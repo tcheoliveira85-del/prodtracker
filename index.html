@@ -2,18 +2,12 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0b1120">
 <meta name="mobile-web-app-capable" content="yes">
 <title>ProdTracker · Portocel</title>
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icons/icon-180.png">
-<meta name="application-name" content="ProdTracker">
-<meta name="apple-mobile-web-app-title" content="ProdTracker">
-<meta name="description" content="Controle de produtividade hora a hora para operações portuárias.">
-<meta name="format-detection" content="telephone=no">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M18 85L18 30Q18 8 50 8Q82 8 82 30L82 85Z' fill='%23003DA5'/><rect x='25' y='24' width='20' height='20' rx='3' fill='white'/><rect x='55' y='24' width='20' height='20' rx='3' fill='white'/><circle cx='33' cy='65' r='9' fill='white'/><circle cx='67' cy='65' r='9' fill='white'/><line x1='30' y1='85' x2='18' y2='97' stroke='%23003DA5' stroke-width='6' stroke-linecap='round'/><line x1='70' y1='85' x2='82' y2='97' stroke='%23003DA5' stroke-width='6' stroke-linecap='round'/><line x1='12' y1='97' x2='88' y2='97' stroke='%23003DA5' stroke-width='5' stroke-linecap='round'/></svg>">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
@@ -38,11 +32,9 @@
   --input-bg: #f7f9fc; --shadow: 0 2px 12px rgba(0,61,165,.06);
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-* { touch-action:manipulation; }
-html { -webkit-text-size-adjust:100%; text-size-adjust:100%; scroll-behavior:smooth; }
-body { font-family:'Inter',sans-serif; background:var(--bg-grad); color:var(--text); min-height:100vh; min-height:100dvh; min-height:-webkit-fill-available; -webkit-tap-highlight-color:transparent; padding-bottom:env(safe-area-inset-bottom, 0px); }
-input,select,button,textarea { font-family:inherit; -webkit-appearance:none; appearance:none; }
-.container { max-width:920px; margin:0 auto; padding:12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); position:relative; z-index:1; }
+body { font-family:'Inter',sans-serif; background:var(--bg-grad); color:var(--text); min-height:100vh; min-height:100dvh; -webkit-tap-highlight-color:transparent; }
+input,select,button,textarea { font-family:inherit; }
+.container { max-width:920px; margin:0 auto; padding:12px 16px; position:relative; z-index:1; }
 
 /* Topo background */
 .topo-bg { position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.3; }
@@ -57,14 +49,6 @@ input,select,button,textarea { font-family:inherit; -webkit-appearance:none; app
 .header-right { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .theme-btn { padding:6px 14px; border-radius:20px; border:1px solid var(--border); background:var(--card); color:var(--text-sec); cursor:pointer; font-size:11px; font-weight:600; display:flex; align-items:center; gap:6px; transition:all .2s; }
 .theme-btn:hover { border-color:var(--accent); }
-.install-btn { padding:6px 14px; border-radius:20px; border:1px solid var(--accent); background:var(--accent-glow); color:var(--accent); cursor:pointer; font-size:11px; font-weight:700; display:none; align-items:center; gap:6px; transition:all .2s; }
-.install-btn.show { display:inline-flex; }
-.install-btn:hover { background:var(--accent); color:#fff; }
-.offline-badge { position:fixed; top:calc(env(safe-area-inset-top, 0px) + 10px); right:12px; z-index:1000; background:rgba(245,158,11,.14); color:var(--warning); border:1px solid rgba(245,158,11,.25); border-radius:999px; padding:8px 12px; font-size:11px; font-weight:700; display:none; backdrop-filter:blur(8px); }
-.offline-badge.show { display:block; }
-@media(max-width:600px) {
-  .install-btn { width:100%; justify-content:center; }
-}
 .nav { display:flex; gap:4px; }
 .nav-btn { padding:8px 16px; border-radius:8px; border:1.5px solid var(--border); background:transparent; color:var(--text-muted); cursor:pointer; font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; transition:all .2s; }
 .nav-btn.active { border-color:var(--accent); background:var(--accent-glow); color:var(--accent); }
@@ -85,15 +69,15 @@ input.inp-sm { padding:4px 8px; font-size:11px; width:100%; }
 input.inp-num { width:64px; padding:4px 8px; font-size:12px; text-align:center; }
 
 /* Buttons */
-.btn { padding:10px 20px; min-height:44px; border-radius:8px; border:none; cursor:pointer; font-size:12px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; transition:all .2s; display:inline-flex; align-items:center; justify-content:center; gap:6px; }
+.btn { padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-size:12px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; transition:all .2s; display:inline-flex; align-items:center; gap:6px; }
 .btn:active { transform:scale(.97); }
 .btn-accent { background:var(--accent); color:#fff; box-shadow:0 2px 8px rgba(65,182,196,.3); }
 [data-theme="dark"] .btn-accent { color:#0b1120; }
 .btn-success { background:var(--success); color:#fff; }
 .btn-danger { background:var(--danger); color:#fff; }
 .btn-info { background:var(--info); color:#fff; }
-.btn-sm { padding:6px 14px; min-height:36px; font-size:10px; border-radius:6px; }
-.btn-xs { padding:3px 8px; min-height:28px; font-size:9px; border-radius:4px; }
+.btn-sm { padding:6px 14px; font-size:10px; border-radius:6px; }
+.btn-xs { padding:3px 8px; font-size:9px; border-radius:4px; }
 .btn-outline { background:transparent; border:1.5px solid var(--text-muted); color:var(--text-muted); }
 .btn-outline:hover { border-color:var(--accent); color:var(--accent); }
 
@@ -114,7 +98,7 @@ input.inp-num { width:64px; padding:4px 8px; font-size:12px; text-align:center; 
 .progress-fill { height:100%; background:linear-gradient(90deg,var(--brand-cyan),var(--brand-green)); border-radius:4px; transition:width .6s ease; }
 
 /* Table */
-table { width:100%; min-width:600px; border-collapse:collapse; font-size:12px; }
+table { width:100%; border-collapse:collapse; font-size:12px; }
 th { padding:10px 8px; text-align:left; border-bottom:2px solid var(--accent); color:var(--accent); font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; }
 td { padding:8px; border-bottom:1px solid var(--border); }
 td.num { color:var(--accent-light); font-weight:700; text-align:center; }
@@ -136,7 +120,7 @@ tr.alt { background:var(--card-alt); }
 .share-box { background:var(--input-bg); border:1px solid var(--border); border-radius:10px; padding:16px; white-space:pre-wrap; font-size:12px; line-height:1.7; font-family:'JetBrains Mono',monospace; overflow-x:auto; }
 
 /* Toast */
-.toast { position:fixed; bottom:calc(env(safe-area-inset-bottom, 0px) + 20px); left:50%; transform:translateX(-50%) translateY(20px); background:var(--success); color:#fff; padding:12px 28px; border-radius:10px; font-size:12px; font-weight:700; opacity:0; transition:all .3s; z-index:999; pointer-events:none; box-shadow:0 4px 20px rgba(16,185,129,.4); max-width:calc(100vw - 24px); text-align:center; }
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--success); color:#fff; padding:12px 28px; border-radius:10px; font-size:12px; font-weight:700; opacity:0; transition:all .3s; z-index:999; pointer-events:none; box-shadow:0 4px 20px rgba(16,185,129,.4); }
 .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
 /* Empty state */
@@ -158,21 +142,17 @@ tr.alt { background:var(--card-alt); }
 
 /* Responsive */
 @media(max-width:600px) {
-  .container { padding:8px 12px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .container { padding:8px 12px; }
   .header { gap:8px; }
   .row { gap:8px; }
-  .field, .field-sm { min-width:100%; }
+  .field { min-width:120px; }
   .metrics { gap:6px; }
-  .metric { min-width:calc(50% - 6px); padding:10px 6px; }
+  .metric { min-width:70px; padding:10px 6px; }
   .metric-num { font-size:18px; }
   .metric-num-lg { font-size:24px; }
-  .btn { width:100%; padding:10px 14px; font-size:11px; }
+  .btn { padding:8px 14px; font-size:11px; }
   .section { padding:14px; }
-  .nav { width:100%; }
-  .nav-btn { flex:1; padding:10px; font-size:10px; }
-  .header-right { width:100%; }
-  .actions { flex-direction:column; }
-  .theme-btn { width:100%; justify-content:center; }
+  .nav-btn { padding:6px 10px; font-size:10px; }
 }
 
 /* Scrollbar */
@@ -191,7 +171,6 @@ tr.alt { background:var(--card-alt); }
 
 <div class="container" id="app"></div>
 <div class="toast" id="toast"></div>
-<div class="offline-badge" id="offlineBadge">Modo offline</div>
 
 <script>
 // ── State ──
@@ -204,13 +183,10 @@ let state = {
   viewHistId: null
 };
 
-let deferredInstallPrompt = null;
-
 function init() {
   try { state.operacao = JSON.parse(localStorage.getItem('pt_op')); } catch(e) {}
   try { state.historico = JSON.parse(localStorage.getItem('pt_hist')) || []; } catch(e) {}
   document.body.dataset.theme = state.theme;
-  updateOfflineBadge();
   render();
 }
 
@@ -232,95 +208,12 @@ const fmtDate = d => { if(!d) return '—'; const t=new Date(d); return `${pad(t
 const fmtTime = d => { if(!d) return '—'; const t=new Date(d); return `${pad(t.getHours())}:${pad(t.getMinutes())}`; };
 const fmtDateTime = d => d ? `${fmtDate(d)} ${fmtTime(d)}` : '—';
 const fmtDur = ms => { if(!ms||ms<0) return '—'; return `${Math.floor(ms/36e5)}h${pad(Math.floor((ms%36e5)/6e4))}`; };
-const toLocal = d => {
-  if(!d) return '';
-  const t = new Date(d);
-  if (Number.isNaN(t.getTime())) return '';
-  const offset = t.getTimezoneOffset();
-  const local = new Date(t.getTime() - offset * 60000);
-  return local.toISOString().slice(0,16);
-};
-
-let toastTimer = null;
+const toLocal = d => { if(!d) return ''; const t=new Date(d); return new Date(t.getTime()-t.getTimezoneOffset()*6e4).toISOString().slice(0,16); };
 
 function showToast(msg) {
   const el = document.getElementById('toast');
-  if (!el) return;
-  el.textContent = msg;
-  el.classList.add('show');
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
-}
-
-function toIsoFromInput(value) {
-  if(!value) return null;
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return null;
-  return parsed.toISOString();
-}
-
-function fallbackCopy(texto) {
-  const textarea = document.createElement('textarea');
-  textarea.value = texto;
-  textarea.setAttribute('readonly', '');
-  textarea.style.position = 'fixed';
-  textarea.style.top = '-9999px';
-  textarea.style.opacity = '0';
-  document.body.appendChild(textarea);
-  textarea.focus();
-  textarea.select();
-  textarea.setSelectionRange(0, textarea.value.length);
-
-  let copied = false;
-  try {
-    copied = document.execCommand('copy');
-  } catch (e) {
-    copied = false;
-  }
-
-  document.body.removeChild(textarea);
-  if (copied) showToast('✓ Copiado!');
-  else showToast('Erro ao copiar');
-}
-
-
-function updateOfflineBadge() {
-  const badge = document.getElementById('offlineBadge');
-  if (!badge) return;
-  badge.classList.toggle('show', !navigator.onLine);
-}
-
-function updateInstallButton() {
-  const btn = document.getElementById('installBtn');
-  if (!btn) return;
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-  btn.classList.toggle('show', !!deferredInstallPrompt && !isStandalone);
-}
-
-async function instalarApp() {
-  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-
-  if (standalone) {
-    showToast('O app já está instalado');
-    return;
-  }
-
-  if (deferredInstallPrompt) {
-    deferredInstallPrompt.prompt();
-    const choice = await deferredInstallPrompt.userChoice;
-    deferredInstallPrompt = null;
-    updateInstallButton();
-    showToast(choice.outcome === 'accepted' ? 'Instalação iniciada' : 'Instalação cancelada');
-    return;
-  }
-
-  if (isIos) {
-    showToast('No iPhone: Compartilhar > Adicionar à Tela de Início');
-    return;
-  }
-
-  showToast('Use o menu do navegador e escolha "Instalar app"');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
 }
 
 // ── Calculations ──
@@ -429,20 +322,11 @@ function finalizarOp() {
 }
 
 function copiarTexto(op) {
-  const texto = gerarTexto(op || state.operacao);
-
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(texto)
-      .then(() => showToast('✓ Copiado!'))
-      .catch(() => fallbackCopy(texto));
-  } else {
-    fallbackCopy(texto);
-  }
+  navigator.clipboard.writeText(gerarTexto(op||state.operacao)).then(() => showToast('✓ Copiado!')).catch(() => showToast('Erro ao copiar'));
 }
 
 function abrirWhatsApp(op) {
-  const url = 'https://wa.me/?text=' + encodeURIComponent(gerarTexto(op || state.operacao));
-  window.location.href = url;
+  window.open('https://wa.me/?text='+encodeURIComponent(gerarTexto(op||state.operacao)),'_blank');
 }
 
 function removerHist(id) {
@@ -486,7 +370,6 @@ function render() {
     <div class="logo-area">${logoSVG()}<div><div class="logo-text">ProdTracker</div><div class="logo-sub">Produtividade Hora a Hora · Portocel</div></div></div>
     <div class="header-right">
       <button class="theme-btn" onclick="toggleTheme()">${themeIcon} ${otherTheme}</button>
-      <button class="install-btn" id="installBtn" onclick="instalarApp()">⬇ Instalar app</button>
       <div class="nav">
         <button class="nav-btn ${state.tab==='operacao'?'active':''}" onclick="setState({tab:'operacao'})">Operação</button>
         <button class="nav-btn ${state.tab==='historico'?'active':''}" onclick="setState({tab:'historico'})">Histórico (${state.historico.length})</button>
@@ -506,7 +389,7 @@ function render() {
       html += `<div class="section"><div class="section-title"><span style="color:var(--accent)">◆</span> DADOS DA COMPOSIÇÃO</div>
         <div class="row">
           <div class="field"><label class="lbl">Composição</label><input class="inp" value="${op.composicao||''}" placeholder="Ex: 260101L40 (aammdd+nº da L)" oninput="state.operacao.composicao=this.value;save()"></div>
-          <div class="field"><label class="lbl">Chegada</label><input type="datetime-local" class="inp" value="${toLocal(op.chegada)}" onchange="state.operacao.chegada=toIsoFromInput(this.value)||state.operacao.chegada;save()"></div>
+          <div class="field"><label class="lbl">Chegada</label><input type="datetime-local" class="inp" value="${toLocal(op.chegada)}" onchange="state.operacao.chegada=this.value?new Date(this.value).toISOString():state.operacao.chegada;save()"></div>
           <div class="field-sm"><label class="lbl">Produto</label><select class="inp" onchange="state.operacao.produto=this.value;save()"><option ${op.produto==='Celulose'?'selected':''}>Celulose</option><option ${op.produto==='Outro'?'selected':''}>Outro</option></select></div>
         </div></div>`;
 
@@ -533,9 +416,9 @@ function render() {
             ${op.encostes.length>1?`<button class="btn btn-danger btn-sm" onclick="removeEncoste(${eIdx})">✕</button>`:''}
           </div>
           <div class="row">
-            <div class="field"><label class="lbl">Quantidade</label><input type="number" inputmode="numeric" class="inp" value="${enc.quantidade||''}" placeholder="Nº vagões" oninput="state.operacao.encostes[${eIdx}].quantidade=parseInt(this.value)||0;setState({operacao:state.operacao})"></div>
-            <div class="field"><label class="lbl">Posicionamento</label><input type="datetime-local" class="inp" value="${toLocal(enc.posicionamento)}" onchange="state.operacao.encostes[${eIdx}].posicionamento=toIsoFromInput(this.value);setState({operacao:state.operacao})"></div>
-            <div class="field"><label class="lbl">Início Operação</label><input type="datetime-local" class="inp" value="${toLocal(enc.inicioOp)}" onchange="state.operacao.encostes[${eIdx}].inicioOp=toIsoFromInput(this.value);setState({operacao:state.operacao})"></div>
+            <div class="field"><label class="lbl">Quantidade</label><input type="number" class="inp" value="${enc.quantidade||''}" placeholder="Nº vagões" oninput="state.operacao.encostes[${eIdx}].quantidade=parseInt(this.value)||0;save()" onblur="render()"></div>
+            <div class="field"><label class="lbl">Posicionamento</label><input type="datetime-local" class="inp" value="${toLocal(enc.posicionamento)}" onchange="state.operacao.encostes[${eIdx}].posicionamento=this.value?new Date(this.value).toISOString():null;save();render()"></div>
+            <div class="field"><label class="lbl">Início Operação</label><input type="datetime-local" class="inp" value="${toLocal(enc.inicioOp)}" onchange="state.operacao.encostes[${eIdx}].inicioOp=this.value?new Date(this.value).toISOString():null;save();render()"></div>
           </div>
           <div class="metrics">
             <div class="metric"><div class="metric-num">${c.total}</div><div class="metric-label">Descarregados</div></div>
@@ -555,9 +438,9 @@ function render() {
           const vgh = elapsed > 0 && acum > 0 ? acum/(elapsed/36e5) : 0;
           html += `<tr class="${rIdx%2?'alt':''}">
             <td style="color:var(--text-muted);font-weight:600">${rIdx+1}ª</td>
-            <td><input type="datetime-local" class="inp inp-sm" value="${toLocal(r.hora)}" onchange="state.operacao.encostes[${eIdx}].registros[${rIdx}].hora=toIsoFromInput(this.value)||state.operacao.encostes[${eIdx}].registros[${rIdx}].hora;setState({operacao:state.operacao})" style="width:170px"></td>
+            <td><input type="datetime-local" class="inp inp-sm" value="${toLocal(r.hora)}" onchange="state.operacao.encostes[${eIdx}].registros[${rIdx}].hora=this.value?new Date(this.value).toISOString():state.operacao.encostes[${eIdx}].registros[${rIdx}].hora;save();render()" style="width:170px"></td>
             <td class="num">${fmtDur(elapsed)}</td>
-            <td><input type="number" inputmode="numeric" class="inp inp-num" value="${r.qtd||''}" placeholder="0" oninput="state.operacao.encostes[${eIdx}].registros[${rIdx}].qtd=parseInt(this.value)||0;setState({operacao:state.operacao})"></td>
+            <td><input type="number" class="inp inp-num" value="${r.qtd||''}" placeholder="0" oninput="state.operacao.encostes[${eIdx}].registros[${rIdx}].qtd=parseInt(this.value)||0;save()" onblur="render()"></td>
             <td class="num">${acum}</td>
             <td class="num" style="color:var(--success)">${vgh.toFixed(1)}</td>
             <td><button class="btn btn-danger btn-xs" onclick="removeRegistro(${eIdx},${rIdx})">✕</button></td>
@@ -640,31 +523,9 @@ function render() {
   html += `<div class="footer">ProdTracker v2.0 · Portocel — Dedicação Carrega o Mundo</div>`;
 
   document.getElementById('app').innerHTML = html;
-  updateInstallButton();
 }
 
-window.addEventListener('load', () => {
-  init();
-
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-  }
-}, { once:true });
-
-window.addEventListener('beforeinstallprompt', (event) => {
-  event.preventDefault();
-  deferredInstallPrompt = event;
-  updateInstallButton();
-});
-
-window.addEventListener('appinstalled', () => {
-  deferredInstallPrompt = null;
-  updateInstallButton();
-  showToast('✓ App instalado');
-});
-
-window.addEventListener('online', updateOfflineBadge);
-window.addEventListener('offline', updateOfflineBadge);
+init();
 </script>
 </body>
 </html>
