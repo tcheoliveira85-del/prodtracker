@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b1120">
+<meta name="mobile-web-app-capable" content="yes">
+<title>ProdTracker · Portocel</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="application-name" content="ProdTracker">
+<meta name="apple-mobile-web-app-title" content="ProdTracker">
+<meta name="description" content="Controle de produtividade hora a hora para operações portuárias.">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M18 85L18 30Q18 8 50 8Q82 8 82 30L82 85Z' fill='%23003DA5'/><rect x='25' y='24' width='20' height='20' rx='3' fill='white'/><rect x='55' y='24' width='20' height='20' rx='3' fill='white'/><circle cx='33' cy='65' r='9' fill='white'/><circle cx='67' cy='65' r='9' fill='white'/><line x1='30' y1='85' x2='18' y2='97' stroke='%23003DA5' stroke-width='6' stroke-linecap='round'/><line x1='70' y1='85' x2='82' y2='97' stroke='%23003DA5' stroke-width='6' stroke-linecap='round'/><line x1='12' y1='97' x2='88' y2='97' stroke='%23003DA5' stroke-width='5' stroke-linecap='round'/></svg>">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #0b1120; --bg-grad: linear-gradient(180deg,#0b1120,#0f1a2e);
+  --card: #111d33; --card-alt: #162340; --card-hover: #1a2a4d;
+  --border: #1e3355; --border-light: #284470;
+  --accent: #41b6c4; --accent-dark: #2d8a96; --accent-light: #7fcdbb; --accent-glow: rgba(65,182,196,.12);
+  --success: #10b981; --danger: #ef4444; --info: #2680c2; --warning: #f59e0b;
+  --text: #e8edf5; --text-sec: #94a3b8; --text-muted: #5a7094;
+  --input-bg: #0d1526; --shadow: 0 2px 12px rgba(0,0,0,.4);
+  --brand-blue: #003DA5; --brand-cyan: #41b6c4; --brand-green: #78c679;
+}
+[data-theme="light"] {
+  --bg: #f0f4f8; --bg-grad: linear-gradient(180deg,#f0f4f8,#e8eff6);
+  --card: #ffffff; --card-alt: #f7f9fc; --card-hover: #eef3f9;
+  --border: #d4dde8; --border-light: #c2cfe0;
+  --accent: #003DA5; --accent-dark: #002d7a; --accent-light: #0056b3; --accent-glow: rgba(0,61,165,.06);
+  --success: #5aaa2b; --danger: #dc2626; --info: #41b6c4; --warning: #d97706;
+  --text: #1a2840; --text-sec: #4a5e7a; --text-muted: #8695aa;
+  --input-bg: #f7f9fc; --shadow: 0 2px 12px rgba(0,61,165,.06);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+* { touch-action:manipulation; }
+html { -webkit-text-size-adjust:100%; text-size-adjust:100%; scroll-behavior:smooth; }
+body { font-family:'Inter',sans-serif; background:var(--bg-grad); color:var(--text); min-height:100vh; min-height:100dvh; min-height:-webkit-fill-available; -webkit-tap-highlight-color:transparent; padding-bottom:env(safe-area-inset-bottom, 0px); }
+input,select,button,textarea { font-family:inherit; -webkit-appearance:none; appearance:none; }
+.container { max-width:920px; margin:0 auto; padding:12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); position:relative; z-index:1; }
+
+/* Topo background */
+.topo-bg { position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.3; }
+.wave-bg { position:fixed; bottom:0; left:0; right:0; height:100px; pointer-events:none; z-index:0; overflow:hidden; }
+
+/* Header */
+.header { display:flex; align-items:center; justify-content:space-between; padding:16px 0 14px; border-bottom:2px solid var(--accent); margin-bottom:20px; flex-wrap:wrap; gap:10px; }
+.logo-area { display:flex; align-items:center; gap:12px; }
+.logo-svg { width:40px; height:40px; flex-shrink:0; }
+.logo-text { font-size:17px; font-weight:800; letter-spacing:1.5px; color:var(--accent); }
+.logo-sub { font-size:10px; color:var(--text-muted); letter-spacing:.5px; margin-top:1px; }
+.header-right { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.theme-btn { padding:6px 14px; border-radius:20px; border:1px solid var(--border); background:var(--card); color:var(--text-sec); cursor:pointer; font-size:11px; font-weight:600; display:flex; align-items:center; gap:6px; transition:all .2s; }
+.theme-btn:hover { border-color:var(--accent); }
+.install-btn { padding:6px 14px; border-radius:20px; border:1px solid var(--accent); background:var(--accent-glow); color:var(--accent); cursor:pointer; font-size:11px; font-weight:700; display:none; align-items:center; gap:6px; transition:all .2s; }
+.install-btn.show { display:inline-flex; }
+.install-btn:hover { background:var(--accent); color:#fff; }
+.offline-badge { position:fixed; top:calc(env(safe-area-inset-top, 0px) + 10px); right:12px; z-index:1000; background:rgba(245,158,11,.14); color:var(--warning); border:1px solid rgba(245,158,11,.25); border-radius:999px; padding:8px 12px; font-size:11px; font-weight:700; display:none; backdrop-filter:blur(8px); }
+.offline-badge.show { display:block; }
+@media(max-width:600px) {
+  .install-btn { width:100%; justify-content:center; }
+}
+.nav { display:flex; gap:4px; }
+.nav-btn { padding:8px 16px; border-radius:8px; border:1.5px solid var(--border); background:transparent; color:var(--text-muted); cursor:pointer; font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; transition:all .2s; }
+.nav-btn.active { border-color:var(--accent); background:var(--accent-glow); color:var(--accent); }
+
+/* Section */
+.section { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:16px; box-shadow:var(--shadow); }
+.section-title { font-size:11px; font-weight:800; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.section-grad { background:linear-gradient(135deg,var(--card),var(--card-alt)); }
+
+/* Form */
+.row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+.field { flex:1; min-width:140px; }
+.field-sm { flex:.6; min-width:100px; }
+label.lbl { display:block; font-size:10px; font-weight:700; color:var(--text-muted); letter-spacing:.8px; text-transform:uppercase; margin-bottom:4px; }
+input.inp, select.inp { width:100%; padding:9px 12px; background:var(--input-bg); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:13px; outline:none; transition:border-color .2s; }
+input.inp:focus, select.inp:focus { border-color:var(--accent); }
+input.inp-sm { padding:4px 8px; font-size:11px; width:100%; }
+input.inp-num { width:64px; padding:4px 8px; font-size:12px; text-align:center; }
+
+/* Buttons */
+.btn { padding:10px 20px; min-height:44px; border-radius:8px; border:none; cursor:pointer; font-size:12px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; transition:all .2s; display:inline-flex; align-items:center; justify-content:center; gap:6px; }
+.btn:active { transform:scale(.97); }
+.btn-accent { background:var(--accent); color:#fff; box-shadow:0 2px 8px rgba(65,182,196,.3); }
+[data-theme="dark"] .btn-accent { color:#0b1120; }
+.btn-success { background:var(--success); color:#fff; }
+.btn-danger { background:var(--danger); color:#fff; }
+.btn-info { background:var(--info); color:#fff; }
+.btn-sm { padding:6px 14px; min-height:36px; font-size:10px; border-radius:6px; }
+.btn-xs { padding:3px 8px; min-height:28px; font-size:9px; border-radius:4px; }
+.btn-outline { background:transparent; border:1.5px solid var(--text-muted); color:var(--text-muted); }
+.btn-outline:hover { border-color:var(--accent); color:var(--accent); }
+
+/* Metrics */
+.metrics { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+.metric { text-align:center; padding:14px 10px; background:var(--card-alt); border-radius:10px; border:1px solid var(--border); flex:1; min-width:80px; }
+.metric-num { font-size:22px; font-weight:800; color:var(--accent); line-height:1; }
+.metric-num-lg { font-size:30px; }
+.metric-label { font-size:9px; color:var(--text-muted); letter-spacing:.8px; text-transform:uppercase; margin-top:4px; font-weight:600; }
+.color-success { color:var(--success)!important; }
+.color-warning { color:var(--warning)!important; }
+.color-info { color:var(--info)!important; }
+.color-muted { color:var(--text-muted)!important; }
+.color-danger { color:var(--danger)!important; }
+
+/* Progress */
+.progress { height:8px; background:var(--border); border-radius:4px; overflow:hidden; margin-top:14px; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--brand-cyan),var(--brand-green)); border-radius:4px; transition:width .6s ease; }
+
+/* Table */
+table { width:100%; min-width:600px; border-collapse:collapse; font-size:12px; }
+th { padding:10px 8px; text-align:left; border-bottom:2px solid var(--accent); color:var(--accent); font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; }
+td { padding:8px; border-bottom:1px solid var(--border); }
+td.num { color:var(--accent-light); font-weight:700; text-align:center; }
+tr.alt { background:var(--card-alt); }
+
+/* Badge */
+.badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:9px; font-weight:800; letter-spacing:.8px; text-transform:uppercase; }
+.badge-success { background:rgba(16,185,129,.12); color:var(--success); border:1px solid rgba(16,185,129,.2); }
+[data-theme="light"] .badge-success { background:rgba(90,170,43,.1); color:var(--success); }
+.badge-warning { background:rgba(245,158,11,.12); color:var(--warning); border:1px solid rgba(245,158,11,.2); }
+
+/* Encoste */
+.encoste { border-left:4px solid var(--accent); }
+.encoste.done { border-left-color:var(--success); }
+.encoste-num { background:var(--accent); color:#fff; width:26px; height:26px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:900; }
+.encoste.done .encoste-num { background:var(--success); }
+
+/* Share */
+.share-box { background:var(--input-bg); border:1px solid var(--border); border-radius:10px; padding:16px; white-space:pre-wrap; font-size:12px; line-height:1.7; font-family:'JetBrains Mono',monospace; overflow-x:auto; }
+
+/* Toast */
+.toast { position:fixed; bottom:calc(env(safe-area-inset-bottom, 0px) + 20px); left:50%; transform:translateX(-50%) translateY(20px); background:var(--success); color:#fff; padding:12px 28px; border-radius:10px; font-size:12px; font-weight:700; opacity:0; transition:all .3s; z-index:999; pointer-events:none; box-shadow:0 4px 20px rgba(16,185,129,.4); max-width:calc(100vw - 24px); text-align:center; }
+.toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+/* Empty state */
+.empty { text-align:center; padding:56px 20px; color:var(--text-muted); }
+
+/* Actions row */
+.actions { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+
+/* History item */
+.hist-item { cursor:pointer; }
+.hist-header { display:flex; justify-content:space-between; align-items:center; }
+.hist-name { font-size:15px; font-weight:800; color:var(--accent); }
+.hist-meta { font-size:11px; color:var(--text-muted); margin-top:3px; }
+.hist-detail { margin-top:16px; }
+.divider { height:1px; background:var(--border); margin:16px 0; }
+
+/* Footer */
+.footer { text-align:center; padding:24px 0 48px; color:var(--text-muted); font-size:10px; letter-spacing:.5px; }
+
+/* Responsive */
+@media(max-width:600px) {
+  .container { padding:8px 12px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .header { gap:8px; }
+  .row { gap:8px; }
+  .field, .field-sm { min-width:100%; }
+  .metrics { gap:6px; }
+  .metric { min-width:calc(50% - 6px); padding:10px 6px; }
+  .metric-num { font-size:18px; }
+  .metric-num-lg { font-size:24px; }
+  .btn { width:100%; padding:10px 14px; font-size:11px; }
+  .section { padding:14px; }
+  .nav { width:100%; }
+  .nav-btn { flex:1; padding:10px; font-size:10px; }
+  .header-right { width:100%; }
+  .actions { flex-direction:column; }
+  .theme-btn { width:100%; justify-content:center; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:var(--card); }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+</style>
+</head>
+<body data-theme="dark">
+
+<!-- Topo Background -->
+<svg class="topo-bg" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="topo" width="200" height="200" patternUnits="userSpaceOnUse"><path d="M20 100Q60 60 100 100Q140 140 180 100" fill="none" stroke="var(--accent)" stroke-width=".3" opacity=".15"/><path d="M0 60Q40 30 80 60Q120 90 160 60Q180 45 200 60" fill="none" stroke="var(--accent)" stroke-width=".3" opacity=".1"/><path d="M10 150Q50 120 90 150Q130 180 170 150" fill="none" stroke="var(--brand-green)" stroke-width=".3" opacity=".08"/></pattern></defs><rect width="100%" height="100%" fill="url(#topo)"/></svg>
+
+<!-- Wave Background -->
+<div class="wave-bg"><svg width="100%" height="100" viewBox="0 0 1200 100" preserveAspectRatio="none"><path d="M0 65Q200 30 400 55Q600 80 800 45Q1000 10 1200 55L1200 100 0 100Z" fill="var(--brand-cyan)" opacity=".07"/><path d="M0 75Q300 50 600 75Q900 100 1200 65L1200 100 0 100Z" fill="var(--brand-green)" opacity=".05"/></svg></div>
+
+<div class="container" id="app"></div>
+<div class="toast" id="toast"></div>
+<div class="offline-badge" id="offlineBadge">Modo offline</div>
+
+<script>
+// ── State ──
+let state = {
+  theme: localStorage.getItem('pt_theme') || 'dark',
+  tab: 'operacao',
+  operacao: null,
+  historico: [],
+  showShare: false,
+  viewHistId: null
+};
+
+let deferredInstallPrompt = null;
+
+function init() {
+  try { state.operacao = JSON.parse(localStorage.getItem('pt_op')); } catch(e) {}
+  try { state.historico = JSON.parse(localStorage.getItem('pt_hist')) || []; } catch(e) {}
+  document.body.dataset.theme = state.theme;
+  updateOfflineBadge();
+  render();
+}
+
+function save() {
+  localStorage.setItem('pt_op', JSON.stringify(state.operacao));
+  localStorage.setItem('pt_hist', JSON.stringify(state.historico));
+  localStorage.setItem('pt_theme', state.theme);
+}
+
+function setState(patch) {
+  Object.assign(state, patch);
+  save();
+  render();
+}
+
+// ── Helpers ──
+const pad = n => String(n).padStart(2,'0');
+const fmtDate = d => { if(!d) return '—'; const t=new Date(d); return `${pad(t.getDate())}/${pad(t.getMonth()+1)}/${t.getFullYear()}`; };
+const fmtTime = d => { if(!d) return '—'; const t=new Date(d); return `${pad(t.getHours())}:${pad(t.getMinutes())}`; };
+const fmtDateTime = d => d ? `${fmtDate(d)} ${fmtTime(d)}` : '—';
+const fmtDur = ms => { if(!ms||ms<0) return '—'; return `${Math.floor(ms/36e5)}h${pad(Math.floor((ms%36e5)/6e4))}`; };
+const toLocal = d => {
+  if(!d) return '';
+  const t = new Date(d);
+  if (Number.isNaN(t.getTime())) return '';
+  const offset = t.getTimezoneOffset();
+  const local = new Date(t.getTime() - offset * 60000);
+  return local.toISOString().slice(0,16);
+};
+
+let toastTimer = null;
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function toIsoFromInput(value) {
+  if(!value) return null;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed.toISOString();
+}
+
+function fallbackCopy(texto) {
+  const textarea = document.createElement('textarea');
+  textarea.value = texto;
+  textarea.setAttribute('readonly', '');
+  textarea.style.position = 'fixed';
+  textarea.style.top = '-9999px';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  textarea.setSelectionRange(0, textarea.value.length);
+
+  let copied = false;
+  try {
+    copied = document.execCommand('copy');
+  } catch (e) {
+    copied = false;
+  }
+
+  document.body.removeChild(textarea);
+  if (copied) showToast('✓ Copiado!');
+  else showToast('Erro ao copiar');
+}
+
+
+function updateOfflineBadge() {
+  const badge = document.getElementById('offlineBadge');
+  if (!badge) return;
+  badge.classList.toggle('show', !navigator.onLine);
+}
+
+function updateInstallButton() {
+  const btn = document.getElementById('installBtn');
+  if (!btn) return;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  btn.classList.toggle('show', !!deferredInstallPrompt && !isStandalone);
+}
+
+async function instalarApp() {
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+  if (standalone) {
+    showToast('O app já está instalado');
+    return;
+  }
+
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const choice = await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    updateInstallButton();
+    showToast(choice.outcome === 'accepted' ? 'Instalação iniciada' : 'Instalação cancelada');
+    return;
+  }
+
+  if (isIos) {
+    showToast('No iPhone: Compartilhar > Adicionar à Tela de Início');
+    return;
+  }
+
+  showToast('Use o menu do navegador e escolha "Instalar app"');
+}
+
+// ── Calculations ──
+function calcEncoste(enc) {
+  const regs = enc.registros || [];
+  const total = regs.reduce((s,r) => s + (r.qtd||0), 0);
+  const rest = (enc.quantidade||0) - total;
+  const ini = enc.inicioOp ? new Date(enc.inicioOp) : null;
+  const ult = regs.length ? regs[regs.length-1] : null;
+  const tempoOp = ini && ult ? new Date(ult.hora).getTime() - ini.getTime() : 0;
+  const prod = tempoOp > 0 && total > 0 ? total / (tempoOp/36e5) : 0;
+  const tRest = prod > 0 && rest > 0 ? (rest/prod)*36e5 : 0;
+  const prev = ult && tRest > 0 ? new Date(new Date(ult.hora).getTime() + tRest) : null;
+  const done = rest <= 0 && total > 0;
+  return { total, rest, tempoOp, prod, prev, done };
+}
+
+function calcGeral(op) {
+  if (!op) return { totalVG:0, totalQtd:0, pct:0, tempoTotal:0, prodMedia:0 };
+  let totalVG=0, totalQtd=0, tempoTotal=0;
+  (op.encostes||[]).forEach(e => {
+    const c = calcEncoste(e);
+    totalVG += c.total; totalQtd += e.quantidade||0; tempoTotal += c.tempoOp;
+  });
+  const pct = totalQtd > 0 ? totalVG/totalQtd*100 : 0;
+  const prodMedia = tempoTotal > 0 && totalVG > 0 ? totalVG/(tempoTotal/36e5) : 0;
+  return { totalVG, totalQtd, pct, tempoTotal, prodMedia };
+}
+
+// ── Share Text ──
+function gerarTexto(op) {
+  const L = [];
+  L.push('📦 *PRODUTIVIDADE HORA A HORA*');
+  L.push('━━━━━━━━━━━━━━━━━━━━━');
+  L.push(`Composição: *${op.composicao||'—'}*`);
+  L.push(`Chegada: ${fmtDateTime(op.chegada)}`);
+  L.push(`Produto: ${op.produto||'Celulose'}`);
+  L.push('');
+  (op.encostes||[]).forEach((enc,idx) => {
+    const c = calcEncoste(enc);
+    const regs = enc.registros||[];
+    L.push(`▸ *${idx+1}º ENCOSTE*`);
+    L.push(`  Qtd: ${enc.quantidade||0} vagões`);
+    L.push(`  Posicionamento: ${fmtDateTime(enc.posicionamento)}`);
+    L.push(`  Início: ${fmtDateTime(enc.inicioOp)}`);
+    L.push(`  Descarregados: ${c.total} | Restante: ${Math.max(0,c.rest)}`);
+    L.push(`  Produtividade: ${c.prod.toFixed(1)} VG/h`);
+    L.push(`  Tempo Op: ${fmtDur(c.tempoOp)}`);
+    if(c.done) L.push('  ✅ *CONCLUÍDO*');
+    else if(c.prev) L.push(`  🕐 *Prev. Término: ${fmtDateTime(c.prev)}*`);
+    if(regs.length) { L.push(''); regs.forEach((r,i) => { const ac = regs.slice(0,i+1).reduce((s,x)=>s+(x.qtd||0),0); L.push(`  ${i+1}ª h → ${fmtTime(r.hora)} | +${r.qtd||0} vg | Acum: ${ac}`); }); }
+    L.push('');
+  });
+  const g = calcGeral(op);
+  L.push('━━━━━━━━━━━━━━━━━━━━━');
+  L.push(`Total: ${g.totalVG}/${g.totalQtd} vagões`);
+  return L.join('\n');
+}
+
+// ── Actions ──
+function toggleTheme() {
+  setState({ theme: state.theme === 'dark' ? 'light' : 'dark' });
+  document.body.dataset.theme = state.theme;
+}
+
+function novaOp() {
+  setState({ operacao: { id:Date.now(), composicao:'', chegada:new Date().toISOString(), produto:'Celulose', encostes:[{ id:Date.now(), quantidade:0, posicionamento:null, inicioOp:null, registros:[] }] }, showShare:false, tab:'operacao' });
+}
+
+function addEncoste() {
+  if(!state.operacao) return;
+  state.operacao.encostes.push({ id:Date.now(), quantidade:0, posicionamento:null, inicioOp:null, registros:[] });
+  setState({ operacao: state.operacao });
+}
+
+function removeEncoste(idx) {
+  if(!state.operacao || state.operacao.encostes.length <= 1) return;
+  state.operacao.encostes.splice(idx,1);
+  setState({ operacao: state.operacao });
+}
+
+function addRegistro(eIdx) {
+  state.operacao.encostes[eIdx].registros.push({ id:Date.now(), hora:new Date().toISOString(), qtd:0 });
+  setState({ operacao: state.operacao });
+}
+
+function removeRegistro(eIdx, rIdx) {
+  state.operacao.encostes[eIdx].registros.splice(rIdx,1);
+  setState({ operacao: state.operacao });
+}
+
+function salvarHist() {
+  if(!state.operacao) return;
+  const entry = JSON.parse(JSON.stringify(state.operacao));
+  entry.salvoEm = new Date().toISOString();
+  state.historico = [entry, ...state.historico.filter(h => h.id !== state.operacao.id)];
+  setState({ historico: state.historico });
+  showToast('✓ Salvo no histórico');
+}
+
+function finalizarOp() {
+  if(!state.operacao) return;
+  salvarHist();
+  setState({ operacao:null, showShare:false });
+  showToast('✓ Operação finalizada');
+}
+
+function copiarTexto(op) {
+  const texto = gerarTexto(op || state.operacao);
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(texto)
+      .then(() => showToast('✓ Copiado!'))
+      .catch(() => fallbackCopy(texto));
+  } else {
+    fallbackCopy(texto);
+  }
+}
+
+function abrirWhatsApp(op) {
+  const url = 'https://wa.me/?text=' + encodeURIComponent(gerarTexto(op || state.operacao));
+  window.location.href = url;
+}
+
+function removerHist(id) {
+  state.historico = state.historico.filter(h => h.id !== id);
+  if(state.viewHistId === id) state.viewHistId = null;
+  setState({ historico: state.historico });
+  showToast('✓ Removido');
+}
+
+// ── Logo SVG ──
+function trainSVG(size=40, color=null) {
+  const c = color || '#003DA5';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Train body - rounded top, flat bottom -->
+    <path d="M18 85 L18 30 Q18 8 50 8 Q82 8 82 30 L82 85 Z" fill="${c}"/>
+    <!-- Windows -->
+    <rect x="25" y="24" width="20" height="20" rx="3" fill="white"/>
+    <rect x="55" y="24" width="20" height="20" rx="3" fill="white"/>
+    <!-- Headlights -->
+    <circle cx="33" cy="65" r="9" fill="white"/>
+    <circle cx="67" cy="65" r="9" fill="white"/>
+    <!-- Rail tracks -->
+    <line x1="30" y1="85" x2="18" y2="97" stroke="${c}" stroke-width="6" stroke-linecap="round"/>
+    <line x1="70" y1="85" x2="82" y2="97" stroke="${c}" stroke-width="6" stroke-linecap="round"/>
+    <line x1="12" y1="97" x2="88" y2="97" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+  </svg>`;
+}
+function logoSVG() { return trainSVG(40); }
+
+// ── Render ──
+function render() {
+  const op = state.operacao;
+  const isDark = state.theme === 'dark';
+  const otherTheme = isDark ? 'Claro' : 'Escuro';
+  const themeIcon = isDark ? '☀️' : '🌙';
+
+  let html = '';
+
+  // Header
+  html += `<div class="header">
+    <div class="logo-area">${logoSVG()}<div><div class="logo-text">ProdTracker</div><div class="logo-sub">Produtividade Hora a Hora · Portocel</div></div></div>
+    <div class="header-right">
+      <button class="theme-btn" onclick="toggleTheme()">${themeIcon} ${otherTheme}</button>
+      <button class="install-btn" id="installBtn" onclick="instalarApp()">⬇ Instalar app</button>
+      <div class="nav">
+        <button class="nav-btn ${state.tab==='operacao'?'active':''}" onclick="setState({tab:'operacao'})">Operação</button>
+        <button class="nav-btn ${state.tab==='historico'?'active':''}" onclick="setState({tab:'historico'})">Histórico (${state.historico.length})</button>
+      </div>
+    </div>
+  </div>`;
+
+  // ── TAB OPERAÇÃO ──
+  if (state.tab === 'operacao') {
+    if (!op) {
+      html += `<div class="section empty"><div style="margin-bottom:16px">${trainSVG(64)}</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:6px;color:var(--text)">Nenhuma operação ativa</div>
+        <div style="font-size:12px;margin-bottom:28px">Inicie uma nova operação para registrar a produtividade</div>
+        <button class="btn btn-accent" onclick="novaOp()">＋ Nova Operação</button></div>`;
+    } else {
+      // Dados composição
+      html += `<div class="section"><div class="section-title"><span style="color:var(--accent)">◆</span> DADOS DA COMPOSIÇÃO</div>
+        <div class="row">
+          <div class="field"><label class="lbl">Composição</label><input class="inp" value="${op.composicao||''}" placeholder="Ex: 260101L40 (aammdd+nº da L)" oninput="state.operacao.composicao=this.value;save()"></div>
+          <div class="field"><label class="lbl">Chegada</label><input type="datetime-local" class="inp" value="${toLocal(op.chegada)}" onchange="state.operacao.chegada=toIsoFromInput(this.value)||state.operacao.chegada;save()"></div>
+          <div class="field-sm"><label class="lbl">Produto</label><select class="inp" onchange="state.operacao.produto=this.value;save()"><option ${op.produto==='Celulose'?'selected':''}>Celulose</option><option ${op.produto==='Outro'?'selected':''}>Outro</option></select></div>
+        </div></div>`;
+
+      // Resumo geral
+      const g = calcGeral(op);
+      html += `<div class="section section-grad"><div class="section-title"><span style="color:var(--accent)">◆</span> RESUMO GERAL</div>
+        <div class="metrics">
+          <div class="metric"><div class="metric-num metric-num-lg">${g.totalVG}</div><div class="metric-label">Descarregados</div></div>
+          <div class="metric"><div class="metric-num metric-num-lg color-info">${g.totalQtd}</div><div class="metric-label">Total</div></div>
+          <div class="metric"><div class="metric-num">${g.pct.toFixed(0)}%</div><div class="metric-label">Progresso</div></div>
+          <div class="metric"><div class="metric-num">${g.prodMedia.toFixed(1)}</div><div class="metric-label">Média VG/h</div></div>
+          <div class="metric"><div class="metric-num color-info">${fmtDur(g.tempoTotal)}</div><div class="metric-label">Tempo Total</div></div>
+        </div>
+        <div class="progress"><div class="progress-fill" style="width:${Math.min(100,g.pct)}%"></div></div></div>`;
+
+      // Encostes
+      (op.encostes||[]).forEach((enc, eIdx) => {
+        const c = calcEncoste(enc);
+        const regs = enc.registros||[];
+        const ini = enc.inicioOp ? new Date(enc.inicioOp) : null;
+        html += `<div class="section encoste ${c.done?'done':''}">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div class="section-title" style="margin-bottom:0"><span class="encoste-num">${eIdx+1}</span> ${eIdx+1}º ENCOSTE ${c.done?'<span class="badge badge-success">✓ Concluído</span>':''}</div>
+            ${op.encostes.length>1?`<button class="btn btn-danger btn-sm" onclick="removeEncoste(${eIdx})">✕</button>`:''}
+          </div>
+          <div class="row">
+            <div class="field"><label class="lbl">Quantidade</label><input type="number" inputmode="numeric" class="inp" value="${enc.quantidade||''}" placeholder="Nº vagões" oninput="state.operacao.encostes[${eIdx}].quantidade=parseInt(this.value)||0;setState({operacao:state.operacao})"></div>
+            <div class="field"><label class="lbl">Posicionamento</label><input type="datetime-local" class="inp" value="${toLocal(enc.posicionamento)}" onchange="state.operacao.encostes[${eIdx}].posicionamento=toIsoFromInput(this.value);setState({operacao:state.operacao})"></div>
+            <div class="field"><label class="lbl">Início Operação</label><input type="datetime-local" class="inp" value="${toLocal(enc.inicioOp)}" onchange="state.operacao.encostes[${eIdx}].inicioOp=toIsoFromInput(this.value);setState({operacao:state.operacao})"></div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><div class="metric-num">${c.total}</div><div class="metric-label">Descarregados</div></div>
+            <div class="metric"><div class="metric-num ${c.rest>0?'color-warning':'color-success'}">${Math.max(0,c.rest)}</div><div class="metric-label">Restante</div></div>
+            <div class="metric"><div class="metric-num">${c.prod.toFixed(1)}</div><div class="metric-label">VG/h</div></div>
+            <div class="metric"><div class="metric-num color-info">${fmtDur(c.tempoOp)}</div><div class="metric-label">Tempo Op.</div></div>
+            <div class="metric"><div class="metric-num" style="font-size:18px" class="${c.prev?'color-success':'color-muted'}">${c.prev?fmtTime(c.prev):c.done?'✓':'—'}</div><div class="metric-label">Prev. Término</div></div>
+          </div>
+          <div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Hora</th><th>Tempo Op.</th><th>Qtd. VG</th><th>Acum.</th><th>VG/h</th><th></th></tr></thead><tbody>`;
+
+        if(!regs.length) {
+          html += `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px">Clique "＋ Hora" para registrar</td></tr>`;
+        }
+        regs.forEach((r, rIdx) => {
+          const acum = regs.slice(0,rIdx+1).reduce((s,x)=>s+(x.qtd||0),0);
+          const elapsed = ini ? new Date(r.hora).getTime() - ini.getTime() : 0;
+          const vgh = elapsed > 0 && acum > 0 ? acum/(elapsed/36e5) : 0;
+          html += `<tr class="${rIdx%2?'alt':''}">
+            <td style="color:var(--text-muted);font-weight:600">${rIdx+1}ª</td>
+            <td><input type="datetime-local" class="inp inp-sm" value="${toLocal(r.hora)}" onchange="state.operacao.encostes[${eIdx}].registros[${rIdx}].hora=toIsoFromInput(this.value)||state.operacao.encostes[${eIdx}].registros[${rIdx}].hora;setState({operacao:state.operacao})" style="width:170px"></td>
+            <td class="num">${fmtDur(elapsed)}</td>
+            <td><input type="number" inputmode="numeric" class="inp inp-num" value="${r.qtd||''}" placeholder="0" oninput="state.operacao.encostes[${eIdx}].registros[${rIdx}].qtd=parseInt(this.value)||0;setState({operacao:state.operacao})"></td>
+            <td class="num">${acum}</td>
+            <td class="num" style="color:var(--success)">${vgh.toFixed(1)}</td>
+            <td><button class="btn btn-danger btn-xs" onclick="removeRegistro(${eIdx},${rIdx})">✕</button></td>
+          </tr>`;
+        });
+        html += `</tbody></table></div>
+          <div style="margin-top:12px"><button class="btn btn-accent btn-sm" onclick="addRegistro(${eIdx})">＋ Hora</button></div>
+        </div>`;
+      });
+
+      // Actions
+      html += `<div class="actions">
+        <button class="btn btn-info" onclick="addEncoste()">＋ Encoste</button>
+        <button class="btn btn-success" onclick="salvarHist()">💾 Salvar</button>
+        <button class="btn btn-accent" onclick="setState({showShare:!state.showShare})">📋 ${state.showShare?'Fechar':'Compartilhar'}</button>
+        <button class="btn btn-danger" onclick="finalizarOp()">✓ Finalizar</button>
+        <button class="btn btn-outline" onclick="novaOp()">Nova Op.</button>
+      </div>`;
+
+      // Share panel
+      if (state.showShare) {
+        html += `<div class="section"><div class="section-title"><span style="color:var(--accent)">◆</span> TEXTO PARA WHATSAPP</div>
+          <div class="share-box">${gerarTexto(op).replace(/</g,'&lt;')}</div>
+          <div style="margin-top:14px;display:flex;gap:8px">
+            <button class="btn btn-success" onclick="copiarTexto()">📋 Copiar</button>
+            <button class="btn btn-outline" onclick="abrirWhatsApp()">💬 WhatsApp</button>
+          </div></div>`;
+      }
+    }
+  }
+
+  // ── TAB HISTÓRICO ──
+  if (state.tab === 'historico') {
+    if (!state.historico.length) {
+      html += `<div class="section empty"><div style="margin-bottom:12px">${trainSVG(56)}</div>Nenhuma operação registrada.</div>`;
+    } else {
+      html += `<div style="margin-bottom:14px;font-size:11px;color:var(--text-muted);font-weight:600">${state.historico.length} operação(ões)</div>`;
+      state.historico.forEach((h, hIdx) => {
+        const g = calcGeral(h);
+        const isOpen = state.viewHistId === h.id;
+        html += `<div class="section hist-item">
+          <div class="hist-header" onclick="setState({viewHistId:state.viewHistId===${h.id}?null:${h.id}})">
+            <div><div style="display:flex;align-items:center;gap:8px"><div>${trainSVG(28)}</div><div class="hist-name">${h.composicao||'Sem nome'}</div></div>
+              <div class="hist-meta">${fmtDateTime(h.chegada)} · ${(h.encostes||[]).length} encoste(s) · ${g.totalVG}/${g.totalQtd} vg</div></div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span class="badge ${g.totalVG>=g.totalQtd&&g.totalQtd>0?'badge-success':'badge-warning'}">${g.totalVG>=g.totalQtd&&g.totalQtd>0?'Concluído':'Parcial'}</span>
+              <span style="color:var(--text-muted)">${isOpen?'▲':'▼'}</span>
+            </div>
+          </div>`;
+
+        if (isOpen) {
+          html += `<div class="hist-detail"><div class="divider"></div>
+            <div class="share-box">${gerarTexto(h).replace(/</g,'&lt;')}</div>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button class="btn btn-success btn-sm" onclick="event.stopPropagation();copiarTexto(state.historico[${hIdx}])">📋 Copiar</button>
+              <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();removerHist(${h.id})">🗑 Excluir</button>
+            </div>`;
+
+          (h.encostes||[]).forEach((enc, eidx) => {
+            const regs = enc.registros||[];
+            const ini = enc.inicioOp ? new Date(enc.inicioOp) : null;
+            html += `<div style="margin-top:18px"><div style="font-size:11px;font-weight:800;color:var(--accent);margin-bottom:8px;letter-spacing:1px">${eidx+1}º ENCOSTE — ${enc.quantidade||0} vagões</div>
+              <table><thead><tr><th>#</th><th>Hora</th><th>Qtd</th><th>Acum.</th><th>VG/h</th></tr></thead><tbody>`;
+            regs.forEach((r,i) => {
+              const acum = regs.slice(0,i+1).reduce((s,x)=>s+(x.qtd||0),0);
+              const elapsed = ini ? new Date(r.hora).getTime()-ini.getTime() : 0;
+              const vgh = elapsed>0?acum/(elapsed/36e5):0;
+              html += `<tr class="${i%2?'alt':''}"><td>${i+1}ª</td><td>${fmtTime(r.hora)}</td><td class="num">${r.qtd||0}</td><td class="num">${acum}</td><td class="num" style="color:var(--success)">${vgh.toFixed(1)}</td></tr>`;
+            });
+            html += `</tbody></table></div>`;
+          });
+          html += `</div>`;
+        }
+        html += `</div>`;
+      });
+    }
+  }
+
+  // Footer
+  html += `<div class="footer">ProdTracker v2.0 · Portocel — Dedicação Carrega o Mundo</div>`;
+
+  document.getElementById('app').innerHTML = html;
+  updateInstallButton();
+}
+
+window.addEventListener('load', () => {
+  init();
+
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+}, { once:true });
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  updateInstallButton();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  updateInstallButton();
+  showToast('✓ App instalado');
+});
+
+window.addEventListener('online', updateOfflineBadge);
+window.addEventListener('offline', updateOfflineBadge);
+</script>
+</body>
+</html>
