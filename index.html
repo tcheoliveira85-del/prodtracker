@@ -122,12 +122,15 @@ function showToast(msg){const el=document.getElementById('toast');el.textContent
 // ── Calculations ──
 function calcEncoste(enc){
   const regs=enc.registros||[],total=regs.reduce((s,r)=>s+(r.qtd||0),0),rest=(enc.quantidade||0)-total;
-  const ini=enc.inicioOp?new Date(enc.inicioOp):null,ult=regs.length?regs[regs.length-1]:null;
+  const ini=enc.inicioOp?new Date(enc.inicioOp):null;
+  // Find last registro that has a valid hora
+  const regsComHora=regs.filter(r=>r.hora);
+  const ult=regsComHora.length?regsComHora[regsComHora.length-1]:null;
   const tempoOp=ini&&ult?new Date(ult.hora).getTime()-ini.getTime():0;
   const prod=tempoOp>0&&total>0?total/(tempoOp/36e5):0;
   const tRest=prod>0&&rest>0?(rest/prod)*36e5:0;
   const prev=ult&&tRest>0?new Date(new Date(ult.hora).getTime()+tRest):null;
-  return{total,rest,tempoOp,prod,prev,done:rest<=0&&total>0};
+  return{total,rest,tempoOp:tempoOp>0?tempoOp:0,prod,prev,done:rest<=0&&total>0};
 }
 function calcGeral(op){
   if(!op)return{totalVG:0,totalQtd:0,pct:0,tempoTotal:0,prodMedia:0};
@@ -189,7 +192,11 @@ function removeEncoste(idx){
   setState({operacao:state.operacao});
   showToast('Encoste excluído');
 }
-function addRegistro(eIdx){state.operacao.encostes[eIdx].registros.push({id:Date.now(),hora:new Date().toISOString(),qtd:0});setState({operacao:state.operacao})}
+function addRegistro(eIdx){
+  // Leave hora blank so user fills in the correct time manually
+  state.operacao.encostes[eIdx].registros.push({id:Date.now(),hora:null,qtd:0});
+  setState({operacao:state.operacao});
+}
 function removeRegistro(eIdx,rIdx){state.operacao.encostes[eIdx].registros.splice(rIdx,1);setState({operacao:state.operacao})}
 function salvarHist(){if(!state.operacao)return;const e=JSON.parse(JSON.stringify(state.operacao));e.salvoEm=new Date().toISOString();state.historico=[e,...state.historico.filter(h=>h.id!==state.operacao.id)];setState({historico:state.historico});showToast('✓ Salvo no histórico')}
 function finalizarOp(){if(!state.operacao)return;salvarHist();setState({operacao:null,showShare:false});showToast('✓ Operação finalizada')}
@@ -263,12 +270,13 @@ function render(){
         }
         regs.forEach((r,rIdx)=>{
           const acum=regs.slice(0,rIdx+1).reduce((s,x)=>s+(x.qtd||0),0);
-          const elapsed=ini&&r.hora?new Date(r.hora).getTime()-ini.getTime():0;
-          const elapsedValid=ini&&elapsed>0;
+          const hasTime=ini&&r.hora;
+          const elapsed=hasTime?new Date(r.hora).getTime()-ini.getTime():0;
+          const elapsedValid=hasTime&&elapsed>0;
           const vgh=elapsedValid&&acum>0?acum/(elapsed/36e5):0;
           html+=`<tr class="${rIdx%2?'alt':''}">
             <td style="color:var(--text-muted);font-weight:600">${rIdx+1}ª</td>
-            <td><input type="datetime-local" class="inp" style="padding:4px 8px;font-size:11px;width:170px" value="${toLocal(r.hora)}" onchange="updateField('operacao.encostes.${eIdx}.registros.${rIdx}.hora',this.value?new Date(this.value).toISOString():state.operacao.encostes[${eIdx}].registros[${rIdx}].hora)"></td>
+            <td><input type="datetime-local" class="inp" style="padding:4px 8px;font-size:11px;width:170px" value="${r.hora?toLocal(r.hora):''}" onchange="updateField('operacao.encostes.${eIdx}.registros.${rIdx}.hora',this.value?new Date(this.value).toISOString():null)"></td>
             <td class="num">${elapsedValid?fmtDur(elapsed):'—'}</td>
             <td><input type="number" class="inp" style="width:64px;padding:4px 8px;font-size:12px;text-align:center" inputmode="numeric" id="reg_qtd_${eIdx}_${rIdx}" value="${r.qtd||''}" placeholder="0" oninput="updateField('operacao.encostes.${eIdx}.registros.${rIdx}.qtd',parseInt(this.value)||0)"></td>
             <td class="num">${acum}</td>
