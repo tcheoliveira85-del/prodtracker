@@ -152,7 +152,9 @@ function gerarTexto(op){
     if(regs.length){L.push('');regs.forEach((r,i)=>{const ac=regs.slice(0,i+1).reduce((s,x)=>s+(x.qtd||0),0);L.push(`  ${i+1}ª h → ${fmtTime(r.hora)} | +${r.qtd||0} vg | Acum: ${ac}`)});}
     L.push('');
   });
-  const g=calcGeral(op);L.push('━━━━━━━━━━━━━━━━━━━━━',`Total: ${g.totalVG}/${g.totalQtd} vagões`);
+  const g=calcGeral(op);
+  const totalRef=op.totalVagoes||g.totalQtd;
+  L.push('━━━━━━━━━━━━━━━━━━━━━',`Total: ${g.totalVG}/${totalRef} vagões`);
   return L.join('\n');
 }
 
@@ -182,7 +184,7 @@ function refreshMetrics(){
 
 // ── Actions ──
 function toggleTheme(){setState({theme:state.theme==='dark'?'light':'dark'});document.body.dataset.theme=state.theme}
-function novaOp(){setState({operacao:{id:Date.now(),composicao:'',chegada:new Date().toISOString(),produto:'Celulose',encostes:[{id:Date.now(),quantidade:0,posicionamento:null,inicioOp:null,registros:[]}]},showShare:false,tab:'operacao'})}
+function novaOp(){setState({operacao:{id:Date.now(),composicao:'',chegada:new Date().toISOString(),produto:'Celulose',totalVagoes:0,encostes:[{id:Date.now(),quantidade:0,posicionamento:null,inicioOp:null,registros:[]}]},showShare:false,tab:'operacao'})}
 function addEncoste(){if(!state.operacao)return;state.operacao.encostes.push({id:Date.now(),quantidade:0,posicionamento:null,inicioOp:null,registros:[]});setState({operacao:state.operacao})}
 function removeEncoste(idx){
   if(!state.operacao)return;
@@ -223,20 +225,24 @@ function render(){
       html+=`<div class="section"><div class="section-title"><span style="color:var(--accent)">◆</span> DADOS DA COMPOSIÇÃO</div><div class="row">
         <div class="field"><label class="lbl">Composição</label><input class="inp" value="${op.composicao||''}" placeholder="Ex: 260101L40 (aammdd+nº da L)" oninput="updateField('operacao.composicao',this.value)"></div>
         <div class="field-date"><label class="lbl">Chegada</label><input type="datetime-local" class="inp" value="${toLocal(op.chegada)}" onchange="updateField('operacao.chegada',this.value?new Date(this.value).toISOString():state.operacao.chegada)"></div>
+      </div><div class="row">
+        <div class="field"><label class="lbl">Qtd. Total de Vagões</label><input type="number" class="inp" value="${op.totalVagoes||''}" placeholder="Total que chegou" inputmode="numeric" oninput="updateField('operacao.totalVagoes',parseInt(this.value)||0)"></div>
         <div class="field-sm"><label class="lbl">Produto</label><select class="inp" onchange="updateField('operacao.produto',this.value)"><option ${op.produto==='Celulose'?'selected':''}>Celulose</option><option ${op.produto==='Outro'?'selected':''}>Outro</option></select></div>
       </div></div>`;
 
-      // Resumo
+      // Resumo - usa totalVagoes da composição como referência
       const g=calcGeral(op);
+      const totalRef=op.totalVagoes||g.totalQtd; // usa o total informado, ou soma dos encostes como fallback
+      const pctRef=totalRef>0?(g.totalVG/totalRef*100):0;
       html+=`<div class="section section-grad"><div class="section-title"><span style="color:var(--accent)">◆</span> RESUMO GERAL</div>
         <div class="metrics">
           <div class="metric"><div class="metric-num metric-num-lg">${g.totalVG}</div><div class="metric-label">Descarregados</div></div>
-          <div class="metric"><div class="metric-num metric-num-lg color-info">${g.totalQtd}</div><div class="metric-label">Total</div></div>
-          <div class="metric"><div class="metric-num">${g.pct.toFixed(0)}%</div><div class="metric-label">Progresso</div></div>
+          <div class="metric"><div class="metric-num metric-num-lg color-info">${totalRef}</div><div class="metric-label">Total Vagões</div></div>
+          <div class="metric"><div class="metric-num">${pctRef.toFixed(0)}%</div><div class="metric-label">Progresso</div></div>
           <div class="metric"><div class="metric-num">${g.prodMedia.toFixed(1)}</div><div class="metric-label">Média VG/h</div></div>
           <div class="metric"><div class="metric-num color-info">${fmtDur(g.tempoTotal)}</div><div class="metric-label">Tempo Total</div></div>
         </div>
-        <div class="progress"><div class="progress-fill" style="width:${Math.min(100,g.pct)}%"></div></div></div>`;
+        <div class="progress"><div class="progress-fill" style="width:${Math.min(100,pctRef)}%"></div></div></div>`;
 
       // Encostes
       (op.encostes||[]).forEach((enc,eIdx)=>{
