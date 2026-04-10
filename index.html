@@ -113,9 +113,10 @@ tr.alt{background:var(--card-alt)}
 <!-- Firebase SDK -->
 <script type="module">
 // ══════════════════════════════════════════════════════════════
-// 🔥 FIREBASE CONFIG — COLE SUAS CREDENCIAIS AQUI
+// 🔥 FIREBASE CONFIG
 // ══════════════════════════════════════════════════════════════
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
@@ -125,10 +126,12 @@ const firebaseConfig = {
   projectId: "prodtracker-portocel",
   storageBucket: "prodtracker-portocel.firebasestorage.app",
   messagingSenderId: "906993772621",
-  appId: "1:906993772621:web:1e12874c88fb96a8395404"
+  appId: "1:906993772621:web:1e12874c88fb96a8395404",
+  measurementId: "G-C1M8GDPFSZ"
 };
 
 const fbApp = initializeApp(firebaseConfig);
+const analytics = getAnalytics(fbApp);
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
 
