@@ -32,8 +32,7 @@ input,select,button,textarea{font-family:inherit}
 .section-title{font-size:11px;font-weight:800;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .section-grad{background:linear-gradient(135deg,var(--card),var(--card-alt))}
 .row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
-.field{flex:1;min-width:140px}.field-sm{flex:.6;min-width:100px}
-.field-date{flex:1;min-width:200px}
+.field{flex:1;min-width:140px}.field-sm{flex:.6;min-width:100px}.field-date{flex:1;min-width:200px}
 label.lbl{display:block;font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
 input.inp,select.inp{width:100%;padding:9px 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
 input[type="datetime-local"].inp{min-height:42px}
@@ -42,17 +41,13 @@ input.inp:focus,select.inp:focus{border-color:var(--accent)}
 .btn:active{transform:scale(.97)}
 .btn-accent{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(65,182,196,.3)}
 [data-theme="dark"] .btn-accent{color:#0b1120}
-.btn-success{background:var(--success);color:#fff}
-.btn-danger{background:var(--danger);color:#fff}
-.btn-info{background:var(--info);color:#fff}
-.btn-sm{padding:6px 14px;font-size:10px;border-radius:6px}
-.btn-xs{padding:4px 10px;font-size:9px;border-radius:4px}
+.btn-success{background:var(--success);color:#fff}.btn-danger{background:var(--danger);color:#fff}.btn-info{background:var(--info);color:#fff}
+.btn-sm{padding:6px 14px;font-size:10px;border-radius:6px}.btn-xs{padding:4px 10px;font-size:9px;border-radius:4px}
 .btn-outline{background:transparent;border:1.5px solid var(--text-muted);color:var(--text-muted)}
 .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
 .metrics{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .metric{text-align:center;padding:14px 10px;background:var(--card-alt);border-radius:10px;border:1px solid var(--border);flex:1;min-width:80px}
-.metric-num{font-size:22px;font-weight:800;color:var(--accent);line-height:1}
-.metric-num-lg{font-size:30px}
+.metric-num{font-size:22px;font-weight:800;color:var(--accent);line-height:1}.metric-num-lg{font-size:30px}
 .metric-label{font-size:9px;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;margin-top:4px;font-weight:600}
 .color-success{color:var(--success)!important}.color-warning{color:var(--warning)!important}.color-info{color:var(--info)!important}.color-muted{color:var(--text-muted)!important}
 .progress{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:14px}
@@ -78,37 +73,188 @@ tr.alt{background:var(--card-alt)}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .divider{height:1px;background:var(--border);margin:16px 0}
 .footer{text-align:center;padding:24px 0 48px;color:var(--text-muted);font-size:10px;letter-spacing:.5px}
-.confirm-del{background:var(--card-alt);border:1px solid var(--danger);border-radius:8px;padding:12px;margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.confirm-del span{font-size:11px;color:var(--text)}
-@media(max-width:600px){.container{padding:8px 12px}.header{gap:8px}.row{gap:8px}.field{min-width:100%;flex-basis:100%}.field-date{min-width:100%;flex-basis:100%}.field-sm{min-width:100%;flex-basis:100%}.metrics{gap:6px}.metric{min-width:60px;padding:10px 4px}.metric-num{font-size:16px}.metric-num-lg{font-size:22px}.btn{padding:8px 14px;font-size:11px}.section{padding:14px}.nav-btn{padding:6px 10px;font-size:10px}input[type="datetime-local"].inp{font-size:14px}td input[type="datetime-local"].inp{width:100%!important;min-width:150px}}
+/* Login screen */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:20px;position:relative;z-index:1}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px 32px;max-width:380px;width:100%;box-shadow:var(--shadow);text-align:center}
+.login-box .logo-text{font-size:22px;margin-bottom:4px}
+.login-box .logo-sub{margin-bottom:28px}
+.login-box input{margin-bottom:12px}
+.login-box .btn{width:100%;justify-content:center;margin-top:8px}
+.login-error{color:var(--danger);font-size:11px;margin-top:8px;min-height:16px}
+.user-bar{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-muted)}
+.user-bar button{padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:10px;font-family:inherit}
+.sync-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.sync-dot.online{background:var(--success)}.sync-dot.offline{background:var(--danger)}
+@media(max-width:600px){.container{padding:8px 12px}.header{gap:8px}.row{gap:8px}.field{min-width:100%;flex-basis:100%}.field-date{min-width:100%;flex-basis:100%}.field-sm{min-width:100%;flex-basis:100%}.metrics{gap:6px}.metric{min-width:60px;padding:10px 4px}.metric-num{font-size:16px}.metric-num-lg{font-size:22px}.btn{padding:8px 14px;font-size:11px}.section{padding:14px}.nav-btn{padding:6px 10px;font-size:10px}input[type="datetime-local"].inp{font-size:14px}td input[type="datetime-local"].inp{width:100%!important;min-width:150px}.login-box{padding:28px 20px}}
 ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--card)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 </style>
 </head>
 <body data-theme="dark">
 <svg class="topo-bg" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="topo" width="200" height="200" patternUnits="userSpaceOnUse"><path d="M20 100Q60 60 100 100Q140 140 180 100" fill="none" stroke="var(--accent)" stroke-width=".3" opacity=".15"/><path d="M0 60Q40 30 80 60Q120 90 160 60Q180 45 200 60" fill="none" stroke="var(--accent)" stroke-width=".3" opacity=".1"/><path d="M10 150Q50 120 90 150Q130 180 170 150" fill="none" stroke="var(--brand-green)" stroke-width=".3" opacity=".08"/></pattern></defs><rect width="100%" height="100%" fill="url(#topo)"/></svg>
 <div class="wave-bg"><svg width="100%" height="100" viewBox="0 0 1200 100" preserveAspectRatio="none"><path d="M0 65Q200 30 400 55Q600 80 800 45Q1000 10 1200 55L1200 100 0 100Z" fill="var(--brand-cyan)" opacity=".07"/><path d="M0 75Q300 50 600 75Q900 100 1200 65L1200 100 0 100Z" fill="var(--brand-green)" opacity=".05"/></svg></div>
-<div class="container" id="app"></div>
+
+<!-- Login Screen -->
+<div class="login-wrap" id="loginScreen">
+  <div class="login-box">
+    <div style="margin-bottom:20px" id="loginLogo"></div>
+    <div class="logo-text" style="color:var(--accent)">ProdTracker</div>
+    <div class="logo-sub">Produtividade Hora a Hora · Portocel</div>
+    <input class="inp" id="loginEmail" type="email" placeholder="E-mail" autocomplete="email">
+    <input class="inp" id="loginPass" type="password" placeholder="Senha" autocomplete="current-password">
+    <button class="btn btn-accent" id="loginBtn" onclick="doLogin()">Entrar</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- App (hidden until login) -->
+<div class="container" id="app" style="display:none"></div>
 <div class="toast" id="toast"></div>
 
-<script>
-// ── State ──
-let state={theme:'dark',tab:'operacao',operacao:null,historico:[],showShare:false,viewHistId:null};
-// Track which field is focused to prevent re-render stealing focus
-let activeFieldId=null;
+<!-- Firebase SDK -->
+<script type="module">
+// ══════════════════════════════════════════════════════════════
+// 🔥 FIREBASE CONFIG — COLE SUAS CREDENCIAIS AQUI
+// ══════════════════════════════════════════════════════════════
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-function init(){
-  try{state.theme=localStorage.getItem('pt_theme')||'dark'}catch(e){}
-  try{state.operacao=JSON.parse(localStorage.getItem('pt_op'))}catch(e){}
-  try{state.historico=JSON.parse(localStorage.getItem('pt_hist'))||[]}catch(e){}
-  document.body.dataset.theme=state.theme;
+const firebaseConfig = {
+  apiKey: "AIzaSyB_oeUejt-cTPI2qAb9zqiH9Qwo7JFFKC4",
+  authDomain: "prodtracker-portocel.firebaseapp.com",
+  projectId: "prodtracker-portocel",
+  storageBucket: "prodtracker-portocel.firebasestorage.app",
+  messagingSenderId: "906993772621",
+  appId: "1:906993772621:web:1e12874c88fb96a8395404"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
+// Expose to global scope for inline handlers
+window.auth = auth;
+window.db = db;
+window.fbFn = { collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, query, orderBy, signOut };
+
+// ── Auth state ──
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    window.currentUser = user;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    await loadFromFirestore();
+    listenToOperations();
+    render();
+  } else {
+    window.currentUser = null;
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+
+// ── Login ──
+window.doLogin = async function() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  errEl.textContent = '';
+  if (!email || !pass) { errEl.textContent = 'Preencha e-mail e senha'; return; }
+  btn.textContent = 'Entrando...'; btn.disabled = true;
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch (e) {
+    const msgs = {
+      'auth/user-not-found': 'Usuário não encontrado',
+      'auth/wrong-password': 'Senha incorreta',
+      'auth/invalid-credential': 'E-mail ou senha incorretos',
+      'auth/too-many-requests': 'Muitas tentativas. Aguarde.',
+      'auth/invalid-email': 'E-mail inválido'
+    };
+    errEl.textContent = msgs[e.code] || 'Erro: ' + e.message;
+  }
+  btn.textContent = 'Entrar'; btn.disabled = false;
+};
+
+window.doLogout = async function() {
+  if (unsubscribe) unsubscribe();
+  await fbFn.signOut(auth);
+};
+
+// ── Firestore operations ──
+let unsubscribe = null;
+
+async function loadFromFirestore() {
+  try {
+    // Load current operation
+    const opDoc = await getDoc(doc(db, 'config', 'operacaoAtiva'));
+    if (opDoc.exists()) state.operacao = opDoc.data().data || null;
+    else state.operacao = null;
+
+    // Load history
+    const histSnap = await getDocs(query(collection(db, 'historico'), orderBy('salvoEm', 'desc')));
+    state.historico = [];
+    histSnap.forEach(d => state.historico.push({ ...d.data(), _docId: d.id }));
+  } catch (e) { console.error('Load error:', e); }
+}
+
+function listenToOperations() {
+  // Real-time listener on active operation
+  if (unsubscribe) unsubscribe();
+  unsubscribe = onSnapshot(doc(db, 'config', 'operacaoAtiva'), (snap) => {
+    if (snap.exists()) {
+      state.operacao = snap.data().data || null;
+    } else {
+      state.operacao = null;
+    }
+    render();
+  });
+}
+
+window.saveToFirestore = async function() {
+  try {
+    await setDoc(doc(db, 'config', 'operacaoAtiva'), { data: state.operacao, updatedBy: currentUser.email, updatedAt: new Date().toISOString() });
+  } catch (e) { console.error('Save error:', e); }
+};
+
+window.saveHistToFirestore = async function(entry) {
+  try {
+    const docId = 'op_' + entry.id;
+    await setDoc(doc(db, 'historico', docId), { ...entry, salvoEm: new Date().toISOString(), salvoPor: currentUser.email });
+    // Reload history
+    const histSnap = await getDocs(query(collection(db, 'historico'), orderBy('salvoEm', 'desc')));
+    state.historico = [];
+    histSnap.forEach(d => state.historico.push({ ...d.data(), _docId: d.id }));
+  } catch (e) { console.error('Save hist error:', e); }
+};
+
+window.removeHistFromFirestore = async function(id) {
+  try {
+    const docId = 'op_' + id;
+    await deleteDoc(doc(db, 'historico', docId));
+    state.historico = state.historico.filter(h => h.id !== id);
+  } catch (e) { console.error('Remove hist error:', e); }
+};
+
+// ── State ──
+let state = { theme: 'dark', tab: 'operacao', operacao: null, historico: [], showShare: false, viewHistId: null };
+
+window.state = state;
+
+function save() {
+  localStorage.setItem('pt_theme', state.theme);
+  saveToFirestore();
+}
+window.save = save;
+
+function setState(patch) {
+  Object.assign(state, patch);
+  localStorage.setItem('pt_theme', state.theme);
+  if (patch.operacao !== undefined) saveToFirestore();
   render();
 }
-function save(){
-  localStorage.setItem('pt_op',JSON.stringify(state.operacao));
-  localStorage.setItem('pt_hist',JSON.stringify(state.historico));
-  localStorage.setItem('pt_theme',state.theme);
-}
-function setState(patch){Object.assign(state,patch);save();render()}
+window.setState = setState;
 
 // ── Helpers ──
 const pad=n=>String(n).padStart(2,'0');
@@ -117,13 +263,15 @@ const fmtTime=d=>{if(!d)return'—';const t=new Date(d);return`${pad(t.getHours(
 const fmtDateTime=d=>d?`${fmtDate(d)} ${fmtTime(d)}`:'—';
 const fmtDur=ms=>{if(!ms||ms<0)return'—';return`${Math.floor(ms/36e5)}h${pad(Math.floor((ms%36e5)/6e4))}`};
 const toLocal=d=>{if(!d)return'';const t=new Date(d);return new Date(t.getTime()-t.getTimezoneOffset()*6e4).toISOString().slice(0,16)};
+window.fmtDate=fmtDate;window.fmtTime=fmtTime;window.fmtDateTime=fmtDateTime;window.fmtDur=fmtDur;window.toLocal=toLocal;
+
 function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500)}
+window.showToast=showToast;
 
 // ── Calculations ──
 function calcEncoste(enc){
   const regs=enc.registros||[],total=regs.reduce((s,r)=>s+(r.qtd||0),0),rest=(enc.quantidade||0)-total;
   const ini=enc.inicioOp?new Date(enc.inicioOp):null;
-  // Find last registro that has a valid hora
   const regsComHora=regs.filter(r=>r.hora);
   const ult=regsComHora.length?regsComHora[regsComHora.length-1]:null;
   const tempoOp=ini&&ult?new Date(ult.hora).getTime()-ini.getTime():0;
@@ -132,12 +280,15 @@ function calcEncoste(enc){
   const prev=ult&&tRest>0?new Date(new Date(ult.hora).getTime()+tRest):null;
   return{total,rest,tempoOp:tempoOp>0?tempoOp:0,prod,prev,done:rest<=0&&total>0};
 }
+window.calcEncoste=calcEncoste;
+
 function calcGeral(op){
   if(!op)return{totalVG:0,totalQtd:0,pct:0,tempoTotal:0,prodMedia:0};
   let totalVG=0,totalQtd=0,tempoTotal=0;
   (op.encostes||[]).forEach(e=>{const c=calcEncoste(e);totalVG+=c.total;totalQtd+=e.quantidade||0;tempoTotal+=c.tempoOp});
   return{totalVG,totalQtd,pct:totalQtd>0?totalVG/totalQtd*100:0,tempoTotal,prodMedia:tempoTotal>0&&totalVG>0?totalVG/(tempoTotal/36e5):0};
 }
+window.calcGeral=calcGeral;
 
 // ── Share text ──
 function gerarTexto(op){
@@ -152,76 +303,80 @@ function gerarTexto(op){
     if(regs.length){L.push('');regs.forEach((r,i)=>{const ac=regs.slice(0,i+1).reduce((s,x)=>s+(x.qtd||0),0);L.push(`  ${i+1}ª h → ${fmtTime(r.hora)} | +${r.qtd||0} vg | Acum: ${ac}`)});}
     L.push('');
   });
-  const g=calcGeral(op);
-  const totalRef=op.totalVagoes||g.totalQtd;
+  const g=calcGeral(op);const totalRef=op.totalVagoes||g.totalQtd;
   L.push('━━━━━━━━━━━━━━━━━━━━━',`Total: ${g.totalVG}/${totalRef} vagões`);
   return L.join('\n');
 }
+window.gerarTexto=gerarTexto;
 
 // ── Train SVG ──
 function trainSVG(size=40){
   return`<svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 85L18 30Q18 8 50 8Q82 8 82 30L82 85Z" fill="#003DA5"/><rect x="25" y="24" width="20" height="20" rx="3" fill="white"/><rect x="55" y="24" width="20" height="20" rx="3" fill="white"/><circle cx="33" cy="65" r="9" fill="white"/><circle cx="67" cy="65" r="9" fill="white"/><line x1="30" y1="85" x2="18" y2="97" stroke="#003DA5" stroke-width="6" stroke-linecap="round"/><line x1="70" y1="85" x2="82" y2="97" stroke="#003DA5" stroke-width="6" stroke-linecap="round"/><line x1="12" y1="97" x2="88" y2="97" stroke="#003DA5" stroke-width="5" stroke-linecap="round"/></svg>`;
 }
+window.trainSVG=trainSVG;
 
-// ── Field update functions (NO re-render) ──
-function updateField(path,value){
-  const parts=path.split('.');
-  let obj=state;
-  for(let i=0;i<parts.length-1;i++){
-    if(parts[i].match(/^\d+$/))obj=obj[parseInt(parts[i])];
-    else obj=obj[parts[i]];
-  }
-  const last=parts[parts.length-1];
-  obj[last]=value;
-  save();
-}
+document.getElementById('loginLogo').innerHTML = trainSVG(64);
 
-// Update metrics display without full re-render
-function refreshMetrics(){
-  save();
-  render();
-}
+// ── Field update (NO re-render) ──
+window.updateField=function(path,value){
+  const parts=path.split('.');let obj=state;
+  for(let i=0;i<parts.length-1;i++){if(parts[i].match(/^\d+$/))obj=obj[parseInt(parts[i])];else obj=obj[parts[i]];}
+  obj[parts[parts.length-1]]=value;
+  saveToFirestore(); // Save to cloud silently
+};
+
+window.refreshMetrics=function(){render()};
 
 // ── Actions ──
-function toggleTheme(){setState({theme:state.theme==='dark'?'light':'dark'});document.body.dataset.theme=state.theme}
-function novaOp(){setState({operacao:{id:Date.now(),composicao:'',chegada:new Date().toISOString(),produto:'Celulose',totalVagoes:0,encostes:[{id:Date.now(),quantidade:0,posicionamento:null,inicioOp:null,registros:[]}]},showShare:false,tab:'operacao'})}
-function addEncoste(){if(!state.operacao)return;state.operacao.encostes.push({id:Date.now(),quantidade:0,posicionamento:null,inicioOp:null,registros:[]});setState({operacao:state.operacao})}
-function removeEncoste(idx){
+window.toggleTheme=function(){setState({theme:state.theme==='dark'?'light':'dark'});document.body.dataset.theme=state.theme};
+window.novaOp=function(){setState({operacao:{id:Date.now(),composicao:'',chegada:new Date().toISOString(),produto:'Celulose',totalVagoes:0,encostes:[{id:Date.now(),quantidade:0,posicionamento:null,inicioOp:null,registros:[]}]},showShare:false,tab:'operacao'})};
+window.addEncoste=function(){if(!state.operacao)return;state.operacao.encostes.push({id:Date.now(),quantidade:0,posicionamento:null,inicioOp:null,registros:[]});setState({operacao:state.operacao})};
+window.removeEncoste=function(idx){
   if(!state.operacao)return;
   if(state.operacao.encostes.length<=1){showToast('Mínimo 1 encoste');return}
   if(!confirm(`Excluir o ${idx+1}º Encoste e todos os seus registros?`))return;
-  state.operacao.encostes.splice(idx,1);
-  setState({operacao:state.operacao});
-  showToast('Encoste excluído');
-}
-function addRegistro(eIdx){
-  // Leave hora blank so user fills in the correct time manually
-  state.operacao.encostes[eIdx].registros.push({id:Date.now(),hora:null,qtd:0});
-  setState({operacao:state.operacao});
-}
-function removeRegistro(eIdx,rIdx){state.operacao.encostes[eIdx].registros.splice(rIdx,1);setState({operacao:state.operacao})}
-function salvarHist(){if(!state.operacao)return;const e=JSON.parse(JSON.stringify(state.operacao));e.salvoEm=new Date().toISOString();state.historico=[e,...state.historico.filter(h=>h.id!==state.operacao.id)];setState({historico:state.historico});showToast('✓ Salvo no histórico')}
-function finalizarOp(){if(!state.operacao)return;salvarHist();setState({operacao:null,showShare:false});showToast('✓ Operação finalizada')}
-function copiarTexto(op){navigator.clipboard.writeText(gerarTexto(op||state.operacao)).then(()=>showToast('✓ Copiado!')).catch(()=>showToast('Erro'))}
-function abrirWhatsApp(op){window.open('https://wa.me/?text='+encodeURIComponent(gerarTexto(op||state.operacao)),'_blank')}
-function removerHist(id){state.historico=state.historico.filter(h=>h.id!==id);if(state.viewHistId===id)state.viewHistId=null;setState({historico:state.historico});showToast('✓ Removido')}
+  state.operacao.encostes.splice(idx,1);setState({operacao:state.operacao});showToast('Encoste excluído');
+};
+window.addRegistro=function(eIdx){state.operacao.encostes[eIdx].registros.push({id:Date.now(),hora:null,qtd:0});setState({operacao:state.operacao})};
+window.removeRegistro=function(eIdx,rIdx){state.operacao.encostes[eIdx].registros.splice(rIdx,1);setState({operacao:state.operacao})};
+
+window.salvarHist=async function(){
+  if(!state.operacao)return;
+  const e=JSON.parse(JSON.stringify(state.operacao));e.salvoEm=new Date().toISOString();
+  await saveHistToFirestore(e);
+  showToast('✓ Salvo no histórico');render();
+};
+window.finalizarOp=async function(){
+  if(!state.operacao)return;
+  const e=JSON.parse(JSON.stringify(state.operacao));e.salvoEm=new Date().toISOString();
+  await saveHistToFirestore(e);
+  state.operacao=null;state.showShare=false;
+  await saveToFirestore();
+  showToast('✓ Operação finalizada');render();
+};
+window.copiarTexto=function(op){navigator.clipboard.writeText(gerarTexto(op||state.operacao)).then(()=>showToast('✓ Copiado!')).catch(()=>showToast('Erro'))};
+window.abrirWhatsApp=function(op){window.open('https://wa.me/?text='+encodeURIComponent(gerarTexto(op||state.operacao)),'_blank')};
+window.removerHist=async function(id){
+  await removeHistFromFirestore(id);
+  if(state.viewHistId===id)state.viewHistId=null;
+  showToast('✓ Removido');render();
+};
 
 // ── Render ──
 function render(){
   const op=state.operacao;
   const isDark=state.theme==='dark';
-  const otherTheme=isDark?'Claro':'Escuro';
-  const themeIcon=isDark?'☀️':'🌙';
+  document.body.dataset.theme=state.theme;
   let html='';
+  const userEmail=window.currentUser?window.currentUser.email:'';
 
   // Header
-  html+=`<div class="header"><div class="logo-area">${trainSVG(40)}<div><div class="logo-text">ProdTracker</div><div class="logo-sub">Produtividade Hora a Hora · Portocel</div></div></div><div class="header-right"><button class="theme-btn" onclick="toggleTheme()">${themeIcon} ${otherTheme}</button><div class="nav"><button class="nav-btn ${state.tab==='operacao'?'active':''}" onclick="setState({tab:'operacao'})">Operação</button><button class="nav-btn ${state.tab==='historico'?'active':''}" onclick="setState({tab:'historico'})">Histórico (${state.historico.length})</button></div></div></div>`;
+  html+=`<div class="header"><div class="logo-area">${trainSVG(40)}<div><div class="logo-text">ProdTracker</div><div class="logo-sub">Produtividade Hora a Hora · Portocel</div></div></div><div class="header-right"><div class="user-bar"><span class="sync-dot online"></span><span>${userEmail.split('@')[0]}</span><button onclick="doLogout()">Sair</button></div><button class="theme-btn" onclick="toggleTheme()">${isDark?'☀️ Claro':'🌙 Escuro'}</button><div class="nav"><button class="nav-btn ${state.tab==='operacao'?'active':''}" onclick="setState({tab:'operacao'})">Operação</button><button class="nav-btn ${state.tab==='historico'?'active':''}" onclick="setState({tab:'historico'})">Histórico (${state.historico.length})</button></div></div></div>`;
 
   if(state.tab==='operacao'){
     if(!op){
       html+=`<div class="section empty"><div style="margin-bottom:16px">${trainSVG(64)}</div><div style="font-size:16px;font-weight:700;margin-bottom:6px;color:var(--text)">Nenhuma operação ativa</div><div style="font-size:12px;margin-bottom:28px">Inicie uma nova operação para registrar a produtividade</div><button class="btn btn-accent" onclick="novaOp()">＋ Nova Operação</button></div>`;
     } else {
-      // Composição - these use oninput+save only (no render)
       html+=`<div class="section"><div class="section-title"><span style="color:var(--accent)">◆</span> DADOS DA COMPOSIÇÃO</div><div class="row">
         <div class="field"><label class="lbl">Composição</label><input class="inp" value="${op.composicao||''}" placeholder="Ex: 260101L40 (aammdd+nº da L)" oninput="updateField('operacao.composicao',this.value)"></div>
         <div class="field-date"><label class="lbl">Chegada</label><input type="datetime-local" class="inp" value="${toLocal(op.chegada)}" onchange="updateField('operacao.chegada',this.value?new Date(this.value).toISOString():state.operacao.chegada)"></div>
@@ -230,10 +385,7 @@ function render(){
         <div class="field-sm"><label class="lbl">Produto</label><select class="inp" onchange="updateField('operacao.produto',this.value)"><option ${op.produto==='Celulose'?'selected':''}>Celulose</option><option ${op.produto==='Outro'?'selected':''}>Outro</option></select></div>
       </div></div>`;
 
-      // Resumo - usa totalVagoes da composição como referência
-      const g=calcGeral(op);
-      const totalRef=op.totalVagoes||g.totalQtd; // usa o total informado, ou soma dos encostes como fallback
-      const pctRef=totalRef>0?(g.totalVG/totalRef*100):0;
+      const g=calcGeral(op);const totalRef=op.totalVagoes||g.totalQtd;const pctRef=totalRef>0?(g.totalVG/totalRef*100):0;
       html+=`<div class="section section-grad"><div class="section-title"><span style="color:var(--accent)">◆</span> RESUMO GERAL</div>
         <div class="metrics">
           <div class="metric"><div class="metric-num metric-num-lg">${g.totalVG}</div><div class="metric-label">Descarregados</div></div>
@@ -244,23 +396,14 @@ function render(){
         </div>
         <div class="progress"><div class="progress-fill" style="width:${Math.min(100,pctRef)}%"></div></div></div>`;
 
-      // Encostes
       (op.encostes||[]).forEach((enc,eIdx)=>{
-        const c=calcEncoste(enc);
-        const regs=enc.registros||[];
-        const ini=enc.inicioOp?new Date(enc.inicioOp):null;
-
+        const c=calcEncoste(enc);const regs=enc.registros||[];const ini=enc.inicioOp?new Date(enc.inicioOp):null;
         html+=`<div class="section encoste ${c.done?'done':''}">
-          <div class="encoste-header">
-            <div class="section-title" style="margin-bottom:0"><span class="encoste-num">${eIdx+1}</span> ${eIdx+1}º ENCOSTE ${c.done?'<span class="badge badge-success">✓ Concluído</span>':''}</div>
-            <div class="encoste-actions">
-              <button class="btn btn-danger btn-xs" onclick="removeEncoste(${eIdx})" title="Excluir encoste">🗑 Excluir</button>
-            </div>
-          </div>
+          <div class="encoste-header"><div class="section-title" style="margin-bottom:0"><span class="encoste-num">${eIdx+1}</span> ${eIdx+1}º ENCOSTE ${c.done?'<span class="badge badge-success">✓ Concluído</span>':''}</div><div class="encoste-actions"><button class="btn btn-danger btn-xs" onclick="removeEncoste(${eIdx})">🗑 Excluir</button></div></div>
           <div class="row">
-            <div class="field"><label class="lbl">Quantidade</label><input type="number" class="inp" id="enc_qtd_${eIdx}" value="${enc.quantidade||''}" placeholder="Nº vagões" inputmode="numeric" oninput="updateField('operacao.encostes.${eIdx}.quantidade',parseInt(this.value)||0)"></div>
-            <div class="field-date"><label class="lbl">Posicionamento</label><input type="datetime-local" class="inp" id="enc_pos_${eIdx}" value="${toLocal(enc.posicionamento)}" onchange="updateField('operacao.encostes.${eIdx}.posicionamento',this.value?new Date(this.value).toISOString():null)"></div>
-            <div class="field-date"><label class="lbl">Início Operação</label><input type="datetime-local" class="inp" id="enc_ini_${eIdx}" value="${toLocal(enc.inicioOp)}" onchange="updateField('operacao.encostes.${eIdx}.inicioOp',this.value?new Date(this.value).toISOString():null)"></div>
+            <div class="field"><label class="lbl">Quantidade</label><input type="number" class="inp" value="${enc.quantidade||''}" placeholder="Nº vagões" inputmode="numeric" oninput="updateField('operacao.encostes.${eIdx}.quantidade',parseInt(this.value)||0)"></div>
+            <div class="field-date"><label class="lbl">Posicionamento</label><input type="datetime-local" class="inp" value="${toLocal(enc.posicionamento)}" onchange="updateField('operacao.encostes.${eIdx}.posicionamento',this.value?new Date(this.value).toISOString():null)"></div>
+            <div class="field-date"><label class="lbl">Início Operação</label><input type="datetime-local" class="inp" value="${toLocal(enc.inicioOp)}" onchange="updateField('operacao.encostes.${eIdx}.inicioOp',this.value?new Date(this.value).toISOString():null)"></div>
           </div>
           <div class="metrics">
             <div class="metric"><div class="metric-num">${c.total}</div><div class="metric-label">Descarregados</div></div>
@@ -270,35 +413,23 @@ function render(){
             <div class="metric"><div class="metric-num" style="font-size:18px">${c.prev?fmtTime(c.prev):c.done?'✓':'—'}</div><div class="metric-label">Prev. Término</div></div>
           </div>
           <div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Hora</th><th>Tempo Op.</th><th>Qtd. VG</th><th>Acum.</th><th>VG/h</th><th></th></tr></thead><tbody>`;
-
-        if(!regs.length){
-          html+=`<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px">Clique "＋ Hora" para registrar</td></tr>`;
-        }
+        if(!regs.length)html+=`<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px">Clique "＋ Hora" para registrar</td></tr>`;
         regs.forEach((r,rIdx)=>{
           const acum=regs.slice(0,rIdx+1).reduce((s,x)=>s+(x.qtd||0),0);
-          const hasTime=ini&&r.hora;
-          const elapsed=hasTime?new Date(r.hora).getTime()-ini.getTime():0;
-          const elapsedValid=hasTime&&elapsed>0;
+          const hasTime=ini&&r.hora;const elapsed=hasTime?new Date(r.hora).getTime()-ini.getTime():0;const elapsedValid=hasTime&&elapsed>0;
           const vgh=elapsedValid&&acum>0?acum/(elapsed/36e5):0;
           html+=`<tr class="${rIdx%2?'alt':''}">
             <td style="color:var(--text-muted);font-weight:600">${rIdx+1}ª</td>
             <td><input type="datetime-local" class="inp" style="padding:4px 8px;font-size:11px;width:170px" value="${r.hora?toLocal(r.hora):''}" onchange="updateField('operacao.encostes.${eIdx}.registros.${rIdx}.hora',this.value?new Date(this.value).toISOString():null)"></td>
             <td class="num">${elapsedValid?fmtDur(elapsed):'—'}</td>
-            <td><input type="number" class="inp" style="width:64px;padding:4px 8px;font-size:12px;text-align:center" inputmode="numeric" id="reg_qtd_${eIdx}_${rIdx}" value="${r.qtd||''}" placeholder="0" oninput="updateField('operacao.encostes.${eIdx}.registros.${rIdx}.qtd',parseInt(this.value)||0)"></td>
+            <td><input type="number" class="inp" style="width:64px;padding:4px 8px;font-size:12px;text-align:center" inputmode="numeric" value="${r.qtd||''}" placeholder="0" oninput="updateField('operacao.encostes.${eIdx}.registros.${rIdx}.qtd',parseInt(this.value)||0)"></td>
             <td class="num">${acum}</td>
             <td class="num" style="color:var(--success)">${vgh.toFixed(1)}</td>
-            <td><button class="btn btn-danger btn-xs" onclick="removeRegistro(${eIdx},${rIdx})">✕</button></td>
-          </tr>`;
+            <td><button class="btn btn-danger btn-xs" onclick="removeRegistro(${eIdx},${rIdx})">✕</button></td></tr>`;
         });
-        html+=`</tbody></table></div>
-          <div style="margin-top:12px;display:flex;gap:8px">
-            <button class="btn btn-accent btn-sm" onclick="addRegistro(${eIdx})">＋ Hora</button>
-            <button class="btn btn-sm btn-outline" onclick="refreshMetrics()">🔄 Atualizar</button>
-          </div>
-        </div>`;
+        html+=`</tbody></table></div><div style="margin-top:12px;display:flex;gap:8px"><button class="btn btn-accent btn-sm" onclick="addRegistro(${eIdx})">＋ Hora</button><button class="btn btn-sm btn-outline" onclick="refreshMetrics()">🔄 Atualizar</button></div></div>`;
       });
 
-      // Actions
       html+=`<div class="actions">
         <button class="btn btn-info" onclick="addEncoste()">＋ Encoste</button>
         <button class="btn btn-success" onclick="salvarHist()">💾 Salvar</button>
@@ -306,51 +437,33 @@ function render(){
         <button class="btn btn-danger" onclick="finalizarOp()">✓ Finalizar</button>
         <button class="btn btn-outline" onclick="novaOp()">Nova Op.</button>
       </div>`;
-
       if(state.showShare){
         html+=`<div class="section"><div class="section-title"><span style="color:var(--accent)">◆</span> TEXTO PARA WHATSAPP</div>
           <div class="share-box">${gerarTexto(op).replace(/</g,'&lt;')}</div>
-          <div style="margin-top:14px;display:flex;gap:8px">
-            <button class="btn btn-success" onclick="copiarTexto()">📋 Copiar</button>
-            <button class="btn btn-outline" onclick="abrirWhatsApp()">💬 WhatsApp</button>
-          </div></div>`;
+          <div style="margin-top:14px;display:flex;gap:8px"><button class="btn btn-success" onclick="copiarTexto()">📋 Copiar</button><button class="btn btn-outline" onclick="abrirWhatsApp()">💬 WhatsApp</button></div></div>`;
       }
     }
   }
 
-  // Histórico
   if(state.tab==='historico'){
     if(!state.historico.length){
       html+=`<div class="section empty"><div style="margin-bottom:12px">${trainSVG(56)}</div>Nenhuma operação registrada.</div>`;
     } else {
       html+=`<div style="margin-bottom:14px;font-size:11px;color:var(--text-muted);font-weight:600">${state.historico.length} operação(ões)</div>`;
       state.historico.forEach((h,hIdx)=>{
-        const g=calcGeral(h);
-        const isOpen=state.viewHistId===h.id;
-        html+=`<div class="section">
-          <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="setState({viewHistId:state.viewHistId===${h.id}?null:${h.id}})">
+        const g=calcGeral(h);const isOpen=state.viewHistId===h.id;
+        html+=`<div class="section"><div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="setState({viewHistId:state.viewHistId===${h.id}?null:${h.id}})">
             <div><div style="display:flex;align-items:center;gap:8px"><div>${trainSVG(28)}</div><div style="font-size:15px;font-weight:800;color:var(--accent)">${h.composicao||'Sem nome'}</div></div>
-              <div style="font-size:11px;color:var(--text-muted);margin-top:3px">${fmtDateTime(h.chegada)} · ${(h.encostes||[]).length} encoste(s) · ${g.totalVG}/${g.totalQtd} vg</div></div>
-            <div style="display:flex;gap:8px;align-items:center">
-              <span class="badge ${g.totalVG>=g.totalQtd&&g.totalQtd>0?'badge-success':'badge-warning'}">${g.totalVG>=g.totalQtd&&g.totalQtd>0?'Concluído':'Parcial'}</span>
-              <span style="color:var(--text-muted)">${isOpen?'▲':'▼'}</span>
-            </div>
-          </div>`;
+              <div style="font-size:11px;color:var(--text-muted);margin-top:3px">${fmtDateTime(h.chegada)} · ${(h.encostes||[]).length} enc. · ${g.totalVG}/${g.totalQtd} vg${h.salvoPor?' · '+h.salvoPor.split('@')[0]:''}</div></div>
+            <div style="display:flex;gap:8px;align-items:center"><span class="badge ${g.totalVG>=g.totalQtd&&g.totalQtd>0?'badge-success':'badge-warning'}">${g.totalVG>=g.totalQtd&&g.totalQtd>0?'Concluído':'Parcial'}</span><span style="color:var(--text-muted)">${isOpen?'▲':'▼'}</span></div></div>`;
         if(isOpen){
-          html+=`<div style="margin-top:16px"><div class="divider"></div>
-            <div class="share-box">${gerarTexto(h).replace(/</g,'&lt;')}</div>
-            <div style="margin-top:12px;display:flex;gap:8px">
-              <button class="btn btn-success btn-sm" onclick="event.stopPropagation();copiarTexto(state.historico[${hIdx}])">📋 Copiar</button>
-              <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();removerHist(${h.id})">🗑 Excluir</button>
-            </div>`;
+          html+=`<div style="margin-top:16px"><div class="divider"></div><div class="share-box">${gerarTexto(h).replace(/</g,'&lt;')}</div>
+            <div style="margin-top:12px;display:flex;gap:8px"><button class="btn btn-success btn-sm" onclick="event.stopPropagation();copiarTexto(state.historico[${hIdx}])">📋 Copiar</button><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();removerHist(${h.id})">🗑 Excluir</button></div>`;
           (h.encostes||[]).forEach((enc,eidx)=>{
             const regs=enc.registros||[],ini2=enc.inicioOp?new Date(enc.inicioOp):null;
             html+=`<div style="margin-top:18px"><div style="font-size:11px;font-weight:800;color:var(--accent);margin-bottom:8px;letter-spacing:1px">${eidx+1}º ENCOSTE — ${enc.quantidade||0} vagões</div>
               <table><thead><tr><th>#</th><th>Hora</th><th>Qtd</th><th>Acum.</th><th>VG/h</th></tr></thead><tbody>`;
-            regs.forEach((r,i)=>{
-              const acum=regs.slice(0,i+1).reduce((s,x)=>s+(x.qtd||0),0);
-              const elapsed=ini2?new Date(r.hora).getTime()-ini2.getTime():0;
-              const vgh=elapsed>0?acum/(elapsed/36e5):0;
+            regs.forEach((r,i)=>{const acum=regs.slice(0,i+1).reduce((s,x)=>s+(x.qtd||0),0);const elapsed=ini2&&r.hora?new Date(r.hora).getTime()-ini2.getTime():0;const vgh=elapsed>0?acum/(elapsed/36e5):0;
               html+=`<tr class="${i%2?'alt':''}"><td>${i+1}ª</td><td>${fmtTime(r.hora)}</td><td class="num">${r.qtd||0}</td><td class="num">${acum}</td><td class="num" style="color:var(--success)">${vgh.toFixed(1)}</td></tr>`;
             });
             html+=`</tbody></table></div>`;
@@ -362,11 +475,14 @@ function render(){
     }
   }
 
-  html+=`<div class="footer">ProdTracker v2.1 · Portocel — Dedicação Carrega o Mundo</div>`;
+  html+=`<div class="footer">ProdTracker v3.0 · Portocel — Dedicação Carrega o Mundo</div>`;
   document.getElementById('app').innerHTML=html;
 }
+window.render=render;
 
-init();
+// Init theme
+try{state.theme=localStorage.getItem('pt_theme')||'dark'}catch(e){}
+document.body.dataset.theme=state.theme;
 </script>
 </body>
 </html>
