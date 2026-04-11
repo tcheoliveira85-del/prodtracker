@@ -7,10 +7,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0b1120">
 <meta name="mobile-web-app-capable" content="yes">
-<title>ProdTracker · Portocel</title>
+<title>ProdTracker v4.0 · Portocel</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M18 85L18 30Q18 8 50 8Q82 8 82 30L82 85Z' fill='%23003DA5'/><rect x='25' y='24' width='20' height='20' rx='3' fill='white'/><rect x='55' y='24' width='20' height='20' rx='3' fill='white'/><circle cx='33' cy='65' r='9' fill='white'/><circle cx='67' cy='65' r='9' fill='white'/><line x1='30' y1='85' x2='18' y2='97' stroke='%23003DA5' stroke-width='6' stroke-linecap='round'/><line x1='70' y1='85' x2='82' y2='97' stroke='%23003DA5' stroke-width='6' stroke-linecap='round'/><line x1='12' y1='97' x2='88' y2='97' stroke='%23003DA5' stroke-width='5' stroke-linecap='round'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 :root{--bg:#0b1120;--bg-grad:linear-gradient(180deg,#0b1120,#0f1a2e);--card:#111d33;--card-alt:#162340;--border:#1e3355;--accent:#41b6c4;--accent-dark:#2d8a96;--accent-light:#7fcdbb;--accent-glow:rgba(65,182,196,.12);--success:#10b981;--danger:#ef4444;--info:#2680c2;--warning:#f59e0b;--text:#e8edf5;--text-sec:#94a3b8;--text-muted:#5a7094;--input-bg:#0d1526;--shadow:0 2px 12px rgba(0,0,0,.4);--brand-blue:#003DA5;--brand-cyan:#41b6c4;--brand-green:#78c679}
 [data-theme="light"]{--bg:#f0f4f8;--bg-grad:linear-gradient(180deg,#f0f4f8,#e8eff6);--card:#fff;--card-alt:#f7f9fc;--border:#d4dde8;--accent:#003DA5;--accent-dark:#002d7a;--accent-light:#0056b3;--accent-glow:rgba(0,61,165,.06);--success:#5aaa2b;--danger:#dc2626;--info:#41b6c4;--warning:#d97706;--text:#1a2840;--text-sec:#4a5e7a;--text-muted:#8695aa;--input-bg:#f7f9fc;--shadow:0 2px 12px rgba(0,61,165,.06)}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -61,6 +62,7 @@ tr.alt{background:var(--card-alt)}
 .badge-success{background:rgba(16,185,129,.12);color:var(--success);border:1px solid rgba(16,185,129,.2)}
 [data-theme="light"] .badge-success{background:rgba(90,170,43,.1);color:var(--success)}
 .badge-warning{background:rgba(245,158,11,.12);color:var(--warning);border:1px solid rgba(245,158,11,.2)}
+.badge-accent{background:var(--accent-glow);color:var(--accent);border:1px solid rgba(65,182,196,.2)}
 .encoste{border-left:4px solid var(--accent)}.encoste.done{border-left-color:var(--success)}
 .encoste-num{background:var(--accent);color:#fff;width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:900}
 .encoste.done .encoste-num{background:var(--success)}
@@ -73,7 +75,6 @@ tr.alt{background:var(--card-alt)}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .divider{height:1px;background:var(--border);margin:16px 0}
 .footer{text-align:center;padding:24px 0 48px;color:var(--text-muted);font-size:10px;letter-spacing:.5px}
-/* Login screen */
 .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:20px;position:relative;z-index:1}
 .login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px 32px;max-width:380px;width:100%;box-shadow:var(--shadow);text-align:center}
 .login-box .logo-text{font-size:22px;margin-bottom:4px}
@@ -85,7 +86,21 @@ tr.alt{background:var(--card-alt)}
 .user-bar button{padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:10px;font-family:inherit}
 .sync-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
 .sync-dot.online{background:var(--success)}.sync-dot.offline{background:var(--danger)}
-@media(max-width:600px){.container{padding:8px 12px}.header{gap:8px}.row{gap:8px}.field{min-width:100%;flex-basis:100%}.field-date{min-width:100%;flex-basis:100%}.field-sm{min-width:100%;flex-basis:100%}.metrics{gap:6px}.metric{min-width:60px;padding:10px 4px}.metric-num{font-size:16px}.metric-num-lg{font-size:22px}.btn{padding:8px 14px;font-size:11px}.section{padding:14px}.nav-btn{padding:6px 10px;font-size:10px}input[type="datetime-local"].inp{font-size:14px}td input[type="datetime-local"].inp{width:100%!important;min-width:150px}.login-box{padding:28px 20px}}
+.portico-row{display:flex;gap:6px;margin-top:4px;align-items:center}
+.portico-inp{padding:4px 8px;background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:10px;width:90px;outline:none}
+.portico-inp:focus{border-color:var(--accent)}
+.portico-toggle{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:10px;padding:2px 6px}
+.chart-container{position:relative;width:100%;height:260px;margin-bottom:16px}
+.analise-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px}
+.analise-tab{padding:8px 16px;font-size:11px;font-weight:700;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;letter-spacing:.5px;text-transform:uppercase}
+.analise-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.insight-card{background:var(--accent-glow);border:1px solid rgba(65,182,196,.15);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:11px;color:var(--accent-light)}
+[data-theme="light"] .insight-card{color:var(--accent)}
+.rank-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.rank-row:last-child{border-bottom:none}
+.rank-pos{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+.rank-name{flex:1;font-size:13px}.rank-val{font-size:13px;font-weight:700}
+@media(max-width:600px){.container{padding:8px 12px}.header{gap:8px}.row{gap:8px}.field{min-width:100%;flex-basis:100%}.field-date{min-width:100%;flex-basis:100%}.field-sm{min-width:100%;flex-basis:100%}.metrics{gap:6px}.metric{min-width:60px;padding:10px 4px}.metric-num{font-size:16px}.metric-num-lg{font-size:22px}.btn{padding:8px 14px;font-size:11px}.section{padding:14px}.nav-btn{padding:6px 10px;font-size:10px}input[type="datetime-local"].inp{font-size:14px}td input[type="datetime-local"].inp{width:100%!important;min-width:150px}.login-box{padding:28px 20px}.chart-container{height:220px}}
 ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--card)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 </style>
 </head>
@@ -93,31 +108,17 @@ tr.alt{background:var(--card-alt)}
 <svg class="topo-bg" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="topo" width="200" height="200" patternUnits="userSpaceOnUse"><path d="M20 100Q60 60 100 100Q140 140 180 100" fill="none" stroke="var(--accent)" stroke-width=".3" opacity=".15"/><path d="M0 60Q40 30 80 60Q120 90 160 60Q180 45 200 60" fill="none" stroke="var(--accent)" stroke-width=".3" opacity=".1"/><path d="M10 150Q50 120 90 150Q130 180 170 150" fill="none" stroke="var(--brand-green)" stroke-width=".3" opacity=".08"/></pattern></defs><rect width="100%" height="100%" fill="url(#topo)"/></svg>
 <div class="wave-bg"><svg width="100%" height="100" viewBox="0 0 1200 100" preserveAspectRatio="none"><path d="M0 65Q200 30 400 55Q600 80 800 45Q1000 10 1200 55L1200 100 0 100Z" fill="var(--brand-cyan)" opacity=".07"/><path d="M0 75Q300 50 600 75Q900 100 1200 65L1200 100 0 100Z" fill="var(--brand-green)" opacity=".05"/></svg></div>
 
-<!-- Login Screen -->
-<div class="login-wrap" id="loginScreen">
-  <div class="login-box">
-    <div style="margin-bottom:20px" id="loginLogo"></div>
-    <div class="logo-text" style="color:var(--accent)">ProdTracker</div>
-    <div class="logo-sub">Produtividade Hora a Hora · Portocel</div>
-    <input class="inp" id="loginEmail" type="email" placeholder="E-mail" autocomplete="email">
-    <input class="inp" id="loginPass" type="password" placeholder="Senha" autocomplete="current-password">
-    <button class="btn btn-accent" id="loginBtn" onclick="doLogin()">Entrar</button>
-    <div class="login-error" id="loginError"></div>
-  </div>
-</div>
-
-<!-- App (hidden until login) -->
-<div class="container" id="app" style="display:none"></div>
+<div id="root"></div>
 <div class="toast" id="toast"></div>
 
-<!-- Firebase SDK -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
 <script type="module">
-// ══════════════════════════════════════════════════════════════
-// 🔥 FIREBASE CONFIG
-// ══════════════════════════════════════════════════════════════
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, updatePassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -131,361 +132,857 @@ const firebaseConfig = {
 };
 
 const fbApp = initializeApp(firebaseConfig);
-const analytics = getAnalytics(fbApp);
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
 
-// Expose to global scope for inline handlers
-window.auth = auth;
-window.db = db;
-window.fbFn = { collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, query, orderBy, signOut };
+window._fb = { auth, db, signInWithEmailAndPassword, onAuthStateChanged, signOut, updatePassword, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, query, orderBy };
+</script>
 
-// ── Auth state ──
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    window.currentUser = user;
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    await loadFromFirestore();
-    listenToOperations();
-    render();
-  } else {
-    window.currentUser = null;
-    document.getElementById('loginScreen').style.display = 'flex';
-    document.getElementById('app').style.display = 'none';
-  }
-});
+<script type="text/babel">
+const { useState, useEffect, useCallback, useRef, useMemo } = React;
 
-// ── Login ──
-window.doLogin = async function() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass = document.getElementById('loginPass').value;
-  const errEl = document.getElementById('loginError');
-  const btn = document.getElementById('loginBtn');
-  errEl.textContent = '';
-  if (!email || !pass) { errEl.textContent = 'Preencha e-mail e senha'; return; }
-  btn.textContent = 'Entrando...'; btn.disabled = true;
-  try {
-    await signInWithEmailAndPassword(auth, email, pass);
-  } catch (e) {
-    const msgs = {
-      'auth/user-not-found': 'Usuário não encontrado',
-      'auth/wrong-password': 'Senha incorreta',
-      'auth/invalid-credential': 'E-mail ou senha incorretos',
-      'auth/too-many-requests': 'Muitas tentativas. Aguarde.',
-      'auth/invalid-email': 'E-mail inválido'
-    };
-    errEl.textContent = msgs[e.code] || 'Erro: ' + e.message;
-  }
-  btn.textContent = 'Entrar'; btn.disabled = false;
-};
+const VER = "4.0";
+const GESTOR_UIDS = ["htYqXxsmYrSpz0nrKpSD9tXceiQ2", "bCu7KCZSKtMLhQC3VL9QNuScn7k1"];
 
-window.doLogout = async function() {
-  if (unsubscribe) unsubscribe();
-  await fbFn.signOut(auth);
-};
+// ══════ HELPERS ══════
+const pad = n => String(n).padStart(2, "0");
+const fmtDate = d => { if (!d) return "—"; const t = new Date(d); return `${pad(t.getDate())}/${pad(t.getMonth() + 1)}/${t.getFullYear()}`; };
+const fmtTime = d => { if (!d) return "—"; const t = new Date(d); return `${pad(t.getHours())}:${pad(t.getMinutes())}`; };
+const fmtDateTime = d => d ? `${fmtDate(d)} ${fmtTime(d)}` : "—";
+const fmtDur = ms => { if (!ms || ms < 0) return "—"; return `${Math.floor(ms / 36e5)}h${pad(Math.floor((ms % 36e5) / 6e4))}`; };
+const toLocal = d => { if (!d) return ""; const t = new Date(d); return new Date(t.getTime() - t.getTimezoneOffset() * 6e4).toISOString().slice(0, 16); };
 
-// ── Firestore operations ──
-let unsubscribe = null;
+function showToast(msg) { const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("show"); setTimeout(() => el.classList.remove("show"), 2500); }
 
-async function loadFromFirestore() {
-  try {
-    // Load current operation
-    const opDoc = await getDoc(doc(db, 'config', 'operacaoAtiva'));
-    if (opDoc.exists()) state.operacao = opDoc.data().data || null;
-    else state.operacao = null;
-
-    // Load history
-    const histSnap = await getDocs(query(collection(db, 'historico'), orderBy('salvoEm', 'desc')));
-    state.historico = [];
-    histSnap.forEach(d => state.historico.push({ ...d.data(), _docId: d.id }));
-  } catch (e) { console.error('Load error:', e); }
+function trainSVG(size = 40) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 85L18 30Q18 8 50 8Q82 8 82 30L82 85Z" fill="#003DA5"/><rect x="25" y="24" width="20" height="20" rx="3" fill="white"/><rect x="55" y="24" width="20" height="20" rx="3" fill="white"/><circle cx="33" cy="65" r="9" fill="white"/><circle cx="67" cy="65" r="9" fill="white"/><line x1="30" y1="85" x2="18" y2="97" stroke="#003DA5" stroke-width="6" stroke-linecap="round"/><line x1="70" y1="85" x2="82" y2="97" stroke="#003DA5" stroke-width="6" stroke-linecap="round"/><line x1="12" y1="97" x2="88" y2="97" stroke="#003DA5" stroke-width="5" stroke-linecap="round"/></svg>`;
 }
 
-function listenToOperations() {
-  // Real-time listener on active operation
-  if (unsubscribe) unsubscribe();
-  unsubscribe = onSnapshot(doc(db, 'config', 'operacaoAtiva'), (snap) => {
-    if (snap.exists()) {
-      state.operacao = snap.data().data || null;
-    } else {
-      state.operacao = null;
+// ══════ ESCALA 4x4 ══════
+function getEquipe(dateStr) {
+  if (!dateStr) return "—";
+  const ref = new Date(2026, 0, 1);
+  const parts = dateStr.split("-").map(Number);
+  const date = new Date(parts[0], parts[1] - 1, parts[2]);
+  const diff = Math.floor((date - ref) / 864e5);
+  const dayTeams = ["C", "D", "A", "B"];
+  const nightTeams = ["B", "C", "D", "A"];
+  const pos = ((Math.floor(diff / 2) % 4) + 4) % 4;
+  return { "07x13": dayTeams[pos], "13x19": dayTeams[pos], "19x01": nightTeams[pos], "01x07": nightTeams[((Math.floor((diff - 1) / 2) % 4) + 4) % 4] };
+}
+
+function getEquipePeriodo(dateStr, periodo) {
+  if (!dateStr || !periodo) return "—";
+  const eq = getEquipe(dateStr);
+  return eq[periodo] || "—";
+}
+
+// ══════ CALCULATIONS ══════
+function calcEncoste(enc) {
+  const regs = enc.registros || [], total = regs.reduce((s, r) => s + (r.qtd || 0), 0), rest = (enc.quantidade || 0) - total;
+  const ini = enc.inicioOp ? new Date(enc.inicioOp) : null;
+  const regsH = regs.filter(r => r.hora);
+  const ult = regsH.length ? regsH[regsH.length - 1] : null;
+  const tempoOp = ini && ult ? new Date(ult.hora).getTime() - ini.getTime() : 0;
+  const prod = tempoOp > 0 && total > 0 ? total / (tempoOp / 36e5) : 0;
+  const tRest = prod > 0 && rest > 0 ? (rest / prod) * 36e5 : 0;
+  const prev = ult && tRest > 0 ? new Date(new Date(ult.hora).getTime() + tRest) : null;
+  return { total, rest, tempoOp: tempoOp > 0 ? tempoOp : 0, prod, prev, done: rest <= 0 && total > 0 };
+}
+
+function calcGeral(op) {
+  if (!op) return { totalVG: 0, totalQtd: 0, pct: 0, tempoTotal: 0, prodMedia: 0 };
+  let totalVG = 0, totalQtd = 0, tempoTotal = 0;
+  (op.encostes || []).forEach(e => { const c = calcEncoste(e); totalVG += c.total; totalQtd += e.quantidade || 0; tempoTotal += c.tempoOp; });
+  return { totalVG, totalQtd, pct: totalQtd > 0 ? totalVG / totalQtd * 100 : 0, tempoTotal, prodMedia: tempoTotal > 0 && totalVG > 0 ? totalVG / (tempoTotal / 36e5) : 0 };
+}
+
+// ══════ WHATSAPP TEXT — INTOCADO ══════
+function gerarTexto(op) {
+  const L = [];
+  L.push("📦 *PRODUTIVIDADE HORA A HORA*", "━━━━━━━━━━━━━━━━━━━━━");
+  L.push(`Composição: *${op.composicao || "—"}*`, `Chegada: ${fmtDateTime(op.chegada)}`, `Produto: ${op.produto || "Celulose"}`, "");
+  (op.encostes || []).forEach((enc, idx) => {
+    const c = calcEncoste(enc), regs = enc.registros || [];
+    L.push(`▸ *${idx + 1}º ENCOSTE*`, `  Qtd: ${enc.quantidade || 0} vagões`, `  Posicionamento: ${fmtDateTime(enc.posicionamento)}`, `  Início: ${fmtDateTime(enc.inicioOp)}`);
+    L.push(`  Descarregados: ${c.total} | Restante: ${Math.max(0, c.rest)}`, `  Produtividade: ${c.prod.toFixed(1)} VG/h`, `  Tempo Op: ${fmtDur(c.tempoOp)}`);
+    if (c.done) L.push("  ✅ *CONCLUÍDO*"); else if (c.prev) L.push(`  🕐 *Prev. Término: ${fmtDateTime(c.prev)}*`);
+    if (regs.length) { L.push(""); regs.forEach((r, i) => { const ac = regs.slice(0, i + 1).reduce((s, x) => s + (x.qtd || 0), 0); L.push(`  ${i + 1}ª h → ${fmtTime(r.hora)} | +${r.qtd || 0} vg | Acum: ${ac}`); }); }
+    L.push("");
+  });
+  const g = calcGeral(op); const totalRef = op.totalVagoes || g.totalQtd;
+  L.push("━━━━━━━━━━━━━━━━━━━━━", `Total: ${g.totalVG}/${totalRef} vagões`);
+  return L.join("\n");
+}
+
+// ══════ FIRESTORE OPS ══════
+let _unsub = null;
+
+async function loadFirestore(setOp, setHist) {
+  const { db, doc, getDoc, getDocs, query, collection, orderBy } = window._fb;
+  try {
+    const opDoc = await getDoc(doc(db, "config", "operacaoAtiva"));
+    setOp(opDoc.exists() ? opDoc.data().data || null : null);
+    const histSnap = await getDocs(query(collection(db, "historico"), orderBy("salvoEm", "desc")));
+    const h = []; histSnap.forEach(d => h.push({ ...d.data(), _docId: d.id })); setHist(h);
+  } catch (e) { console.error("Load:", e); }
+}
+
+function listenOp(setOp) {
+  const { db, doc, onSnapshot } = window._fb;
+  if (_unsub) _unsub();
+  _unsub = onSnapshot(doc(db, "config", "operacaoAtiva"), snap => {
+    setOp(snap.exists() ? snap.data().data || null : null);
+  });
+}
+
+async function saveOp(op) {
+  const { db, doc, setDoc } = window._fb;
+  try { await setDoc(doc(db, "config", "operacaoAtiva"), { data: op, updatedBy: window._curUser?.email, updatedAt: new Date().toISOString() }); } catch (e) { console.error("SaveOp:", e); }
+}
+
+async function saveHist(entry) {
+  const { db, doc, setDoc } = window._fb;
+  try { await setDoc(doc(db, "historico", "op_" + entry.id), { ...entry, salvoEm: new Date().toISOString(), salvoPor: window._curUser?.email }); } catch (e) { console.error("SaveHist:", e); }
+}
+
+async function removeHist(id) {
+  const { db, doc, deleteDoc } = window._fb;
+  try { await deleteDoc(doc(db, "historico", "op_" + id)); } catch (e) { console.error("RmHist:", e); }
+}
+
+async function reloadHist(setHist) {
+  const { db, getDocs, query, collection, orderBy } = window._fb;
+  const snap = await getDocs(query(collection(db, "historico"), orderBy("salvoEm", "desc")));
+  const h = []; snap.forEach(d => h.push({ ...d.data(), _docId: d.id })); setHist(h);
+}
+
+async function getUserRole(uid) {
+  if (GESTOR_UIDS.includes(uid)) return "gestor";
+  const { db, doc, getDoc } = window._fb;
+  try {
+    const d = await getDoc(doc(db, "usuarios", uid));
+    return d.exists() && d.data().role === "gestor" ? "gestor" : "operador";
+  } catch { return "operador"; }
+}
+
+// ══════ LOGIN COMPONENT ══════
+function Login({ onAuth }) {
+  const [email, setEmail] = useState("");
+  const [pass, setPass] = useState("");
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const doLogin = async () => {
+    setErr("");
+    if (!email || !pass) { setErr("Preencha e-mail e senha"); return; }
+    setLoading(true);
+    try {
+      await window._fb.signInWithEmailAndPassword(window._fb.auth, email, pass);
+    } catch (e) {
+      const msgs = { "auth/user-not-found": "Usuário não encontrado", "auth/wrong-password": "Senha incorreta", "auth/invalid-credential": "E-mail ou senha incorretos", "auth/too-many-requests": "Muitas tentativas. Aguarde.", "auth/invalid-email": "E-mail inválido" };
+      setErr(msgs[e.code] || "Erro: " + e.message);
     }
-    render();
-  });
+    setLoading(false);
+  };
+
+  return (
+    <div className="login-wrap">
+      <div className="login-box">
+        <div style={{ marginBottom: 20 }} dangerouslySetInnerHTML={{ __html: trainSVG(64) }} />
+        <div className="logo-text" style={{ color: "var(--accent)" }}>ProdTracker</div>
+        <div className="logo-sub">Produtividade Hora a Hora · Portocel</div>
+        <input className="inp" type="email" placeholder="E-mail" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" />
+        <input className="inp" type="password" placeholder="Senha" value={pass} onChange={e => setPass(e.target.value)} autoComplete="current-password" onKeyDown={e => e.key === "Enter" && doLogin()} />
+        <button className="btn btn-accent" onClick={doLogin} disabled={loading}>{loading ? "Entrando..." : "Entrar"}</button>
+        <div className="login-error">{err}</div>
+      </div>
+    </div>
+  );
 }
 
-window.saveToFirestore = async function() {
-  try {
-    await setDoc(doc(db, 'config', 'operacaoAtiva'), { data: state.operacao, updatedBy: currentUser.email, updatedAt: new Date().toISOString() });
-  } catch (e) { console.error('Save error:', e); }
-};
+// ══════ ENCOSTE COMPONENT ══════
+function Encoste({ enc, eIdx, total, onUpdate, onRemove, onAddReg, onRemoveReg, onUpdateReg }) {
+  const c = calcEncoste(enc);
+  const regs = enc.registros || [];
+  const ini = enc.inicioOp ? new Date(enc.inicioOp) : null;
+  const [showPorticos, setShowPorticos] = useState({});
+  const dateStr = enc.inicioOp ? enc.inicioOp.slice(0, 10) : (enc.posicionamento ? new Date(enc.posicionamento).toISOString().slice(0, 10) : null);
+  const hora = enc.inicioOp ? new Date(enc.inicioOp).getHours() : null;
+  let periodo = null;
+  if (hora !== null) {
+    if (hora >= 7 && hora < 13) periodo = "07x13";
+    else if (hora >= 13 && hora < 19) periodo = "13x19";
+    else if (hora >= 19 || hora < 1) periodo = "19x01";
+    else periodo = "01x07";
+  }
+  const equipeAuto = dateStr && periodo ? getEquipePeriodo(dateStr.includes("T") ? dateStr.slice(0, 10) : dateStr, periodo) : null;
 
-window.saveHistToFirestore = async function(entry) {
-  try {
-    const docId = 'op_' + entry.id;
-    await setDoc(doc(db, 'historico', docId), { ...entry, salvoEm: new Date().toISOString(), salvoPor: currentUser.email });
-    // Reload history
-    const histSnap = await getDocs(query(collection(db, 'historico'), orderBy('salvoEm', 'desc')));
-    state.historico = [];
-    histSnap.forEach(d => state.historico.push({ ...d.data(), _docId: d.id }));
-  } catch (e) { console.error('Save hist error:', e); }
-};
-
-window.removeHistFromFirestore = async function(id) {
-  try {
-    const docId = 'op_' + id;
-    await deleteDoc(doc(db, 'historico', docId));
-    state.historico = state.historico.filter(h => h.id !== id);
-  } catch (e) { console.error('Remove hist error:', e); }
-};
-
-// ── State ──
-let state = { theme: 'dark', tab: 'operacao', operacao: null, historico: [], showShare: false, viewHistId: null };
-
-window.state = state;
-
-function save() {
-  localStorage.setItem('pt_theme', state.theme);
-  saveToFirestore();
-}
-window.save = save;
-
-function setState(patch) {
-  Object.assign(state, patch);
-  localStorage.setItem('pt_theme', state.theme);
-  if (patch.operacao !== undefined) saveToFirestore();
-  render();
-}
-window.setState = setState;
-
-// ── Helpers ──
-const pad=n=>String(n).padStart(2,'0');
-const fmtDate=d=>{if(!d)return'—';const t=new Date(d);return`${pad(t.getDate())}/${pad(t.getMonth()+1)}/${t.getFullYear()}`};
-const fmtTime=d=>{if(!d)return'—';const t=new Date(d);return`${pad(t.getHours())}:${pad(t.getMinutes())}`};
-const fmtDateTime=d=>d?`${fmtDate(d)} ${fmtTime(d)}`:'—';
-const fmtDur=ms=>{if(!ms||ms<0)return'—';return`${Math.floor(ms/36e5)}h${pad(Math.floor((ms%36e5)/6e4))}`};
-const toLocal=d=>{if(!d)return'';const t=new Date(d);return new Date(t.getTime()-t.getTimezoneOffset()*6e4).toISOString().slice(0,16)};
-window.fmtDate=fmtDate;window.fmtTime=fmtTime;window.fmtDateTime=fmtDateTime;window.fmtDur=fmtDur;window.toLocal=toLocal;
-
-function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500)}
-window.showToast=showToast;
-
-// ── Calculations ──
-function calcEncoste(enc){
-  const regs=enc.registros||[],total=regs.reduce((s,r)=>s+(r.qtd||0),0),rest=(enc.quantidade||0)-total;
-  const ini=enc.inicioOp?new Date(enc.inicioOp):null;
-  const regsComHora=regs.filter(r=>r.hora);
-  const ult=regsComHora.length?regsComHora[regsComHora.length-1]:null;
-  const tempoOp=ini&&ult?new Date(ult.hora).getTime()-ini.getTime():0;
-  const prod=tempoOp>0&&total>0?total/(tempoOp/36e5):0;
-  const tRest=prod>0&&rest>0?(rest/prod)*36e5:0;
-  const prev=ult&&tRest>0?new Date(new Date(ult.hora).getTime()+tRest):null;
-  return{total,rest,tempoOp:tempoOp>0?tempoOp:0,prod,prev,done:rest<=0&&total>0};
-}
-window.calcEncoste=calcEncoste;
-
-function calcGeral(op){
-  if(!op)return{totalVG:0,totalQtd:0,pct:0,tempoTotal:0,prodMedia:0};
-  let totalVG=0,totalQtd=0,tempoTotal=0;
-  (op.encostes||[]).forEach(e=>{const c=calcEncoste(e);totalVG+=c.total;totalQtd+=e.quantidade||0;tempoTotal+=c.tempoOp});
-  return{totalVG,totalQtd,pct:totalQtd>0?totalVG/totalQtd*100:0,tempoTotal,prodMedia:tempoTotal>0&&totalVG>0?totalVG/(tempoTotal/36e5):0};
-}
-window.calcGeral=calcGeral;
-
-// ── Share text ──
-function gerarTexto(op){
-  const L=[];
-  L.push('📦 *PRODUTIVIDADE HORA A HORA*','━━━━━━━━━━━━━━━━━━━━━');
-  L.push(`Composição: *${op.composicao||'—'}*`,`Chegada: ${fmtDateTime(op.chegada)}`,`Produto: ${op.produto||'Celulose'}`,'');
-  (op.encostes||[]).forEach((enc,idx)=>{
-    const c=calcEncoste(enc),regs=enc.registros||[];
-    L.push(`▸ *${idx+1}º ENCOSTE*`,`  Qtd: ${enc.quantidade||0} vagões`,`  Posicionamento: ${fmtDateTime(enc.posicionamento)}`,`  Início: ${fmtDateTime(enc.inicioOp)}`);
-    L.push(`  Descarregados: ${c.total} | Restante: ${Math.max(0,c.rest)}`,`  Produtividade: ${c.prod.toFixed(1)} VG/h`,`  Tempo Op: ${fmtDur(c.tempoOp)}`);
-    if(c.done)L.push('  ✅ *CONCLUÍDO*');else if(c.prev)L.push(`  🕐 *Prev. Término: ${fmtDateTime(c.prev)}*`);
-    if(regs.length){L.push('');regs.forEach((r,i)=>{const ac=regs.slice(0,i+1).reduce((s,x)=>s+(x.qtd||0),0);L.push(`  ${i+1}ª h → ${fmtTime(r.hora)} | +${r.qtd||0} vg | Acum: ${ac}`)});}
-    L.push('');
-  });
-  const g=calcGeral(op);const totalRef=op.totalVagoes||g.totalQtd;
-  L.push('━━━━━━━━━━━━━━━━━━━━━',`Total: ${g.totalVG}/${totalRef} vagões`);
-  return L.join('\n');
-}
-window.gerarTexto=gerarTexto;
-
-// ── Train SVG ──
-function trainSVG(size=40){
-  return`<svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 85L18 30Q18 8 50 8Q82 8 82 30L82 85Z" fill="#003DA5"/><rect x="25" y="24" width="20" height="20" rx="3" fill="white"/><rect x="55" y="24" width="20" height="20" rx="3" fill="white"/><circle cx="33" cy="65" r="9" fill="white"/><circle cx="67" cy="65" r="9" fill="white"/><line x1="30" y1="85" x2="18" y2="97" stroke="#003DA5" stroke-width="6" stroke-linecap="round"/><line x1="70" y1="85" x2="82" y2="97" stroke="#003DA5" stroke-width="6" stroke-linecap="round"/><line x1="12" y1="97" x2="88" y2="97" stroke="#003DA5" stroke-width="5" stroke-linecap="round"/></svg>`;
-}
-window.trainSVG=trainSVG;
-
-document.getElementById('loginLogo').innerHTML = trainSVG(64);
-
-// ── Field update (NO re-render) ──
-window.updateField=function(path,value){
-  const parts=path.split('.');let obj=state;
-  for(let i=0;i<parts.length-1;i++){if(parts[i].match(/^\d+$/))obj=obj[parseInt(parts[i])];else obj=obj[parts[i]];}
-  obj[parts[parts.length-1]]=value;
-  saveToFirestore(); // Save to cloud silently
-};
-
-window.refreshMetrics=function(){render()};
-
-// ── Actions ──
-window.toggleTheme=function(){setState({theme:state.theme==='dark'?'light':'dark'});document.body.dataset.theme=state.theme};
-window.novaOp=function(){setState({operacao:{id:Date.now(),composicao:'',chegada:new Date().toISOString(),produto:'Celulose',totalVagoes:0,encostes:[{id:Date.now(),quantidade:0,posicionamento:null,inicioOp:null,registros:[]}]},showShare:false,tab:'operacao'})};
-window.addEncoste=function(){if(!state.operacao)return;state.operacao.encostes.push({id:Date.now(),quantidade:0,posicionamento:null,inicioOp:null,registros:[]});setState({operacao:state.operacao})};
-window.removeEncoste=function(idx){
-  if(!state.operacao)return;
-  if(state.operacao.encostes.length<=1){showToast('Mínimo 1 encoste');return}
-  if(!confirm(`Excluir o ${idx+1}º Encoste e todos os seus registros?`))return;
-  state.operacao.encostes.splice(idx,1);setState({operacao:state.operacao});showToast('Encoste excluído');
-};
-window.addRegistro=function(eIdx){state.operacao.encostes[eIdx].registros.push({id:Date.now(),hora:null,qtd:0});setState({operacao:state.operacao})};
-window.removeRegistro=function(eIdx,rIdx){state.operacao.encostes[eIdx].registros.splice(rIdx,1);setState({operacao:state.operacao})};
-
-window.salvarHist=async function(){
-  if(!state.operacao)return;
-  const e=JSON.parse(JSON.stringify(state.operacao));e.salvoEm=new Date().toISOString();
-  await saveHistToFirestore(e);
-  showToast('✓ Salvo no histórico');render();
-};
-window.finalizarOp=async function(){
-  if(!state.operacao)return;
-  const e=JSON.parse(JSON.stringify(state.operacao));e.salvoEm=new Date().toISOString();
-  await saveHistToFirestore(e);
-  state.operacao=null;state.showShare=false;
-  await saveToFirestore();
-  showToast('✓ Operação finalizada');render();
-};
-window.copiarTexto=function(op){navigator.clipboard.writeText(gerarTexto(op||state.operacao)).then(()=>showToast('✓ Copiado!')).catch(()=>showToast('Erro'))};
-window.abrirWhatsApp=function(op){window.open('https://wa.me/?text='+encodeURIComponent(gerarTexto(op||state.operacao)),'_blank')};
-window.removerHist=async function(id){
-  await removeHistFromFirestore(id);
-  if(state.viewHistId===id)state.viewHistId=null;
-  showToast('✓ Removido');render();
-};
-
-// ── Render ──
-function render(){
-  const op=state.operacao;
-  const isDark=state.theme==='dark';
-  document.body.dataset.theme=state.theme;
-  let html='';
-  const userEmail=window.currentUser?window.currentUser.email:'';
-
-  // Header
-  html+=`<div class="header"><div class="logo-area">${trainSVG(40)}<div><div class="logo-text">ProdTracker</div><div class="logo-sub">Produtividade Hora a Hora · Portocel</div></div></div><div class="header-right"><div class="user-bar"><span class="sync-dot online"></span><span>${userEmail.split('@')[0]}</span><button onclick="doLogout()">Sair</button></div><button class="theme-btn" onclick="toggleTheme()">${isDark?'☀️ Claro':'🌙 Escuro'}</button><div class="nav"><button class="nav-btn ${state.tab==='operacao'?'active':''}" onclick="setState({tab:'operacao'})">Operação</button><button class="nav-btn ${state.tab==='historico'?'active':''}" onclick="setState({tab:'historico'})">Histórico (${state.historico.length})</button></div></div></div>`;
-
-  if(state.tab==='operacao'){
-    if(!op){
-      html+=`<div class="section empty"><div style="margin-bottom:16px">${trainSVG(64)}</div><div style="font-size:16px;font-weight:700;margin-bottom:6px;color:var(--text)">Nenhuma operação ativa</div><div style="font-size:12px;margin-bottom:28px">Inicie uma nova operação para registrar a produtividade</div><button class="btn btn-accent" onclick="novaOp()">＋ Nova Operação</button></div>`;
-    } else {
-      html+=`<div class="section"><div class="section-title"><span style="color:var(--accent)">◆</span> DADOS DA COMPOSIÇÃO</div><div class="row">
-        <div class="field"><label class="lbl">Composição</label><input class="inp" value="${op.composicao||''}" placeholder="Ex: 260101L40 (aammdd+nº da L)" oninput="updateField('operacao.composicao',this.value)"></div>
-        <div class="field-date"><label class="lbl">Chegada</label><input type="datetime-local" class="inp" value="${toLocal(op.chegada)}" onchange="updateField('operacao.chegada',this.value?new Date(this.value).toISOString():state.operacao.chegada)"></div>
-      </div><div class="row">
-        <div class="field"><label class="lbl">Qtd. Total de Vagões</label><input type="number" class="inp" value="${op.totalVagoes||''}" placeholder="Total que chegou" inputmode="numeric" oninput="updateField('operacao.totalVagoes',parseInt(this.value)||0)"></div>
-        <div class="field-sm"><label class="lbl">Produto</label><select class="inp" onchange="updateField('operacao.produto',this.value)"><option ${op.produto==='Celulose'?'selected':''}>Celulose</option><option ${op.produto==='Outro'?'selected':''}>Outro</option></select></div>
-      </div></div>`;
-
-      const g=calcGeral(op);const totalRef=op.totalVagoes||g.totalQtd;const pctRef=totalRef>0?(g.totalVG/totalRef*100):0;
-      html+=`<div class="section section-grad"><div class="section-title"><span style="color:var(--accent)">◆</span> RESUMO GERAL</div>
-        <div class="metrics">
-          <div class="metric"><div class="metric-num metric-num-lg">${g.totalVG}</div><div class="metric-label">Descarregados</div></div>
-          <div class="metric"><div class="metric-num metric-num-lg color-info">${totalRef}</div><div class="metric-label">Total Vagões</div></div>
-          <div class="metric"><div class="metric-num">${pctRef.toFixed(0)}%</div><div class="metric-label">Progresso</div></div>
-          <div class="metric"><div class="metric-num">${g.prodMedia.toFixed(1)}</div><div class="metric-label">Média VG/h</div></div>
-          <div class="metric"><div class="metric-num color-info">${fmtDur(g.tempoTotal)}</div><div class="metric-label">Tempo Total</div></div>
+  return (
+    <div className={`section encoste ${c.done ? "done" : ""}`}>
+      <div className="encoste-header">
+        <div className="section-title" style={{ marginBottom: 0 }}>
+          <span className="encoste-num">{eIdx + 1}</span>
+          {eIdx + 1}º ENCOSTE
+          {equipeAuto && <span className="badge badge-accent">Equipe {enc.equipeManual || equipeAuto}</span>}
+          {c.done && <span className="badge badge-success">✓ Concluído</span>}
         </div>
-        <div class="progress"><div class="progress-fill" style="width:${Math.min(100,pctRef)}%"></div></div></div>`;
-
-      (op.encostes||[]).forEach((enc,eIdx)=>{
-        const c=calcEncoste(enc);const regs=enc.registros||[];const ini=enc.inicioOp?new Date(enc.inicioOp):null;
-        html+=`<div class="section encoste ${c.done?'done':''}">
-          <div class="encoste-header"><div class="section-title" style="margin-bottom:0"><span class="encoste-num">${eIdx+1}</span> ${eIdx+1}º ENCOSTE ${c.done?'<span class="badge badge-success">✓ Concluído</span>':''}</div><div class="encoste-actions"><button class="btn btn-danger btn-xs" onclick="removeEncoste(${eIdx})">🗑 Excluir</button></div></div>
-          <div class="row">
-            <div class="field"><label class="lbl">Quantidade</label><input type="number" class="inp" value="${enc.quantidade||''}" placeholder="Nº vagões" inputmode="numeric" oninput="updateField('operacao.encostes.${eIdx}.quantidade',parseInt(this.value)||0)"></div>
-            <div class="field-date"><label class="lbl">Posicionamento</label><input type="datetime-local" class="inp" value="${toLocal(enc.posicionamento)}" onchange="updateField('operacao.encostes.${eIdx}.posicionamento',this.value?new Date(this.value).toISOString():null)"></div>
-            <div class="field-date"><label class="lbl">Início Operação</label><input type="datetime-local" class="inp" value="${toLocal(enc.inicioOp)}" onchange="updateField('operacao.encostes.${eIdx}.inicioOp',this.value?new Date(this.value).toISOString():null)"></div>
-          </div>
-          <div class="metrics">
-            <div class="metric"><div class="metric-num">${c.total}</div><div class="metric-label">Descarregados</div></div>
-            <div class="metric"><div class="metric-num ${c.rest>0?'color-warning':'color-success'}">${Math.max(0,c.rest)}</div><div class="metric-label">Restante</div></div>
-            <div class="metric"><div class="metric-num">${c.prod.toFixed(1)}</div><div class="metric-label">VG/h</div></div>
-            <div class="metric"><div class="metric-num color-info">${fmtDur(c.tempoOp)}</div><div class="metric-label">Tempo Op.</div></div>
-            <div class="metric"><div class="metric-num" style="font-size:18px">${c.prev?fmtTime(c.prev):c.done?'✓':'—'}</div><div class="metric-label">Prev. Término</div></div>
-          </div>
-          <div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Hora</th><th>Tempo Op.</th><th>Qtd. VG</th><th>Acum.</th><th>VG/h</th><th></th></tr></thead><tbody>`;
-        if(!regs.length)html+=`<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px">Clique "＋ Hora" para registrar</td></tr>`;
-        regs.forEach((r,rIdx)=>{
-          const acum=regs.slice(0,rIdx+1).reduce((s,x)=>s+(x.qtd||0),0);
-          const hasTime=ini&&r.hora;const elapsed=hasTime?new Date(r.hora).getTime()-ini.getTime():0;const elapsedValid=hasTime&&elapsed>0;
-          const vgh=elapsedValid&&acum>0?acum/(elapsed/36e5):0;
-          html+=`<tr class="${rIdx%2?'alt':''}">
-            <td style="color:var(--text-muted);font-weight:600">${rIdx+1}ª</td>
-            <td><input type="datetime-local" class="inp" style="padding:4px 8px;font-size:11px;width:170px" value="${r.hora?toLocal(r.hora):''}" onchange="updateField('operacao.encostes.${eIdx}.registros.${rIdx}.hora',this.value?new Date(this.value).toISOString():null)"></td>
-            <td class="num">${elapsedValid?fmtDur(elapsed):'—'}</td>
-            <td><input type="number" class="inp" style="width:64px;padding:4px 8px;font-size:12px;text-align:center" inputmode="numeric" value="${r.qtd||''}" placeholder="0" oninput="updateField('operacao.encostes.${eIdx}.registros.${rIdx}.qtd',parseInt(this.value)||0)"></td>
-            <td class="num">${acum}</td>
-            <td class="num" style="color:var(--success)">${vgh.toFixed(1)}</td>
-            <td><button class="btn btn-danger btn-xs" onclick="removeRegistro(${eIdx},${rIdx})">✕</button></td></tr>`;
-        });
-        html+=`</tbody></table></div><div style="margin-top:12px;display:flex;gap:8px"><button class="btn btn-accent btn-sm" onclick="addRegistro(${eIdx})">＋ Hora</button><button class="btn btn-sm btn-outline" onclick="refreshMetrics()">🔄 Atualizar</button></div></div>`;
-      });
-
-      html+=`<div class="actions">
-        <button class="btn btn-info" onclick="addEncoste()">＋ Encoste</button>
-        <button class="btn btn-success" onclick="salvarHist()">💾 Salvar</button>
-        <button class="btn btn-accent" onclick="setState({showShare:!state.showShare})">📋 ${state.showShare?'Fechar':'Compartilhar'}</button>
-        <button class="btn btn-danger" onclick="finalizarOp()">✓ Finalizar</button>
-        <button class="btn btn-outline" onclick="novaOp()">Nova Op.</button>
-      </div>`;
-      if(state.showShare){
-        html+=`<div class="section"><div class="section-title"><span style="color:var(--accent)">◆</span> TEXTO PARA WHATSAPP</div>
-          <div class="share-box">${gerarTexto(op).replace(/</g,'&lt;')}</div>
-          <div style="margin-top:14px;display:flex;gap:8px"><button class="btn btn-success" onclick="copiarTexto()">📋 Copiar</button><button class="btn btn-outline" onclick="abrirWhatsApp()">💬 WhatsApp</button></div></div>`;
-      }
-    }
-  }
-
-  if(state.tab==='historico'){
-    if(!state.historico.length){
-      html+=`<div class="section empty"><div style="margin-bottom:12px">${trainSVG(56)}</div>Nenhuma operação registrada.</div>`;
-    } else {
-      html+=`<div style="margin-bottom:14px;font-size:11px;color:var(--text-muted);font-weight:600">${state.historico.length} operação(ões)</div>`;
-      state.historico.forEach((h,hIdx)=>{
-        const g=calcGeral(h);const isOpen=state.viewHistId===h.id;
-        html+=`<div class="section"><div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="setState({viewHistId:state.viewHistId===${h.id}?null:${h.id}})">
-            <div><div style="display:flex;align-items:center;gap:8px"><div>${trainSVG(28)}</div><div style="font-size:15px;font-weight:800;color:var(--accent)">${h.composicao||'Sem nome'}</div></div>
-              <div style="font-size:11px;color:var(--text-muted);margin-top:3px">${fmtDateTime(h.chegada)} · ${(h.encostes||[]).length} enc. · ${g.totalVG}/${g.totalQtd} vg${h.salvoPor?' · '+h.salvoPor.split('@')[0]:''}</div></div>
-            <div style="display:flex;gap:8px;align-items:center"><span class="badge ${g.totalVG>=g.totalQtd&&g.totalQtd>0?'badge-success':'badge-warning'}">${g.totalVG>=g.totalQtd&&g.totalQtd>0?'Concluído':'Parcial'}</span><span style="color:var(--text-muted)">${isOpen?'▲':'▼'}</span></div></div>`;
-        if(isOpen){
-          html+=`<div style="margin-top:16px"><div class="divider"></div><div class="share-box">${gerarTexto(h).replace(/</g,'&lt;')}</div>
-            <div style="margin-top:12px;display:flex;gap:8px"><button class="btn btn-success btn-sm" onclick="event.stopPropagation();copiarTexto(state.historico[${hIdx}])">📋 Copiar</button><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();removerHist(${h.id})">🗑 Excluir</button></div>`;
-          (h.encostes||[]).forEach((enc,eidx)=>{
-            const regs=enc.registros||[],ini2=enc.inicioOp?new Date(enc.inicioOp):null;
-            html+=`<div style="margin-top:18px"><div style="font-size:11px;font-weight:800;color:var(--accent);margin-bottom:8px;letter-spacing:1px">${eidx+1}º ENCOSTE — ${enc.quantidade||0} vagões</div>
-              <table><thead><tr><th>#</th><th>Hora</th><th>Qtd</th><th>Acum.</th><th>VG/h</th></tr></thead><tbody>`;
-            regs.forEach((r,i)=>{const acum=regs.slice(0,i+1).reduce((s,x)=>s+(x.qtd||0),0);const elapsed=ini2&&r.hora?new Date(r.hora).getTime()-ini2.getTime():0;const vgh=elapsed>0?acum/(elapsed/36e5):0;
-              html+=`<tr class="${i%2?'alt':''}"><td>${i+1}ª</td><td>${fmtTime(r.hora)}</td><td class="num">${r.qtd||0}</td><td class="num">${acum}</td><td class="num" style="color:var(--success)">${vgh.toFixed(1)}</td></tr>`;
-            });
-            html+=`</tbody></table></div>`;
-          });
-          html+=`</div>`;
-        }
-        html+=`</div>`;
-      });
-    }
-  }
-
-  html+=`<div class="footer">ProdTracker v3.0 · Portocel — Dedicação Carrega o Mundo</div>`;
-  document.getElementById('app').innerHTML=html;
+        <div className="encoste-actions">
+          {equipeAuto && (
+            <select className="inp" style={{ width: 52, padding: "4px 6px", fontSize: 10 }} value={enc.equipeManual || equipeAuto} onChange={e => onUpdate("equipeManual", e.target.value === equipeAuto ? undefined : e.target.value)}>
+              {["A", "B", "C", "D"].map(eq => <option key={eq} value={eq}>{eq}</option>)}
+            </select>
+          )}
+          {total > 1 && <button className="btn btn-danger btn-xs" onClick={onRemove}>🗑 Excluir</button>}
+        </div>
+      </div>
+      <div className="row">
+        <div className="field">
+          <label className="lbl">Quantidade</label>
+          <input type="number" className="inp" value={enc.quantidade || ""} placeholder="Nº vagões" inputMode="numeric" onChange={e => onUpdate("quantidade", parseInt(e.target.value) || 0)} />
+        </div>
+        <div className="field-date">
+          <label className="lbl">Posicionamento</label>
+          <input type="datetime-local" className="inp" value={toLocal(enc.posicionamento)} onChange={e => onUpdate("posicionamento", e.target.value ? new Date(e.target.value).toISOString() : null)} />
+        </div>
+        <div className="field-date">
+          <label className="lbl">Início Operação</label>
+          <input type="datetime-local" className="inp" value={toLocal(enc.inicioOp)} onChange={e => onUpdate("inicioOp", e.target.value ? new Date(e.target.value).toISOString() : null)} />
+        </div>
+      </div>
+      <div className="metrics">
+        <div className="metric"><div className="metric-num">{c.total}</div><div className="metric-label">Descarregados</div></div>
+        <div className="metric"><div className={`metric-num ${c.rest > 0 ? "color-warning" : "color-success"}`}>{Math.max(0, c.rest)}</div><div className="metric-label">Restante</div></div>
+        <div className="metric"><div className="metric-num">{c.prod.toFixed(1)}</div><div className="metric-label">VG/h</div></div>
+        <div className="metric"><div className="metric-num color-info">{fmtDur(c.tempoOp)}</div><div className="metric-label">Tempo Op.</div></div>
+        <div className="metric"><div className="metric-num" style={{ fontSize: 18 }}>{c.prev ? fmtTime(c.prev) : c.done ? "✓" : "—"}</div><div className="metric-label">Prev. Término</div></div>
+      </div>
+      <div style={{ overflowX: "auto" }}>
+        <table>
+          <thead><tr><th>#</th><th>Hora</th><th>Tempo Op.</th><th>Qtd. VG</th><th>Acum.</th><th>VG/h</th><th>Pórticos</th><th></th></tr></thead>
+          <tbody>
+            {!regs.length && <tr><td colSpan={8} style={{ textAlign: "center", color: "var(--text-muted)", padding: 24 }}>Clique "＋ Hora" para registrar</td></tr>}
+            {regs.map((r, rIdx) => {
+              const acum = regs.slice(0, rIdx + 1).reduce((s, x) => s + (x.qtd || 0), 0);
+              const elapsed = ini && r.hora ? new Date(r.hora).getTime() - ini.getTime() : 0;
+              const vgh = elapsed > 0 && acum > 0 ? acum / (elapsed / 36e5) : 0;
+              const showP = showPorticos[rIdx];
+              return (
+                <tr key={r.id || rIdx} className={rIdx % 2 ? "alt" : ""}>
+                  <td style={{ color: "var(--text-muted)", fontWeight: 600 }}>{rIdx + 1}ª</td>
+                  <td><input type="datetime-local" className="inp" style={{ padding: "4px 8px", fontSize: 11, width: 170 }} value={r.hora ? toLocal(r.hora) : ""} onChange={e => onUpdateReg(rIdx, "hora", e.target.value ? new Date(e.target.value).toISOString() : null)} /></td>
+                  <td className="num">{elapsed > 0 ? fmtDur(elapsed) : "—"}</td>
+                  <td><input type="number" className="inp" style={{ width: 64, padding: "4px 8px", fontSize: 12, textAlign: "center" }} inputMode="numeric" value={r.qtd || ""} placeholder="0" onChange={e => onUpdateReg(rIdx, "qtd", parseInt(e.target.value) || 0)} /></td>
+                  <td className="num">{acum}</td>
+                  <td className="num" style={{ color: "var(--success)" }}>{vgh.toFixed(1)}</td>
+                  <td>
+                    <button className="portico-toggle" onClick={() => setShowPorticos({ ...showPorticos, [rIdx]: !showP })}>{showP ? "▲" : "🏗️"}</button>
+                    {showP && (
+                      <div className="portico-row">
+                        <input className="portico-inp" placeholder="P1" value={r.p1 || ""} onChange={e => onUpdateReg(rIdx, "p1", e.target.value)} />
+                        <input className="portico-inp" placeholder="P2" value={r.p2 || ""} onChange={e => onUpdateReg(rIdx, "p2", e.target.value)} />
+                      </div>
+                    )}
+                  </td>
+                  <td><button className="btn btn-danger btn-xs" onClick={() => onRemoveReg(rIdx)}>✕</button></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+        <button className="btn btn-accent btn-sm" onClick={onAddReg}>＋ Hora</button>
+      </div>
+    </div>
+  );
 }
-window.render=render;
 
-// Init theme
-try{state.theme=localStorage.getItem('pt_theme')||'dark'}catch(e){}
-document.body.dataset.theme=state.theme;
+// ══════ ANALISE COMPONENT ══════
+function Analise({ historico }) {
+  const [subTab, setSubTab] = useState("equipe");
+  const chartEquipeRef = useRef(null);
+  const chartPorticoRef = useRef(null);
+  const chartPeriodoRef = useRef(null);
+  const chartScatterRef = useRef(null);
+  const chartInstances = useRef({});
+
+  const stats = useMemo(() => {
+    const equipes = { A: { vg: 0, h: 0 }, B: { vg: 0, h: 0 }, C: { vg: 0, h: 0 }, D: { vg: 0, h: 0 } };
+    const operadores = {};
+    const periodos = { "07x13": { vg: 0, h: 0 }, "13x19": { vg: 0, h: 0 }, "19x01": { vg: 0, h: 0 }, "01x07": { vg: 0, h: 0 } };
+    const porticoData = { um: { vg: 0, h: 0, ops: [] }, dois: { vg: 0, h: 0, ops: [] } };
+
+    historico.forEach(op => {
+      (op.encostes || []).forEach(enc => {
+        const regs = enc.registros || [];
+        const ini = enc.inicioOp ? new Date(enc.inicioOp) : null;
+        if (!ini || !regs.length) return;
+        const total = regs.reduce((s, r) => s + (r.qtd || 0), 0);
+        const lastR = regs.filter(r => r.hora).pop();
+        if (!lastR) return;
+        const elapsed = (new Date(lastR.hora).getTime() - ini.getTime()) / 36e5;
+        if (elapsed <= 0) return;
+
+        const dateStr = enc.inicioOp.slice(0, 10);
+        const hora = ini.getHours();
+        let per = "01x07";
+        if (hora >= 7 && hora < 13) per = "07x13";
+        else if (hora >= 13 && hora < 19) per = "13x19";
+        else if (hora >= 19 || hora < 1) per = "19x01";
+
+        const eq = enc.equipeManual || getEquipePeriodo(dateStr, per);
+        if (equipes[eq]) { equipes[eq].vg += total; equipes[eq].h += elapsed; }
+        periodos[per].vg += total;
+        periodos[per].h += elapsed;
+
+        let temDois = false;
+        regs.forEach(r => {
+          if (r.p1) { operadores[r.p1] = operadores[r.p1] || { vg: 0, h: 0 }; operadores[r.p1].vg += (r.qtd || 0); operadores[r.p1].h += 1; }
+          if (r.p2) { operadores[r.p2] = operadores[r.p2] || { vg: 0, h: 0 }; operadores[r.p2].vg += (r.qtd || 0); operadores[r.p2].h += 1; temDois = true; }
+        });
+
+        const bucket = temDois ? porticoData.dois : porticoData.um;
+        bucket.vg += total; bucket.h += elapsed;
+        bucket.ops.push({ vg: enc.quantidade || total, h: elapsed });
+      });
+    });
+
+    const eqArr = Object.entries(equipes).map(([k, v]) => ({ eq: k, vgh: v.h > 0 ? v.vg / v.h : 0 })).sort((a, b) => b.vgh - a.vgh);
+    const opArr = Object.entries(operadores).map(([k, v]) => ({ nome: k, vgh: v.h > 0 ? v.vg / v.h : 0 })).sort((a, b) => b.vgh - a.vgh).slice(0, 10);
+    const perArr = Object.entries(periodos).map(([k, v]) => ({ per: k, vgh: v.h > 0 ? v.vg / v.h : 0 }));
+    const p1vgh = porticoData.um.h > 0 ? porticoData.um.vg / porticoData.um.h : 0;
+    const p2vgh = porticoData.dois.h > 0 ? porticoData.dois.vg / porticoData.dois.h : 0;
+    const ganho = p1vgh > 0 ? ((p2vgh - p1vgh) / p1vgh * 100) : 0;
+
+    return { eqArr, opArr, perArr, p1vgh, p2vgh, ganho, porticoData, totalOps: historico.length };
+  }, [historico]);
+
+  useEffect(() => {
+    Object.values(chartInstances.current).forEach(c => c?.destroy());
+    chartInstances.current = {};
+
+    if (subTab === "equipe" && chartEquipeRef.current) {
+      chartInstances.current.eq = new Chart(chartEquipeRef.current, {
+        type: "bar", data: { labels: stats.eqArr.map(e => "Equipe " + e.eq), datasets: [{ data: stats.eqArr.map(e => Math.round(e.vgh * 10) / 10), backgroundColor: ["#003DA5", "#41b6c4", "#78c679", "#f59e0b"], borderRadius: 4, barPercentage: 0.6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.raw + " VG/h" } } }, scales: { y: { beginAtZero: true, grid: { color: "rgba(255,255,255,.06)" }, ticks: { color: "#94a3b8", font: { size: 11 } } }, x: { grid: { display: false }, ticks: { color: "#94a3b8", font: { size: 11 } } } } }
+      });
+    }
+    if (subTab === "portico" && chartPorticoRef.current) {
+      chartInstances.current.pt = new Chart(chartPorticoRef.current, {
+        type: "bar", data: { labels: ["1 pórtico", "2 pórticos"], datasets: [{ data: [Math.round(stats.p1vgh * 10) / 10, Math.round(stats.p2vgh * 10) / 10], backgroundColor: ["#003DA5", "#41b6c4"], borderRadius: 4, barPercentage: 0.5 }] },
+        options: { indexAxis: "y", responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { color: "rgba(255,255,255,.06)" }, ticks: { color: "#94a3b8" } }, y: { grid: { display: false }, ticks: { color: "#94a3b8" } } } }
+      });
+    }
+    if (subTab === "periodo" && chartPeriodoRef.current) {
+      chartInstances.current.per = new Chart(chartPeriodoRef.current, {
+        type: "line", data: { labels: stats.perArr.map(p => p.per), datasets: [{ data: stats.perArr.map(p => Math.round(p.vgh * 10) / 10), borderColor: "#003DA5", backgroundColor: "rgba(0,61,165,0.1)", fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: "#003DA5" }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: "rgba(255,255,255,.06)" }, ticks: { color: "#94a3b8" } }, x: { grid: { display: false }, ticks: { color: "#94a3b8" } } } }
+      });
+    }
+    if (subTab === "correlacao" && chartScatterRef.current) {
+      chartInstances.current.sc = new Chart(chartScatterRef.current, {
+        type: "scatter", data: { datasets: [
+          { label: "1 pórtico", data: stats.porticoData.um.ops.map(o => ({ x: o.vg, y: Math.round(o.h * 10) / 10 })), backgroundColor: "rgba(0,61,165,0.6)", pointRadius: 6 },
+          { label: "2 pórticos", data: stats.porticoData.dois.ops.map(o => ({ x: o.vg, y: Math.round(o.h * 10) / 10 })), backgroundColor: "rgba(65,182,196,0.6)", pointRadius: 6 },
+        ] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: "Vagões", color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.06)" }, ticks: { color: "#94a3b8" } }, y: { title: { display: true, text: "Horas", color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.06)" }, ticks: { color: "#94a3b8" } } } }
+      });
+    }
+    return () => { Object.values(chartInstances.current).forEach(c => c?.destroy()); };
+  }, [subTab, stats]);
+
+  const best = stats.eqArr[0], worst = stats.eqArr[stats.eqArr.length - 1];
+  const gap = worst && worst.vgh > 0 ? Math.round((best.vgh - worst.vgh) / worst.vgh * 100) : 0;
+
+  return (
+    <div>
+      <div className="analise-tabs">
+        {[["equipe", "Equipe"], ["portico", "Pórtico"], ["operador", "Operador"], ["periodo", "Período"], ["correlacao", "Correlação"]].map(([k, l]) => (
+          <div key={k} className={`analise-tab ${subTab === k ? "active" : ""}`} onClick={() => setSubTab(k)}>{l}</div>
+        ))}
+      </div>
+
+      <div className="metrics">
+        <div className="metric"><div className="metric-num">{stats.totalOps}</div><div className="metric-label">Operações</div></div>
+        <div className="metric"><div className="metric-num">{stats.eqArr.length > 0 ? stats.eqArr.reduce((s, e) => s + e.vgh, 0) / stats.eqArr.filter(e => e.vgh > 0).length || 0 : 0}</div><div className="metric-label">VG/h Médio</div></div>
+      </div>
+
+      {subTab === "equipe" && (
+        <div>
+          <div className="section"><div className="section-title">VG/h médio por equipe</div><div className="chart-container"><canvas ref={chartEquipeRef} /></div></div>
+          {gap > 0 && <div className="insight-card">A Equipe {best.eq} tem produtividade {gap}% superior à Equipe {worst.eq}.</div>}
+        </div>
+      )}
+
+      {subTab === "portico" && (
+        <div>
+          <div className="section"><div className="section-title">Impacto do 2º pórtico</div><div className="chart-container" style={{ height: 180 }}><canvas ref={chartPorticoRef} /></div></div>
+          <div className="metrics">
+            <div className="metric"><div className={`metric-num ${stats.ganho > 0 ? "color-success" : ""}`}>{stats.ganho > 0 ? "+" : ""}{Math.round(stats.ganho)}%</div><div className="metric-label">Ganho</div></div>
+            <div className="metric"><div className="metric-num">{stats.porticoData.dois.ops.length}</div><div className="metric-label">Ops. 2 pórt.</div></div>
+          </div>
+        </div>
+      )}
+
+      {subTab === "operador" && (
+        <div className="section">
+          <div className="section-title">Ranking de operadores — VG/h</div>
+          {!stats.opArr.length && <div style={{ color: "var(--text-muted)", fontSize: 12, textAlign: "center", padding: 20 }}>Nenhum dado de pórtico registrado ainda.</div>}
+          {stats.opArr.map((op, i) => (
+            <div key={op.nome} className="rank-row">
+              <div className="rank-pos" style={{ background: i < 3 ? ["#003DA5", "#41b6c4", "#78c679"][i] : "var(--card-alt)" }}>{i + 1}</div>
+              <div className="rank-name">{op.nome}</div>
+              <div className="rank-val" style={{ color: i < 3 ? "var(--success)" : "var(--text-sec)" }}>{op.vgh.toFixed(1)} VG/h</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {subTab === "periodo" && (
+        <div>
+          <div className="metrics">
+            {stats.perArr.map(p => (
+              <div key={p.per} className="metric"><div className="metric-num">{p.vgh.toFixed(1)}</div><div className="metric-label">{p.per}</div></div>
+            ))}
+          </div>
+          <div className="section"><div className="section-title">Produtividade por período</div><div className="chart-container"><canvas ref={chartPeriodoRef} /></div></div>
+          {stats.perArr.length > 0 && (() => {
+            const diurno = stats.perArr.filter(p => p.per === "07x13" || p.per === "13x19");
+            const noturno = stats.perArr.filter(p => p.per === "19x01" || p.per === "01x07");
+            const dAvg = diurno.reduce((s, p) => s + p.vgh, 0) / (diurno.filter(p => p.vgh > 0).length || 1);
+            const nAvg = noturno.reduce((s, p) => s + p.vgh, 0) / (noturno.filter(p => p.vgh > 0).length || 1);
+            const diff = nAvg > 0 ? Math.round((dAvg - nAvg) / nAvg * 100) : 0;
+            return diff > 0 ? <div className="insight-card">Turnos diurnos (07-19) têm produtividade {diff}% superior aos noturnos.</div> : null;
+          })()}
+        </div>
+      )}
+
+      {subTab === "correlacao" && (
+        <div>
+          <div className="section"><div className="section-title">Tempo de operação por nº de pórticos</div><div className="chart-container"><canvas ref={chartScatterRef} /></div></div>
+          <div className="metrics">
+            <div className="metric" style={{ borderLeft: "3px solid #003DA5" }}><div className="metric-num">{stats.porticoData.um.ops.length}</div><div className="metric-label">Ops. 1 pórt.</div></div>
+            <div className="metric" style={{ borderLeft: "3px solid #41b6c4" }}><div className="metric-num">{stats.porticoData.dois.ops.length}</div><div className="metric-label">Ops. 2 pórt.</div></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ══════ MAIN APP ══════
+function App() {
+  const [user, setUser] = useState(null);
+  const [role, setRole] = useState("operador");
+  const [authLoading, setAuthLoading] = useState(true);
+  const [op, setOp] = useState(null);
+  const [hist, setHist] = useState([]);
+  const [tab, setTab] = useState("operacao");
+  const [theme, setTheme] = useState("dark");
+  const [showShare, setShowShare] = useState(false);
+  const [viewHistId, setViewHistId] = useState(null);
+  const [confirmFin, setConfirmFin] = useState(false);
+  const [showPwModal, setShowPwModal] = useState(false);
+  const [newPw, setNewPw] = useState("");
+  const [confirmPw, setConfirmPw] = useState("");
+  const [pwErr, setPwErr] = useState("");
+  const [pwLoading, setPwLoading] = useState(false);
+  const opRef = useRef(op);
+  opRef.current = op;
+
+  useEffect(() => {
+    try { const t = localStorage.getItem("pt_theme"); if (t) setTheme(t); } catch {}
+    const unsub = window._fb.onAuthStateChanged(window._fb.auth, async (u) => {
+      if (u) {
+        window._curUser = u;
+        setUser(u);
+        const r = await getUserRole(u.uid);
+        setRole(r);
+        await loadFirestore(setOp, setHist);
+        listenOp(setOp);
+      } else {
+        window._curUser = null;
+        setUser(null);
+        setRole("operador");
+        if (_unsub) { _unsub(); _unsub = null; }
+      }
+      setAuthLoading(false);
+    });
+    return () => unsub();
+  }, []);
+
+  useEffect(() => { document.body.dataset.theme = theme; localStorage.setItem("pt_theme", theme); }, [theme]);
+
+  const updateOp = useCallback((patch) => {
+    setOp(prev => {
+      const next = { ...prev, ...patch };
+      saveOp(next);
+      return next;
+    });
+  }, []);
+
+  const updateEncoste = useCallback((eIdx, field, value) => {
+    setOp(prev => {
+      const next = JSON.parse(JSON.stringify(prev));
+      next.encostes[eIdx][field] = value;
+      saveOp(next);
+      return next;
+    });
+  }, []);
+
+  const updateRegistro = useCallback((eIdx, rIdx, field, value) => {
+    setOp(prev => {
+      const next = JSON.parse(JSON.stringify(prev));
+      next.encostes[eIdx].registros[rIdx][field] = value;
+      saveOp(next);
+      return next;
+    });
+  }, []);
+
+  const addEncoste = useCallback(() => {
+    setOp(prev => {
+      const next = JSON.parse(JSON.stringify(prev));
+      next.encostes.push({ id: Date.now(), quantidade: 0, posicionamento: null, inicioOp: null, registros: [] });
+      saveOp(next);
+      return next;
+    });
+  }, []);
+
+  const removeEncoste = useCallback((eIdx) => {
+    if (!confirm(`Excluir o ${eIdx + 1}º Encoste e todos os seus registros?`)) return;
+    setOp(prev => {
+      const next = JSON.parse(JSON.stringify(prev));
+      next.encostes.splice(eIdx, 1);
+      saveOp(next);
+      return next;
+    });
+    showToast("Encoste excluído");
+  }, []);
+
+  const addRegistro = useCallback((eIdx) => {
+    setOp(prev => {
+      const next = JSON.parse(JSON.stringify(prev));
+      next.encostes[eIdx].registros.push({ id: Date.now(), hora: null, qtd: 0, p1: "", p2: "" });
+      saveOp(next);
+      return next;
+    });
+  }, []);
+
+  const removeRegistro = useCallback((eIdx, rIdx) => {
+    setOp(prev => {
+      const next = JSON.parse(JSON.stringify(prev));
+      next.encostes[eIdx].registros.splice(rIdx, 1);
+      saveOp(next);
+      return next;
+    });
+  }, []);
+
+  const novaOp = useCallback(() => {
+    const newOp = { id: Date.now(), composicao: "", chegada: new Date().toISOString(), produto: "Celulose", totalVagoes: 0, encostes: [{ id: Date.now(), quantidade: 0, posicionamento: null, inicioOp: null, registros: [] }] };
+    setOp(newOp);
+    saveOp(newOp);
+    setShowShare(false);
+    setTab("operacao");
+  }, []);
+
+  const salvarHist = useCallback(async () => {
+    if (!opRef.current) return;
+    const e = JSON.parse(JSON.stringify(opRef.current));
+    e.salvoEm = new Date().toISOString();
+    await saveHist(e);
+    await reloadHist(setHist);
+    showToast("✓ Salvo no histórico");
+  }, []);
+
+  const finalizarOp = useCallback(async () => {
+    if (!opRef.current) return;
+    const e = JSON.parse(JSON.stringify(opRef.current));
+    e.salvoEm = new Date().toISOString();
+    await saveHist(e);
+    setOp(null);
+    await saveOp(null);
+    setShowShare(false);
+    setConfirmFin(false);
+    await reloadHist(setHist);
+    showToast("✓ Operação finalizada");
+  }, []);
+
+  const copiarTexto = useCallback((opData) => {
+    navigator.clipboard.writeText(gerarTexto(opData || opRef.current)).then(() => showToast("✓ Copiado!")).catch(() => showToast("Erro ao copiar"));
+  }, []);
+
+  const doChangePassword = useCallback(async () => {
+    setPwErr("");
+    if (!newPw || !confirmPw) { setPwErr("Preencha os dois campos"); return; }
+    if (newPw.length < 6) { setPwErr("Mínimo 6 caracteres"); return; }
+    if (newPw !== confirmPw) { setPwErr("As senhas não coincidem"); return; }
+    setPwLoading(true);
+    try {
+      await window._fb.updatePassword(window._fb.auth.currentUser, newPw);
+      showToast("✓ Senha alterada com sucesso");
+      setShowPwModal(false); setNewPw(""); setConfirmPw("");
+    } catch (e) {
+      if (e.code === "auth/requires-recent-login") setPwErr("Sessão expirada. Faça logout e login novamente.");
+      else setPwErr("Erro: " + e.message);
+    }
+    setPwLoading(false);
+  }, [newPw, confirmPw]);
+
+  const doLogout = useCallback(async () => {
+    if (_unsub) { _unsub(); _unsub = null; }
+    await window._fb.signOut(window._fb.auth);
+  }, []);
+
+  if (authLoading) return <div className="login-wrap"><div style={{ textAlign: "center" }}><div dangerouslySetInnerHTML={{ __html: trainSVG(48) }} /><div style={{ color: "var(--text-muted)", marginTop: 12 }}>Carregando...</div></div></div>;
+  if (!user) return <Login />;
+
+  const g = op ? calcGeral(op) : null;
+  const totalRef = op ? (op.totalVagoes || g.totalQtd) : 0;
+  const pctRef = totalRef > 0 ? (g.totalVG / totalRef * 100) : 0;
+
+  return (
+    <div className="container">
+      {/* Header */}
+      <div className="header">
+        <div className="logo-area">
+          <div dangerouslySetInnerHTML={{ __html: trainSVG(40) }} />
+          <div><div className="logo-text">ProdTracker</div><div className="logo-sub">Produtividade Hora a Hora · Portocel</div></div>
+        </div>
+        <div className="header-right">
+          <div className="user-bar">
+            <span className="sync-dot online" />
+            <span>{user.email.split("@")[0]}</span>
+            {role === "gestor" && <span className="badge badge-accent">Gestor</span>}
+            <button onClick={() => setShowPwModal(true)}>🔑 Senha</button>
+            <button onClick={doLogout}>Sair</button>
+          </div>
+          <button className="theme-btn" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>{theme === "dark" ? "☀️ Claro" : "🌙 Escuro"}</button>
+          <div className="nav">
+            <button className={`nav-btn ${tab === "operacao" ? "active" : ""}`} onClick={() => setTab("operacao")}>Operação</button>
+            <button className={`nav-btn ${tab === "historico" ? "active" : ""}`} onClick={() => setTab("historico")}>Histórico ({hist.length})</button>
+            {role === "gestor" && <button className={`nav-btn ${tab === "analise" ? "active" : ""}`} onClick={() => setTab("analise")}>Análise</button>}
+          </div>
+        </div>
+      </div>
+
+      {/* Operação */}
+      {tab === "operacao" && (
+        <div>
+          {!op ? (
+            <div className="section empty">
+              <div style={{ marginBottom: 16 }} dangerouslySetInnerHTML={{ __html: trainSVG(64) }} />
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6, color: "var(--text)" }}>Nenhuma operação ativa</div>
+              <div style={{ fontSize: 12, marginBottom: 28 }}>Inicie uma nova operação para registrar a produtividade</div>
+              <button className="btn btn-accent" onClick={novaOp}>＋ Nova Operação</button>
+            </div>
+          ) : (
+            <div>
+              <div className="section">
+                <div className="section-title"><span style={{ color: "var(--accent)" }}>◆</span> DADOS DA COMPOSIÇÃO</div>
+                <div className="row">
+                  <div className="field">
+                    <label className="lbl">Composição</label>
+                    <input className="inp" value={op.composicao || ""} placeholder="Ex: 260101L40 (aammdd+nº da L)" onChange={e => updateOp({ composicao: e.target.value })} />
+                  </div>
+                  <div className="field-date">
+                    <label className="lbl">Chegada</label>
+                    <input type="datetime-local" className="inp" value={toLocal(op.chegada)} onChange={e => updateOp({ chegada: e.target.value ? new Date(e.target.value).toISOString() : op.chegada })} />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="field">
+                    <label className="lbl">Qtd. Total de Vagões</label>
+                    <input type="number" className="inp" value={op.totalVagoes || ""} placeholder="Total que chegou" inputMode="numeric" onChange={e => updateOp({ totalVagoes: parseInt(e.target.value) || 0 })} />
+                  </div>
+                  <div className="field-sm">
+                    <label className="lbl">Produto</label>
+                    <select className="inp" value={op.produto || "Celulose"} onChange={e => updateOp({ produto: e.target.value })}>
+                      <option>Celulose</option><option>Outro</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="section section-grad">
+                <div className="section-title"><span style={{ color: "var(--accent)" }}>◆</span> RESUMO GERAL</div>
+                <div className="metrics">
+                  <div className="metric"><div className="metric-num metric-num-lg">{g.totalVG}</div><div className="metric-label">Descarregados</div></div>
+                  <div className="metric"><div className="metric-num metric-num-lg color-info">{totalRef}</div><div className="metric-label">Total Vagões</div></div>
+                  <div className="metric"><div className="metric-num">{pctRef.toFixed(0)}%</div><div className="metric-label">Progresso</div></div>
+                  <div className="metric"><div className="metric-num">{g.prodMedia.toFixed(1)}</div><div className="metric-label">Média VG/h</div></div>
+                  <div className="metric"><div className="metric-num color-info">{fmtDur(g.tempoTotal)}</div><div className="metric-label">Tempo Total</div></div>
+                </div>
+                <div className="progress"><div className="progress-fill" style={{ width: `${Math.min(100, pctRef)}%` }} /></div>
+              </div>
+
+              {(op.encostes || []).map((enc, eIdx) => (
+                <Encoste key={enc.id || eIdx} enc={enc} eIdx={eIdx} total={(op.encostes || []).length}
+                  onUpdate={(f, v) => updateEncoste(eIdx, f, v)}
+                  onRemove={() => removeEncoste(eIdx)}
+                  onAddReg={() => addRegistro(eIdx)}
+                  onRemoveReg={(rIdx) => removeRegistro(eIdx, rIdx)}
+                  onUpdateReg={(rIdx, f, v) => updateRegistro(eIdx, rIdx, f, v)}
+                />
+              ))}
+
+              <div className="actions">
+                <button className="btn btn-info" onClick={addEncoste}>＋ Encoste</button>
+                <button className="btn btn-success" onClick={salvarHist}>💾 Salvar</button>
+                <button className="btn btn-accent" onClick={() => setShowShare(!showShare)}>📋 {showShare ? "Fechar" : "Compartilhar"}</button>
+                {confirmFin ? (
+                  <div style={{ display: "flex", gap: 6, alignItems: "center", marginLeft: "auto" }}>
+                    <span style={{ fontSize: 11, color: "var(--danger)", fontWeight: 600 }}>Tem certeza?</span>
+                    <button className="btn btn-danger" onClick={finalizarOp}>Sim, finalizar</button>
+                    <button className="btn btn-outline" onClick={() => setConfirmFin(false)}>Cancelar</button>
+                  </div>
+                ) : (
+                  <button className="btn btn-danger" onClick={() => setConfirmFin(true)} style={{ marginLeft: "auto" }}>✓ Finalizar</button>
+                )}
+                <button className="btn btn-outline" onClick={novaOp}>Nova Op.</button>
+              </div>
+
+              {showShare && (
+                <div className="section">
+                  <div className="section-title"><span style={{ color: "var(--accent)" }}>◆</span> TEXTO PARA WHATSAPP</div>
+                  <div className="share-box">{gerarTexto(op)}</div>
+                  <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
+                    <button className="btn btn-success" onClick={() => copiarTexto()}>📋 Copiar</button>
+                    <button className="btn btn-outline" onClick={() => window.open("https://wa.me/?text=" + encodeURIComponent(gerarTexto(op)), "_blank")}>💬 WhatsApp</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Histórico */}
+      {tab === "historico" && (
+        <div>
+          {!hist.length ? (
+            <div className="section empty"><div style={{ marginBottom: 12 }} dangerouslySetInnerHTML={{ __html: trainSVG(56) }} />Nenhuma operação registrada.</div>
+          ) : (
+            <div>
+              <div style={{ marginBottom: 14, fontSize: 11, color: "var(--text-muted)", fontWeight: 600 }}>{hist.length} operação(ões)</div>
+              {hist.map((h, hIdx) => {
+                const hg = calcGeral(h);
+                const isOpen = viewHistId === h.id;
+                return (
+                  <div key={h.id || hIdx} className="section">
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }} onClick={() => setViewHistId(isOpen ? null : h.id)}>
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <div dangerouslySetInnerHTML={{ __html: trainSVG(28) }} />
+                          <div style={{ fontSize: 15, fontWeight: 800, color: "var(--accent)" }}>{h.composicao || "Sem nome"}</div>
+                        </div>
+                        <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 3 }}>
+                          {fmtDateTime(h.chegada)} · {(h.encostes || []).length} enc. · {hg.totalVG}/{hg.totalQtd} vg{h.salvoPor ? " · " + h.salvoPor.split("@")[0] : ""}
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                        <span className={`badge ${hg.totalVG >= hg.totalQtd && hg.totalQtd > 0 ? "badge-success" : "badge-warning"}`}>
+                          {hg.totalVG >= hg.totalQtd && hg.totalQtd > 0 ? "Concluído" : "Parcial"}
+                        </span>
+                        <span style={{ color: "var(--text-muted)" }}>{isOpen ? "▲" : "▼"}</span>
+                      </div>
+                    </div>
+                    {isOpen && (
+                      <div style={{ marginTop: 16 }}>
+                        <div className="divider" />
+                        <div className="share-box">{gerarTexto(h)}</div>
+                        <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+                          <button className="btn btn-success btn-sm" onClick={e => { e.stopPropagation(); copiarTexto(h); }}>📋 Copiar</button>
+                          <button className="btn btn-danger btn-sm" onClick={async e => { e.stopPropagation(); await removeHist(h.id); await reloadHist(setHist); if (viewHistId === h.id) setViewHistId(null); showToast("✓ Removido"); }}>🗑 Excluir</button>
+                        </div>
+                        {(h.encostes || []).map((enc, eidx) => {
+                          const regs = enc.registros || [];
+                          const ini2 = enc.inicioOp ? new Date(enc.inicioOp) : null;
+                          const encDateStr = enc.inicioOp ? enc.inicioOp.slice(0, 10) : null;
+                          const encHora = ini2 ? ini2.getHours() : null;
+                          let encPeriodo = null;
+                          if (encHora !== null) {
+                            if (encHora >= 7 && encHora < 13) encPeriodo = "07x13";
+                            else if (encHora >= 13 && encHora < 19) encPeriodo = "13x19";
+                            else if (encHora >= 19 || encHora < 1) encPeriodo = "19x01";
+                            else encPeriodo = "01x07";
+                          }
+                          const encEquipe = enc.equipeManual || (encDateStr && encPeriodo ? getEquipePeriodo(encDateStr, encPeriodo) : "—");
+                          return (
+                            <div key={eidx} style={{ marginTop: 18 }}>
+                              <div style={{ fontSize: 11, fontWeight: 800, color: "var(--accent)", marginBottom: 8, letterSpacing: 1 }}>
+                                {eidx + 1}º ENCOSTE — {enc.quantidade || 0} vagões
+                                {enc.equipeManual && <span className="badge badge-accent" style={{ marginLeft: 8 }}>Equipe {enc.equipeManual}</span>}
+                              </div>
+                              <table>
+                                <thead><tr><th>#</th><th>Hora</th><th>Qtd</th><th>Acum.</th><th>VG/h</th>{regs.some(r => r.p1 || r.p2) && <th>Pórticos</th>}<th>Equipe</th></tr></thead>
+                                <tbody>
+                                  {regs.map((r, i) => {
+                                    const acum = regs.slice(0, i + 1).reduce((s, x) => s + (x.qtd || 0), 0);
+                                    const elapsed = ini2 && r.hora ? new Date(r.hora).getTime() - ini2.getTime() : 0;
+                                    const vgh = elapsed > 0 ? acum / (elapsed / 36e5) : 0;
+                                    let regEquipe = encEquipe;
+                                    if (r.hora) {
+                                      const rDate = new Date(r.hora);
+                                      const rDateStr = r.hora.slice(0, 10);
+                                      const rH = rDate.getHours();
+                                      let rPer = "01x07";
+                                      if (rH >= 7 && rH < 13) rPer = "07x13";
+                                      else if (rH >= 13 && rH < 19) rPer = "13x19";
+                                      else if (rH >= 19 || rH < 1) rPer = "19x01";
+                                      regEquipe = enc.equipeManual || getEquipePeriodo(rDateStr, rPer);
+                                    }
+                                    return (
+                                      <tr key={i} className={i % 2 ? "alt" : ""}>
+                                        <td>{i + 1}ª</td><td>{fmtTime(r.hora)}</td><td className="num">{r.qtd || 0}</td><td className="num">{acum}</td>
+                                        <td className="num" style={{ color: "var(--success)" }}>{vgh.toFixed(1)}</td>
+                                        {regs.some(r => r.p1 || r.p2) && <td style={{ fontSize: 10, color: "var(--text-muted)" }}>{[r.p1, r.p2].filter(Boolean).join(" / ") || "—"}</td>}
+                                        <td><span className="badge badge-accent">{regEquipe}</span></td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Análise — só gestores */}
+      {tab === "analise" && role === "gestor" && <Analise historico={hist} />}
+
+      {/* Modal troca de senha */}
+      {showPwModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, padding: 16 }} onClick={() => setShowPwModal(false)}>
+          <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 16, padding: 24, maxWidth: 380, width: "100%" }} onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 16 }}>🔑 Alterar Senha</div>
+            <label className="lbl">Nova senha</label>
+            <input type="password" className="inp" value={newPw} onChange={e => setNewPw(e.target.value)} placeholder="Mínimo 6 caracteres" style={{ marginBottom: 10 }} />
+            <label className="lbl">Confirmar senha</label>
+            <input type="password" className="inp" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} placeholder="Repita a senha" onKeyDown={e => e.key === "Enter" && doChangePassword()} style={{ marginBottom: 10 }} />
+            {pwErr && <div style={{ color: "var(--danger)", fontSize: 11, marginBottom: 8 }}>{pwErr}</div>}
+            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+              <button className="btn btn-accent" onClick={doChangePassword} disabled={pwLoading}>{pwLoading ? "Salvando..." : "Salvar"}</button>
+              <button className="btn btn-outline" onClick={() => { setShowPwModal(false); setNewPw(""); setConfirmPw(""); setPwErr(""); }}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="footer">ProdTracker v{VER} · Portocel — Dedicação Carrega o Mundo</div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 </body>
 </html>
