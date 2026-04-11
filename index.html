@@ -115,6 +115,8 @@ tr.alt{background:var(--card-alt)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
@@ -400,173 +402,308 @@ function Encoste({ enc, eIdx, total, onUpdate, onRemove, onAddReg, onRemoveReg, 
 
 // ══════ ANALISE COMPONENT ══════
 function Analise({ historico }) {
-  const [subTab, setSubTab] = useState("equipe");
-  const chartEquipeRef = useRef(null);
-  const chartPorticoRef = useRef(null);
-  const chartPeriodoRef = useRef(null);
-  const chartScatterRef = useRef(null);
+  const chartRefs = { vgh: useRef(null), qtd: useRef(null), portico: useRef(null), ciclo: useRef(null), equipe: useRef(null), periodo: useRef(null) };
   const chartInstances = useRef({});
+  const [expandedMonth, setExpandedMonth] = useState(null);
 
   const stats = useMemo(() => {
+    const months = {};
     const equipes = { A: { vg: 0, h: 0 }, B: { vg: 0, h: 0 }, C: { vg: 0, h: 0 }, D: { vg: 0, h: 0 } };
-    const operadores = {};
     const periodos = { "07x13": { vg: 0, h: 0 }, "13x19": { vg: 0, h: 0 }, "19x01": { vg: 0, h: 0 }, "01x07": { vg: 0, h: 0 } };
-    const porticoData = { um: { vg: 0, h: 0, ops: [] }, dois: { vg: 0, h: 0, ops: [] } };
+    let totalHrsDois = 0, totalHrsUm = 0, totalHrsZero = 0;
 
     historico.forEach(op => {
-      (op.encostes || []).forEach(enc => {
+      const chegada = op.chegada ? new Date(op.chegada) : null;
+      if (!chegada) return;
+      const mKey = `${chegada.getFullYear()}-${String(chegada.getMonth() + 1).padStart(2, "0")}`;
+      if (!months[mKey]) months[mKey] = { vgTotal: 0, hTotal: 0, ops: 0, comps: [] };
+      months[mKey].ops++;
+
+      let opVG = 0, opH = 0;
+      const compData = { nome: op.composicao || "—", chegada: op.chegada, tChegPos: 0, tDescarga: 0, tTroca: 0, tRetirada: 0 };
+      const encostes = op.encostes || [];
+
+      encostes.forEach((enc, ei) => {
         const regs = enc.registros || [];
         const ini = enc.inicioOp ? new Date(enc.inicioOp) : null;
-        if (!ini || !regs.length) return;
+        const pos = enc.posicionamento ? new Date(enc.posicionamento) : null;
         const total = regs.reduce((s, r) => s + (r.qtd || 0), 0);
-        const lastR = regs.filter(r => r.hora).pop();
-        if (!lastR) return;
-        const elapsed = (new Date(lastR.hora).getTime() - ini.getTime()) / 36e5;
-        if (elapsed <= 0) return;
+        const regsH = regs.filter(r => r.hora);
+        const lastR = regsH.length ? regsH[regsH.length - 1] : null;
+        const elapsed = ini && lastR ? (new Date(lastR.hora).getTime() - ini.getTime()) / 36e5 : 0;
 
-        const dateStr = enc.inicioOp.slice(0, 10);
-        const hora = ini.getHours();
-        let per = "01x07";
-        if (hora >= 7 && hora < 13) per = "07x13";
-        else if (hora >= 13 && hora < 19) per = "13x19";
-        else if (hora >= 19 || hora < 1) per = "19x01";
+        opVG += total;
+        if (elapsed > 0) opH += elapsed;
 
-        const eq = enc.equipeManual || getEquipePeriodo(dateStr, per);
-        if (equipes[eq]) { equipes[eq].vg += total; equipes[eq].h += elapsed; }
-        periodos[per].vg += total;
-        periodos[per].h += elapsed;
+        // Chegada → Posicionamento (only 1st encoste)
+        if (ei === 0 && pos && chegada) compData.tChegPos = Math.max(0, (pos.getTime() - chegada.getTime()) / 36e5);
+        // Em descarga
+        if (elapsed > 0) compData.tDescarga += elapsed;
+        // Troca entre encostes
+        if (ei > 0) {
+          const prevEnc = encostes[ei - 1];
+          const prevRegs = (prevEnc.registros || []).filter(r => r.hora);
+          const prevLast = prevRegs.length ? prevRegs[prevRegs.length - 1] : null;
+          if (prevLast && ini) compData.tTroca += Math.max(0, (ini.getTime() - new Date(prevLast.hora).getTime()) / 36e5);
+        }
+        // Retirada
+        if (ei === encostes.length - 1 && op.dataRetirada && lastR) {
+          compData.tRetirada = Math.max(0, (new Date(op.dataRetirada).getTime() - new Date(lastR.hora).getTime()) / 36e5);
+        }
 
-        let temDois = false;
+        // Equipe
+        if (ini) {
+          const dateStr = enc.inicioOp.slice(0, 10);
+          const hora = ini.getHours();
+          let per = "01x07";
+          if (hora >= 7 && hora < 13) per = "07x13";
+          else if (hora >= 13 && hora < 19) per = "13x19";
+          else if (hora >= 19 || hora < 1) per = "19x01";
+          const eq = enc.equipeManual || getEquipePeriodo(dateStr, per);
+          if (equipes[eq]) { equipes[eq].vg += total; equipes[eq].h += elapsed; }
+          periodos[per].vg += total; periodos[per].h += elapsed;
+        }
+
+        // Pórtico availability
         regs.forEach(r => {
-          if (r.p1) { operadores[r.p1] = operadores[r.p1] || { vg: 0, h: 0 }; operadores[r.p1].vg += (r.qtd || 0); operadores[r.p1].h += 1; }
-          if (r.p2) { operadores[r.p2] = operadores[r.p2] || { vg: 0, h: 0 }; operadores[r.p2].vg += (r.qtd || 0); operadores[r.p2].h += 1; temDois = true; }
+          if (r.p1 && r.p2) totalHrsDois++;
+          else if (r.p1 || r.p2) totalHrsUm++;
+          else totalHrsZero++;
         });
-
-        const bucket = temDois ? porticoData.dois : porticoData.um;
-        bucket.vg += total; bucket.h += elapsed;
-        bucket.ops.push({ vg: enc.quantidade || total, h: elapsed });
       });
+
+      months[mKey].vgTotal += opVG;
+      months[mKey].hTotal += opH;
+      months[mKey].comps.push(compData);
     });
 
-    const eqArr = Object.entries(equipes).map(([k, v]) => ({ eq: k, vgh: v.h > 0 ? v.vg / v.h : 0 })).sort((a, b) => b.vgh - a.vgh);
-    const opArr = Object.entries(operadores).map(([k, v]) => ({ nome: k, vgh: v.h > 0 ? v.vg / v.h : 0 })).sort((a, b) => b.vgh - a.vgh).slice(0, 10);
-    const perArr = Object.entries(periodos).map(([k, v]) => ({ per: k, vgh: v.h > 0 ? v.vg / v.h : 0 }));
-    const p1vgh = porticoData.um.h > 0 ? porticoData.um.vg / porticoData.um.h : 0;
-    const p2vgh = porticoData.dois.h > 0 ? porticoData.dois.vg / porticoData.dois.h : 0;
-    const ganho = p1vgh > 0 ? ((p2vgh - p1vgh) / p1vgh * 100) : 0;
+    // Sort months chronologically
+    const sortedMonths = Object.keys(months).sort();
+    const monthLabels = sortedMonths.map(k => { const [y, m] = k.split("-"); const nomes = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]; return nomes[parseInt(m) - 1] + " " + y; });
+    const vghPerMonth = sortedMonths.map(k => months[k].hTotal > 0 ? Math.round(months[k].vgTotal / months[k].hTotal * 10) / 10 : 0);
+    const opsPerMonth = sortedMonths.map(k => months[k].ops);
+    const ytd = opsPerMonth.reduce((s, v) => s + v, 0);
 
-    return { eqArr, opArr, perArr, p1vgh, p2vgh, ganho, porticoData, totalOps: historico.length };
+    // Pórtico %
+    const totalPH = totalHrsDois + totalHrsUm + totalHrsZero;
+    const pctDois = totalPH > 0 ? Math.round(totalHrsDois / totalPH * 100) : 0;
+    const pctUm = totalPH > 0 ? Math.round(totalHrsUm / totalPH * 100) : 0;
+    const pctZero = totalPH > 0 ? Math.round(totalHrsZero / totalPH * 100) : 0;
+
+    // Ciclo consolidado
+    let cChegPos = 0, cDesc = 0, cTroca = 0, cRet = 0, cCount = 0;
+    sortedMonths.forEach(k => months[k].comps.forEach(c => {
+      cChegPos += c.tChegPos; cDesc += c.tDescarga; cTroca += c.tTroca; cRet += c.tRetirada; cCount++;
+    }));
+    const consolidado = { chegPos: cCount > 0 ? Math.round(cChegPos / cCount * 10) / 10 : 0, desc: cCount > 0 ? Math.round(cDesc / cCount * 10) / 10 : 0, troca: cCount > 0 ? Math.round(cTroca / cCount * 10) / 10 : 0, ret: cCount > 0 ? Math.round(cRet / cCount * 10) / 10 : 0 };
+
+    // Ciclo per month
+    const cicloPerMonth = sortedMonths.map(k => {
+      const comps = months[k].comps;
+      const n = comps.length || 1;
+      return {
+        chegPos: Math.round(comps.reduce((s, c) => s + c.tChegPos, 0) / n * 10) / 10,
+        desc: Math.round(comps.reduce((s, c) => s + c.tDescarga, 0) / n * 10) / 10,
+        troca: Math.round(comps.reduce((s, c) => s + c.tTroca, 0) / n * 10) / 10,
+        ret: Math.round(comps.reduce((s, c) => s + c.tRetirada, 0) / n * 10) / 10,
+      };
+    });
+
+    const eqArr = Object.entries(equipes).map(([k, v]) => ({ eq: k, vgh: v.h > 0 ? Math.round(v.vg / v.h * 10) / 10 : 0 })).sort((a, b) => b.vgh - a.vgh);
+    const perArr = Object.entries(periodos).map(([k, v]) => ({ per: k, vgh: v.h > 0 ? Math.round(v.vg / v.h * 10) / 10 : 0 }));
+
+    return { sortedMonths, monthLabels, vghPerMonth, opsPerMonth, ytd, pctDois, pctUm, pctZero, cicloPerMonth, consolidado, eqArr, perArr, months, totalOps: historico.length };
   }, [historico]);
 
   useEffect(() => {
     Object.values(chartInstances.current).forEach(c => c?.destroy());
     chartInstances.current = {};
+    const gc = "rgba(255,255,255,.06)"; const tc = "#94a3b8";
 
-    if (subTab === "equipe" && chartEquipeRef.current) {
-      chartInstances.current.eq = new Chart(chartEquipeRef.current, {
-        type: "bar", data: { labels: stats.eqArr.map(e => "Equipe " + e.eq), datasets: [{ data: stats.eqArr.map(e => Math.round(e.vgh * 10) / 10), backgroundColor: ["#003DA5", "#41b6c4", "#78c679", "#f59e0b"], borderRadius: 4, barPercentage: 0.6 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.raw + " VG/h" } } }, scales: { y: { beginAtZero: true, grid: { color: "rgba(255,255,255,.06)" }, ticks: { color: "#94a3b8", font: { size: 11 } } }, x: { grid: { display: false }, ticks: { color: "#94a3b8", font: { size: 11 } } } } }
+    // 1. VG/h por mês
+    if (chartRefs.vgh.current) {
+      chartInstances.current.vgh = new Chart(chartRefs.vgh.current, {
+        type: "bar", plugins: [ChartDataLabels], data: { labels: stats.monthLabels, datasets: [{ data: stats.vghPerMonth, backgroundColor: "#78c679", borderRadius: 4, barPercentage: 0.6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { anchor: "end", align: "start", color: "#fff", font: { weight: "bold", size: 12 }, formatter: v => v > 0 ? v.toFixed(1) : "" }, annotation: { annotations: { meta: { type: "line", yMin: 9, yMax: 9, borderColor: "#ef4444", borderWidth: 2, borderDash: [6, 3], label: { display: true, content: "Meta: 9 VG/h", position: "end", backgroundColor: "#ef4444", color: "#fff", font: { size: 10 } } } } } },
+          scales: { y: { beginAtZero: true, grid: { color: gc }, ticks: { color: tc, font: { size: 11 } } }, x: { grid: { display: false }, ticks: { color: tc, font: { size: 11 } } } } }
       });
     }
-    if (subTab === "portico" && chartPorticoRef.current) {
-      chartInstances.current.pt = new Chart(chartPorticoRef.current, {
-        type: "bar", data: { labels: ["1 pórtico", "2 pórticos"], datasets: [{ data: [Math.round(stats.p1vgh * 10) / 10, Math.round(stats.p2vgh * 10) / 10], backgroundColor: ["#003DA5", "#41b6c4"], borderRadius: 4, barPercentage: 0.5 }] },
-        options: { indexAxis: "y", responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { color: "rgba(255,255,255,.06)" }, ticks: { color: "#94a3b8" } }, y: { grid: { display: false }, ticks: { color: "#94a3b8" } } } }
+    // 2. Qtd composições
+    if (chartRefs.qtd.current) {
+      chartInstances.current.qtd = new Chart(chartRefs.qtd.current, {
+        type: "bar", plugins: [ChartDataLabels], data: { labels: stats.monthLabels, datasets: [{ data: stats.opsPerMonth, backgroundColor: "#003DA5", borderRadius: 4, barPercentage: 0.6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { anchor: "end", align: "start", color: "#fff", font: { weight: "bold", size: 12 }, formatter: v => v > 0 ? v : "" } }, scales: { y: { beginAtZero: true, grid: { color: gc }, ticks: { color: tc, stepSize: 1 } }, x: { grid: { display: false }, ticks: { color: tc, font: { size: 11 } } } } }
       });
     }
-    if (subTab === "periodo" && chartPeriodoRef.current) {
-      chartInstances.current.per = new Chart(chartPeriodoRef.current, {
-        type: "line", data: { labels: stats.perArr.map(p => p.per), datasets: [{ data: stats.perArr.map(p => Math.round(p.vgh * 10) / 10), borderColor: "#003DA5", backgroundColor: "rgba(0,61,165,0.1)", fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: "#003DA5" }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: "rgba(255,255,255,.06)" }, ticks: { color: "#94a3b8" } }, x: { grid: { display: false }, ticks: { color: "#94a3b8" } } } }
+    // 3. Disponibilidade pórtico
+    if (chartRefs.portico.current) {
+      chartInstances.current.port = new Chart(chartRefs.portico.current, {
+        type: "doughnut", data: { labels: ["2 pórticos", "1 pórtico", "Sem pórtico"], datasets: [{ data: [stats.pctDois, stats.pctUm, stats.pctZero], backgroundColor: ["#003DA5", "#41b6c4", "#94a3b8"], borderWidth: 0, spacing: 2 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: "60%", plugins: { datalabels: { display: false }, legend: { position: "bottom", labels: { color: tc, font: { size: 11 }, padding: 16, usePointStyle: true } } } }
       });
     }
-    if (subTab === "correlacao" && chartScatterRef.current) {
-      chartInstances.current.sc = new Chart(chartScatterRef.current, {
-        type: "scatter", data: { datasets: [
-          { label: "1 pórtico", data: stats.porticoData.um.ops.map(o => ({ x: o.vg, y: Math.round(o.h * 10) / 10 })), backgroundColor: "rgba(0,61,165,0.6)", pointRadius: 6 },
-          { label: "2 pórticos", data: stats.porticoData.dois.ops.map(o => ({ x: o.vg, y: Math.round(o.h * 10) / 10 })), backgroundColor: "rgba(65,182,196,0.6)", pointRadius: 6 },
+    // 4. Ciclo operacional
+    if (chartRefs.ciclo.current) {
+      chartInstances.current.ciclo = new Chart(chartRefs.ciclo.current, {
+        type: "bar", plugins: [ChartDataLabels], data: { labels: stats.monthLabels, datasets: [
+          { label: "Chegada→Pos.", data: stats.cicloPerMonth.map(c => c.chegPos), backgroundColor: "#003DA5", borderRadius: 2 },
+          { label: "Em Descarga", data: stats.cicloPerMonth.map(c => c.desc), backgroundColor: "#78c679", borderRadius: 2 },
+          { label: "Troca Encoste", data: stats.cicloPerMonth.map(c => c.troca), backgroundColor: "#1a6b3c", borderRadius: 2 },
+          { label: "Retirada", data: stats.cicloPerMonth.map(c => c.ret), backgroundColor: "#d4a017", borderRadius: 2 },
         ] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: "Vagões", color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.06)" }, ticks: { color: "#94a3b8" } }, y: { title: { display: true, text: "Horas", color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.06)" }, ticks: { color: "#94a3b8" } } } }
+        options: { indexAxis: "y", responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom", labels: { color: tc, font: { size: 10 }, padding: 12, usePointStyle: true } }, datalabels: { anchor: "center", align: "center", color: "#fff", font: { weight: "bold", size: 10 }, formatter: v => v > 0.3 ? v.toFixed(1) : "" } },
+          scales: { x: { stacked: true, grid: { color: gc }, ticks: { color: tc, callback: v => v + "h" } }, y: { stacked: true, grid: { display: false }, ticks: { color: tc, font: { size: 11 } } } } }
+      });
+    }
+    // 5. Equipe
+    if (chartRefs.equipe.current) {
+      chartInstances.current.eq = new Chart(chartRefs.equipe.current, {
+        type: "bar", plugins: [ChartDataLabels], data: { labels: stats.eqArr.map(e => "Equipe " + e.eq), datasets: [{ data: stats.eqArr.map(e => e.vgh), backgroundColor: ["#003DA5", "#41b6c4", "#78c679", "#f59e0b"], borderRadius: 4, barPercentage: 0.6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { anchor: "end", align: "start", color: "#fff", font: { weight: "bold", size: 12 }, formatter: v => v > 0 ? v.toFixed(1) : "" } }, scales: { y: { beginAtZero: true, grid: { color: gc }, ticks: { color: tc } }, x: { grid: { display: false }, ticks: { color: tc } } } }
+      });
+    }
+    // 6. Período
+    if (chartRefs.periodo.current) {
+      chartInstances.current.per = new Chart(chartRefs.periodo.current, {
+        type: "line", data: { labels: stats.perArr.map(p => p.per), datasets: [{ data: stats.perArr.map(p => p.vgh), borderColor: "#003DA5", backgroundColor: "rgba(0,61,165,0.1)", fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: "#003DA5" }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } }, scales: { y: { grid: { color: gc }, ticks: { color: tc } }, x: { grid: { display: false }, ticks: { color: tc } } } }
       });
     }
     return () => { Object.values(chartInstances.current).forEach(c => c?.destroy()); };
-  }, [subTab, stats]);
+  }, [stats]);
 
   const best = stats.eqArr[0], worst = stats.eqArr[stats.eqArr.length - 1];
   const gap = worst && worst.vgh > 0 ? Math.round((best.vgh - worst.vgh) / worst.vgh * 100) : 0;
 
   return (
     <div>
-      <div className="analise-tabs">
-        {[["equipe", "Equipe"], ["portico", "Pórtico"], ["operador", "Operador"], ["periodo", "Período"], ["correlacao", "Correlação"]].map(([k, l]) => (
-          <div key={k} className={`analise-tab ${subTab === k ? "active" : ""}`} onClick={() => setSubTab(k)}>{l}</div>
-        ))}
+      {/* 1. VG/h por mês */}
+      <div className="section">
+        <div className="section-title">Produtividade VG/h por mês</div>
+        <div className="chart-container"><canvas ref={chartRefs.vgh} /></div>
       </div>
 
-      <div className="metrics">
-        <div className="metric"><div className="metric-num">{stats.totalOps}</div><div className="metric-label">Operações</div></div>
-        <div className="metric"><div className="metric-num">{stats.eqArr.length > 0 ? stats.eqArr.reduce((s, e) => s + e.vgh, 0) / stats.eqArr.filter(e => e.vgh > 0).length || 0 : 0}</div><div className="metric-label">VG/h Médio</div></div>
-      </div>
-
-      {subTab === "equipe" && (
-        <div>
-          <div className="section"><div className="section-title">VG/h médio por equipe</div><div className="chart-container"><canvas ref={chartEquipeRef} /></div></div>
-          {gap > 0 && <div className="insight-card">A Equipe {best.eq} tem produtividade {gap}% superior à Equipe {worst.eq}.</div>}
+      {/* 2. Qtd composições */}
+      <div className="section">
+        <div className="section-title" style={{ justifyContent: "space-between" }}>
+          <span>Composições descarregadas por mês</span>
+          <span className="badge badge-success">YTD: {stats.ytd}</span>
         </div>
-      )}
+        <div className="chart-container"><canvas ref={chartRefs.qtd} /></div>
+      </div>
 
-      {subTab === "portico" && (
-        <div>
-          <div className="section"><div className="section-title">Impacto do 2º pórtico</div><div className="chart-container" style={{ height: 180 }}><canvas ref={chartPorticoRef} /></div></div>
-          <div className="metrics">
-            <div className="metric"><div className={`metric-num ${stats.ganho > 0 ? "color-success" : ""}`}>{stats.ganho > 0 ? "+" : ""}{Math.round(stats.ganho)}%</div><div className="metric-label">Ganho</div></div>
-            <div className="metric"><div className="metric-num">{stats.porticoData.dois.ops.length}</div><div className="metric-label">Ops. 2 pórt.</div></div>
+      {/* 3. Disponibilidade de pórtico */}
+      <div className="section">
+        <div className="section-title">Disponibilidade de pórtico</div>
+        <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
+          <div className="chart-container" style={{ width: 200, height: 200, flex: "0 0 200px" }}><canvas ref={chartRefs.portico} /></div>
+          <div style={{ flex: 1, minWidth: 180 }}>
+            <div className="metrics" style={{ flexDirection: "column", gap: 8 }}>
+              <div className="metric" style={{ borderLeft: "4px solid #003DA5", textAlign: "left", padding: "10px 16px" }}>
+                <div className="metric-num" style={{ fontSize: 20 }}>{stats.pctDois}%</div><div className="metric-label">2 pórticos disponíveis</div>
+              </div>
+              <div className="metric" style={{ borderLeft: "4px solid #41b6c4", textAlign: "left", padding: "10px 16px" }}>
+                <div className="metric-num" style={{ fontSize: 20 }}>{stats.pctUm}%</div><div className="metric-label">1 pórtico disponível</div>
+              </div>
+              <div className="metric" style={{ borderLeft: "4px solid #94a3b8", textAlign: "left", padding: "10px 16px" }}>
+                <div className="metric-num" style={{ fontSize: 20 }}>{stats.pctZero}%</div><div className="metric-label">Sem pórtico disponível</div>
+              </div>
+            </div>
           </div>
         </div>
-      )}
+      </div>
 
-      {subTab === "operador" && (
-        <div className="section">
-          <div className="section-title">Ranking de operadores — VG/h</div>
-          {!stats.opArr.length && <div style={{ color: "var(--text-muted)", fontSize: 12, textAlign: "center", padding: 20 }}>Nenhum dado de pórtico registrado ainda.</div>}
-          {stats.opArr.map((op, i) => (
-            <div key={op.nome} className="rank-row">
-              <div className="rank-pos" style={{ background: i < 3 ? ["#003DA5", "#41b6c4", "#78c679"][i] : "var(--card-alt)" }}>{i + 1}</div>
-              <div className="rank-name">{op.nome}</div>
-              <div className="rank-val" style={{ color: i < 3 ? "var(--success)" : "var(--text-sec)" }}>{op.vgh.toFixed(1)} VG/h</div>
+      {/* 4. Tempo de ciclo operacional */}
+      <div className="section">
+        <div className="section-title">Tempo de ciclo operacional</div>
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+          {/* Consolidado lateral */}
+          <div style={{ minWidth: 160, flex: "0 0 160px" }}>
+            {[
+              { label: "Chegada → Pos.", value: stats.consolidado.chegPos, color: "#003DA5" },
+              { label: "Em descarga", value: stats.consolidado.desc, color: "#78c679" },
+              { label: "Troca encoste", value: stats.consolidado.troca, color: "#1a6b3c" },
+              { label: "Retirada", value: stats.consolidado.ret, color: "#d4a017" },
+            ].map(item => (
+              <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, padding: "8px 10px", background: "var(--card-alt)", borderRadius: 8, borderLeft: `4px solid ${item.color}` }}>
+                <div>
+                  <div style={{ fontSize: 9, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700, letterSpacing: 0.5 }}>{item.label}</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: "var(--accent)" }}>{item.value}h</div>
+                </div>
+              </div>
+            ))}
+            <div style={{ padding: "8px 10px", background: "var(--accent-glow)", borderRadius: 8, textAlign: "center" }}>
+              <div style={{ fontSize: 9, color: "var(--text-muted)", fontWeight: 700 }}>TOTAL MÉDIO</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "var(--accent)" }}>{Math.round((stats.consolidado.chegPos + stats.consolidado.desc + stats.consolidado.troca + stats.consolidado.ret) * 10) / 10}h</div>
             </div>
+          </div>
+          {/* Gráfico */}
+          <div style={{ flex: 1, minWidth: 300 }}>
+            <div className="chart-container" style={{ height: Math.max(200, stats.monthLabels.length * 50 + 60) }}><canvas ref={chartRefs.ciclo} /></div>
+          </div>
+        </div>
+        {/* Expansão por composição */}
+        {stats.sortedMonths.map((mKey, mi) => {
+          const comps = stats.months[mKey]?.comps || [];
+          const isOpen = expandedMonth === mKey;
+          return (
+            <div key={mKey} style={{ marginTop: mi === 0 ? 12 : 0 }}>
+              <div onClick={() => setExpandedMonth(isOpen ? null : mKey)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "var(--card-alt)", borderRadius: 6, cursor: "pointer", marginBottom: 4 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "var(--accent)" }}>{stats.monthLabels[mi]} — {comps.length} composição(ões)</span>
+                <span style={{ color: "var(--text-muted)", fontSize: 12 }}>{isOpen ? "▲" : "▼"}</span>
+              </div>
+              {isOpen && (
+                <div style={{ padding: "8px 0", marginBottom: 8 }}>
+                  <table>
+                    <thead><tr><th>Composição</th><th>Cheg→Pos</th><th>Descarga</th><th>Troca</th><th>Retirada</th><th>Total</th></tr></thead>
+                    <tbody>
+                      {comps.map((c, ci) => {
+                        const total = Math.round((c.tChegPos + c.tDescarga + c.tTroca + c.tRetirada) * 10) / 10;
+                        return (
+                          <tr key={ci} className={ci % 2 ? "alt" : ""}>
+                            <td style={{ fontWeight: 700 }}>{c.nome}</td>
+                            <td className="num">{c.tChegPos.toFixed(1)}h</td>
+                            <td className="num" style={{ color: "var(--success)" }}>{c.tDescarga.toFixed(1)}h</td>
+                            <td className="num">{c.tTroca.toFixed(1)}h</td>
+                            <td className="num">{c.tRetirada.toFixed(1)}h</td>
+                            <td className="num" style={{ fontWeight: 800 }}>{total}h</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 5. Equipe */}
+      <div className="section">
+        <div className="section-title">Produtividade VG/h por equipe</div>
+        <div className="chart-container"><canvas ref={chartRefs.equipe} /></div>
+        {gap > 0 && <div className="insight-card">A Equipe {best.eq} tem produtividade {gap}% superior à Equipe {worst.eq}.</div>}
+      </div>
+
+      {/* 6. Período */}
+      <div className="section">
+        <div className="section-title">Produtividade por período</div>
+        <div className="metrics">
+          {stats.perArr.map(p => (
+            <div key={p.per} className="metric"><div className="metric-num">{p.vgh}</div><div className="metric-label">{p.per}</div></div>
           ))}
         </div>
-      )}
-
-      {subTab === "periodo" && (
-        <div>
-          <div className="metrics">
-            {stats.perArr.map(p => (
-              <div key={p.per} className="metric"><div className="metric-num">{p.vgh.toFixed(1)}</div><div className="metric-label">{p.per}</div></div>
-            ))}
-          </div>
-          <div className="section"><div className="section-title">Produtividade por período</div><div className="chart-container"><canvas ref={chartPeriodoRef} /></div></div>
-          {stats.perArr.length > 0 && (() => {
-            const diurno = stats.perArr.filter(p => p.per === "07x13" || p.per === "13x19");
-            const noturno = stats.perArr.filter(p => p.per === "19x01" || p.per === "01x07");
-            const dAvg = diurno.reduce((s, p) => s + p.vgh, 0) / (diurno.filter(p => p.vgh > 0).length || 1);
-            const nAvg = noturno.reduce((s, p) => s + p.vgh, 0) / (noturno.filter(p => p.vgh > 0).length || 1);
-            const diff = nAvg > 0 ? Math.round((dAvg - nAvg) / nAvg * 100) : 0;
-            return diff > 0 ? <div className="insight-card">Turnos diurnos (07-19) têm produtividade {diff}% superior aos noturnos.</div> : null;
-          })()}
-        </div>
-      )}
-
-      {subTab === "correlacao" && (
-        <div>
-          <div className="section"><div className="section-title">Tempo de operação por nº de pórticos</div><div className="chart-container"><canvas ref={chartScatterRef} /></div></div>
-          <div className="metrics">
-            <div className="metric" style={{ borderLeft: "3px solid #003DA5" }}><div className="metric-num">{stats.porticoData.um.ops.length}</div><div className="metric-label">Ops. 1 pórt.</div></div>
-            <div className="metric" style={{ borderLeft: "3px solid #41b6c4" }}><div className="metric-num">{stats.porticoData.dois.ops.length}</div><div className="metric-label">Ops. 2 pórt.</div></div>
-          </div>
-        </div>
-      )}
+        <div className="chart-container"><canvas ref={chartRefs.periodo} /></div>
+        {stats.perArr.length > 0 && (() => {
+          const diurno = stats.perArr.filter(p => p.per === "07x13" || p.per === "13x19");
+          const noturno = stats.perArr.filter(p => p.per === "19x01" || p.per === "01x07");
+          const dAvg = diurno.reduce((s, p) => s + p.vgh, 0) / (diurno.filter(p => p.vgh > 0).length || 1);
+          const nAvg = noturno.reduce((s, p) => s + p.vgh, 0) / (noturno.filter(p => p.vgh > 0).length || 1);
+          const diff = nAvg > 0 ? Math.round((dAvg - nAvg) / nAvg * 100) : 0;
+          return diff > 0 ? <div className="insight-card">Turnos diurnos (07-19) têm produtividade {diff}% superior aos noturnos.</div> : null;
+        })()}
+      </div>
     </div>
   );
 }
@@ -695,18 +832,24 @@ function App() {
     showToast("✓ Salvo no histórico");
   }, []);
 
+  const [showFinModal, setShowFinModal] = useState(false);
+  const [dataRetirada, setDataRetirada] = useState("");
+
   const finalizarOp = useCallback(async () => {
     if (!opRef.current) return;
     const e = JSON.parse(JSON.stringify(opRef.current));
     e.salvoEm = new Date().toISOString();
+    if (dataRetirada) e.dataRetirada = new Date(dataRetirada).toISOString();
     await saveHist(e);
     setOp(null);
     await saveOp(null);
     setShowShare(false);
     setConfirmFin(false);
+    setShowFinModal(false);
+    setDataRetirada("");
     await reloadHist(setHist);
     showToast("✓ Operação finalizada");
-  }, []);
+  }, [dataRetirada]);
 
   const copiarTexto = useCallback((opData) => {
     navigator.clipboard.writeText(gerarTexto(opData || opRef.current)).then(() => showToast("✓ Copiado!")).catch(() => showToast("Erro ao copiar"));
@@ -833,7 +976,7 @@ function App() {
                 {confirmFin ? (
                   <div style={{ display: "flex", gap: 6, alignItems: "center", marginLeft: "auto" }}>
                     <span style={{ fontSize: 11, color: "var(--danger)", fontWeight: 600 }}>Tem certeza?</span>
-                    <button className="btn btn-danger" onClick={finalizarOp}>Sim, finalizar</button>
+                    <button className="btn btn-danger" onClick={() => { setConfirmFin(false); setShowFinModal(true); }}>Sim</button>
                     <button className="btn btn-outline" onClick={() => setConfirmFin(false)}>Cancelar</button>
                   </div>
                 ) : (
@@ -958,6 +1101,22 @@ function App() {
 
       {/* Análise — só gestores */}
       {tab === "analise" && role === "gestor" && <Analise historico={hist} />}
+
+      {/* Modal finalização com retirada */}
+      {showFinModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, padding: 16 }} onClick={() => setShowFinModal(false)}>
+          <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 16, padding: 24, maxWidth: 380, width: "100%" }} onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 16 }}>✓ Finalizar Operação</div>
+            <label className="lbl">Data/hora de retirada dos vagões (opcional)</label>
+            <input type="datetime-local" className="inp" value={dataRetirada} onChange={e => setDataRetirada(e.target.value)} style={{ marginBottom: 12 }} />
+            <div style={{ fontSize: 10, color: "var(--text-muted)", marginBottom: 16 }}>Se não preencher, o tempo de retirada não será calculado nos gráficos.</div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn btn-danger" onClick={finalizarOp}>Finalizar</button>
+              <button className="btn btn-outline" onClick={() => setShowFinModal(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal troca de senha */}
       {showPwModal && (
