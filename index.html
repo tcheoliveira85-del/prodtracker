@@ -35,8 +35,8 @@ input,select,button,textarea{font-family:inherit}
 .row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
 .field{flex:1;min-width:140px}.field-sm{flex:.6;min-width:100px}.field-date{flex:1;min-width:200px}
 label.lbl{display:block;font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
-input.inp,select.inp{width:100%;padding:9px 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
-input[type="datetime-local"].inp{min-height:42px}
+input.inp,select.inp{width:100%;height:42px;min-height:42px;padding:0 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;line-height:1.2;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
+input[type="datetime-local"].inp,input[type="date"].inp,input[type="time"].inp,input[type="number"].inp{height:42px;min-height:42px}
 input.inp:focus,select.inp:focus{border-color:var(--accent)}
 .btn{padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
 .btn:active{transform:scale(.97)}
@@ -90,6 +90,26 @@ tr.alt{background:var(--card-alt)}
 .portico-inp{padding:4px 8px;background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:10px;width:90px;outline:none}
 .portico-inp:focus{border-color:var(--accent)}
 .portico-toggle{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:10px;padding:2px 6px}
+.troca-toggle{display:flex;align-items:center;gap:8px;width:100%;padding:10px 14px;margin-top:12px;background:rgba(245,158,11,.06);border:1px dashed rgba(245,158,11,.35);border-radius:8px;color:var(--warning);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;font-family:inherit;transition:all .2s}
+.troca-toggle:hover{background:rgba(245,158,11,.12)}
+.troca-toggle.active{background:rgba(245,158,11,.1);border-style:solid}
+.troca-block{margin-top:8px;padding:14px;background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.2);border-radius:10px}
+.troca-block .troca-title{font-size:10px;font-weight:800;color:var(--warning);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.troca-block .row{margin-bottom:8px}
+.troca-block label.lbl{white-space:nowrap}
+.troca-field-lg{flex:0 0 400.8px;width:400.8px;max-width:100%}
+.saldo-pill{display:inline-flex;align-items:center;justify-content:center;height:42px;min-height:42px;margin-left:8px;padding:0 14px;background:rgba(245,158,11,.15);border-radius:8px;font-size:13px;font-weight:700;color:var(--warning)}
+.col-center{text-align:center}.col-center .inp{display:block;margin-left:auto;margin-right:auto}
+.save-indicator{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:var(--text-muted);transition:opacity .3s}
+.save-indicator.saving{color:var(--warning)}
+.save-indicator.saved{color:var(--success)}
+.save-indicator .spinner{width:10px;height:10px;border:1.5px solid var(--text-muted);border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+.save-indicator.saving .spinner{border-color:var(--warning);border-top-color:transparent}
+@keyframes spin{to{transform:rotate(360deg)}}
+.consistency-banner{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:12px 16px;margin-bottom:16px;color:var(--warning);font-size:12px;line-height:1.5}
+.consistency-banner .ttl{font-weight:800;text-transform:uppercase;font-size:10px;letter-spacing:1px;margin-bottom:6px}
+.consistency-banner ul{margin:0;padding-left:18px;color:var(--text)}
+.consistency-banner li{margin-bottom:2px}
 .chart-container{position:relative;width:100%;height:260px;margin-bottom:16px}
 .analise-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px}
 .analise-tab{padding:8px 16px;font-size:11px;font-weight:700;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;letter-spacing:.5px;text-transform:uppercase}
@@ -100,7 +120,7 @@ tr.alt{background:var(--card-alt)}
 .rank-row:last-child{border-bottom:none}
 .rank-pos{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
 .rank-name{flex:1;font-size:13px}.rank-val{font-size:13px;font-weight:700}
-@media(max-width:600px){.container{padding:8px 12px}.header{gap:8px}.row{gap:8px}.field{min-width:100%;flex-basis:100%}.field-date{min-width:100%;flex-basis:100%}.field-sm{min-width:100%;flex-basis:100%}.metrics{gap:6px}.metric{min-width:60px;padding:10px 4px}.metric-num{font-size:16px}.metric-num-lg{font-size:22px}.btn{padding:8px 14px;font-size:11px}.section{padding:14px}.nav-btn{padding:6px 10px;font-size:10px}input[type="datetime-local"].inp{font-size:14px}td input[type="datetime-local"].inp{width:100%!important;min-width:150px}.login-box{padding:28px 20px}.chart-container{height:220px}}
+@media(max-width:600px){.container{padding:8px 12px}.header{gap:8px}.row{gap:8px}.field{min-width:100%;flex-basis:100%}.field-date{min-width:100%;flex-basis:100%}.field-sm{min-width:100%;flex-basis:100%}.troca-field-lg{flex:1 1 100%;width:100%;max-width:100%;min-width:0}.metrics{gap:6px}.metric{min-width:60px;padding:10px 4px}.metric-num{font-size:16px}.metric-num-lg{font-size:22px}.btn{padding:8px 14px;font-size:11px}.section{padding:14px}.nav-btn{padding:6px 10px;font-size:10px}input[type="datetime-local"].inp{font-size:14px}td input[type="datetime-local"].inp{width:100%!important;min-width:150px}.login-box{padding:28px 20px}.chart-container{height:220px}}
 ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--card)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 </style>
 </head>
@@ -179,35 +199,240 @@ function getEquipePeriodo(dateStr, periodo) {
   return eq[periodo] || "—";
 }
 
+// Helper: dado um ISO timestamp, retorna a equipe (A/B/C/D) considerando o turno em que cai
+function getEquipeForTimestamp(iso) {
+  if (!iso) return null;
+  const d = new Date(iso);
+  const h = d.getHours();
+  let periodo;
+  if (h >= 7 && h < 13) periodo = "07x13";
+  else if (h >= 13 && h < 19) periodo = "13x19";
+  else if (h >= 19 || h < 1) periodo = "19x01";
+  else periodo = "01x07";
+  // Para o turno 19x01 que cruza meia-noite: registros entre 00:00 e 00:59 pertencem ao turno 19x01 do dia ANTERIOR
+  let dateStr = iso.slice(0, 10);
+  if (periodo === "19x01" && h < 1) {
+    const prev = new Date(d.getTime() - 24 * 3600 * 1000);
+    dateStr = prev.toISOString().slice(0, 10);
+  }
+  return getEquipePeriodo(dateStr, periodo);
+}
+
 // ══════ CALCULATIONS ══════
+function getPeriodoForTimestamp(iso) {
+  if (!iso) return null;
+  const h = new Date(iso).getHours();
+  if (h >= 7 && h < 13) return "07x13";
+  if (h >= 13 && h < 19) return "13x19";
+  if (h >= 19 || h < 1) return "19x01";
+  return "01x07";
+}
+
 function calcEncoste(enc) {
-  const regs = enc.registros || [], total = regs.reduce((s, r) => s + (r.qtd || 0), 0), rest = (enc.quantidade || 0) - total;
+  const regs = enc.registros || [];
+  const totalRegs = regs.reduce((s, r) => s + (r.qtd || 0), 0);
+  // Deltas da troca parcial (vagões descarregados durante as janelas da troca, fora dos registros hora a hora)
+  const tp = enc.trocaParcial || {};
+  const qtdTroca = (tp.qtdAteParada || 0) + (tp.qtdAposRetorno || 0);
+  // Saldo já descarregado de encoste anterior (campo virtual injetado pela transformação para o relatório)
+  const saldoExt = enc._saldoJaDescarregado || 0;
+  const saldoAnterior = enc._saldoAnterior || 0;
+  const quantidadeBase = (enc.quantidade || 0) + saldoAnterior;
+  const total = totalRegs + qtdTroca + saldoExt;
+  const rest = quantidadeBase - total;
+  const pos = enc.posicionamento ? new Date(enc.posicionamento) : null;
   const ini = enc.inicioOp ? new Date(enc.inicioOp) : null;
+  const disp = enc.disponivelRetirada ? new Date(enc.disponivelRetirada) : null;
   const regsH = regs.filter(r => r.hora);
-  const ult = regsH.length ? regsH[regsH.length - 1] : null;
-  const tempoOp = ini && ult ? new Date(ult.hora).getTime() - ini.getTime() : 0;
-  const prod = tempoOp > 0 && total > 0 ? total / (tempoOp / 36e5) : 0;
+  // Para "último momento operacional" considera também os timestamps da troca (parada efetiva, nova parada)
+  const candidatosFim = [];
+  if (regsH.length) candidatosFim.push(new Date(regsH[regsH.length - 1].hora).getTime());
+  if (tp.paradaEfetiva) candidatosFim.push(new Date(tp.paradaEfetiva).getTime());
+  if (tp.novaParada) candidatosFim.push(new Date(tp.novaParada).getTime());
+  const fimMs = candidatosFim.length ? Math.max(...candidatosFim) : null;
+  const ultHora = fimMs ? new Date(fimMs) : null;
+  // tempoOp: tempo "puro" de operação (inicioOp → último momento operacional)
+  const tempoOp = ini && fimMs ? fimMs - ini.getTime() : 0;
+  // tempoTotal: base do cálculo de produtividade (posicionamento → último momento operacional)
+  const tempoTotal = pos && fimMs ? fimMs - pos.getTime() : 0;
+  // abertura: posicionamento → inicioOp
+  const abertura = pos && ini ? Math.max(0, ini.getTime() - pos.getTime()) : 0;
+  // fechamento: último momento operacional → disponivelRetirada
+  const fechamento = fimMs && disp ? Math.max(0, new Date(disp).getTime() - fimMs) : 0;
+  const prod = tempoTotal > 0 && total > 0 ? total / (tempoTotal / 36e5) : 0;
   const tRest = prod > 0 && rest > 0 ? (rest / prod) * 36e5 : 0;
-  const prev = ult && tRest > 0 ? new Date(new Date(ult.hora).getTime() + tRest) : null;
-  return { total, rest, tempoOp: tempoOp > 0 ? tempoOp : 0, prod, prev, done: rest <= 0 && total > 0 };
+  const prev = ultHora && tRest > 0 ? new Date(fimMs + tRest) : null;
+  return { total, totalRegs, qtdTroca, saldoAnterior, quantidadeBase, rest, fimOperacional: ultHora, tempoOp: tempoOp > 0 ? tempoOp : 0, tempoTotal: tempoTotal > 0 ? tempoTotal : 0, abertura, fechamento, prod, prev, done: rest <= 0 && total > 0 };
 }
 
 function calcGeral(op) {
   if (!op) return { totalVG: 0, totalQtd: 0, pct: 0, tempoTotal: 0, prodMedia: 0 };
-  let totalVG = 0, totalQtd = 0, tempoTotal = 0;
-  (op.encostes || []).forEach(e => { const c = calcEncoste(e); totalVG += c.total; totalQtd += e.quantidade || 0; tempoTotal += c.tempoOp; });
-  return { totalVG, totalQtd, pct: totalQtd > 0 ? totalVG / totalQtd * 100 : 0, tempoTotal, prodMedia: tempoTotal > 0 && totalVG > 0 ? totalVG / (tempoTotal / 36e5) : 0 };
+  let totalVG = 0, totalQtd = 0, tempoBase = 0;
+  // tempoBase agora soma c.tempoTotal (posicionamento → último registro), não c.tempoOp
+  // assim a produtividade média é coerente com a produtividade por encoste
+  (op.encostes || []).forEach(e => { const c = calcEncoste(e); totalVG += c.total; totalQtd += e.quantidade || 0; tempoBase += c.tempoTotal; });
+  return { totalVG, totalQtd, pct: totalQtd > 0 ? totalVG / totalQtd * 100 : 0, tempoTotal: tempoBase, prodMedia: tempoBase > 0 && totalVG > 0 ? totalVG / (tempoBase / 36e5) : 0 };
 }
 
-// ══════ WHATSAPP TEXT — INTOCADO ══════
+// ══════ VALIDAÇÃO DE CONSISTÊNCIA ══════
+// Retorna lista de mensagens de inconsistência (vazia = tudo ok)
+// É WARNING, não bloqueia salvamento — operador pode estar registrando ainda
+function saldosAnterioresPorEncoste(encostes) {
+  const saldos = [];
+  let saldo = 0;
+  (encostes || []).forEach(enc => {
+    saldos.push(saldo);
+    const c = calcEncoste({ ...enc, _saldoAnterior: saldo });
+    saldo = Math.max(0, c.rest);
+  });
+  return saldos;
+}
+
+function validateOp(op) {
+  const warns = [];
+  if (!op) return warns;
+
+  const encostes = op.encostes || [];
+  const totalRef = op.totalVagoes || 0;
+  const totalQtd = encostes.reduce((s, e) => s + (e.quantidade || 0), 0);
+
+  if (totalRef > 0 && totalQtd > totalRef) {
+    warns.push(`Total dos encostes (${totalQtd}) excede total da composição (${totalRef})`);
+  }
+
+  let saldoAnterior = 0;
+  encostes.forEach((enc, i) => {
+    const lbl = `${i + 1}º encoste`;
+    const totalRegs = (enc.registros || []).reduce((s, r) => s + (r.qtd || 0), 0);
+    const tp = enc.trocaParcial || {};
+    const totalEnc = totalRegs + (tp.qtdAteParada || 0) + (tp.qtdAposRetorno || 0);
+    const capacidadeEnc = (enc.quantidade || 0) + saldoAnterior;
+    if (totalEnc > capacidadeEnc && capacidadeEnc > 0) {
+      warns.push(`${lbl}: descarregados (${totalEnc}) > quantidade (${capacidadeEnc})`);
+    }
+    saldoAnterior = Math.max(0, capacidadeEnc - totalEnc);
+
+    const pos = enc.posicionamento ? new Date(enc.posicionamento).getTime() : null;
+    const ini = enc.inicioOp ? new Date(enc.inicioOp).getTime() : null;
+    const disp = enc.disponivelRetirada ? new Date(enc.disponivelRetirada).getTime() : null;
+
+    if (pos && ini && ini < pos) warns.push(`${lbl}: início antes do posicionamento`);
+
+    const regsH = (enc.registros || []).filter(r => r.hora).map(r => new Date(r.hora).getTime()).sort((a, b) => a - b);
+    if (regsH.length && ini && regsH[0] < ini) warns.push(`${lbl}: 1º registro antes do início`);
+    if (regsH.length && disp && regsH[regsH.length - 1] > disp) warns.push(`${lbl}: registro depois do disponível p/ retirada`);
+
+    if (enc.trocaParcial) {
+      if ((tp.qtdAntesChamada || 0) > (enc.quantidade || 0)) {
+        warns.push(`${lbl}: troca parcial — qtd antes da chamada (${tp.qtdAntesChamada}) > quantidade do encoste`);
+      }
+      const mC = tp.momentoChamada ? new Date(tp.momentoChamada).getTime() : null;
+      const pE = tp.paradaEfetiva ? new Date(tp.paradaEfetiva).getTime() : null;
+      const lR = tp.liberadoRetorno ? new Date(tp.liberadoRetorno).getTime() : null;
+      const rD = tp.retornoDescarga ? new Date(tp.retornoDescarga).getTime() : null;
+      const nP = tp.novaParada ? new Date(tp.novaParada).getTime() : null;
+      if (ini && mC && mC < ini) warns.push(`${lbl}: chamada da troca antes do início da operação`);
+      if (mC && pE && pE < mC) warns.push(`${lbl}: parada efetiva antes da chamada`);
+      if (pE && lR && lR < pE) warns.push(`${lbl}: liberação antes da parada`);
+      if (lR && rD && rD < lR) warns.push(`${lbl}: retorno antes da liberação`);
+      if (rD && nP && nP < rD) warns.push(`${lbl}: nova parada antes do retorno`);
+    }
+  });
+
+  return warns;
+}
+
+
+// ══════ TRANSFORMAÇÃO P/ RELATÓRIO WHATSAPP ══════
+// Operacionalmente, quando há troca parcial:
+// "1º encoste" no relatório = primeira leva (qtdAntesChamada vagões, ex: 30)
+// "2º encoste" no relatório = saldo (ex: 10) + próxima leva real (ex: 30) = 40
+// Modelo (interpretação A — delta): vagões descarregados durante a troca estão em
+// trocaParcial.qtdAteParada e qtdAposRetorno (não nos registros hora a hora).
+// O campo virtual _saldoJaDescarregado é injetado no encoste seguinte para que o
+// calcEncoste contabilize esses vagões no total do "2º encoste do relatório".
+function transformaEncostesParaRelatorio(encostes) {
+  const result = [];
+  let pendingSaldo = null;
+
+  (encostes || []).forEach((enc) => {
+    const tp = enc.trocaParcial;
+    const temTroca = tp && (tp.qtdAntesChamada || 0) > 0;
+
+    if (temTroca) {
+      const qtdPrim = tp.qtdAntesChamada;
+      const saldo = Math.max(0, (enc.quantidade || 0) - qtdPrim);
+      const regs = enc.registros || [];
+      const tCham = tp.momentoChamada ? new Date(tp.momentoChamada).getTime() : null;
+      // Registros até a chamada da FIPS = registros da 1ª leva
+      const regsAntes = tCham ? regs.filter(r => r.hora && new Date(r.hora).getTime() <= tCham) : regs;
+
+      // Se já havia um saldo pendente, ele se incorpora à 1ª leva deste encoste no relatório
+      const baseQtd = qtdPrim + (pendingSaldo ? pendingSaldo.qtd : 0);
+      const baseSaldoExt = pendingSaldo ? pendingSaldo.qtdJaDescarregada : 0;
+
+      result.push({
+        ...enc,
+        quantidade: baseQtd,
+        registros: regsAntes,
+        // Disponível p/ Retirada da 1ª leva = momento da chamada (é quando "fica disponível")
+        disponivelRetirada: enc.disponivelRetirada || tp.momentoChamada || null,
+        // Limpa trocaParcial — os deltas pertencem ao saldo, não à 1ª leva
+        trocaParcial: null,
+        _saldoJaDescarregado: baseSaldoExt,
+      });
+
+      pendingSaldo = {
+        qtd: saldo,
+        qtdJaDescarregada: (tp.qtdAteParada || 0) + (tp.qtdAposRetorno || 0),
+        srcPosicionamento: enc.posicionamento,
+        srcInicioOp: enc.inicioOp,
+        srcDisponivelRetirada: enc.disponivelRetirada,
+      };
+    } else {
+      if (pendingSaldo) {
+        result.push({
+          ...enc,
+          quantidade: (enc.quantidade || 0) + pendingSaldo.qtd,
+          _saldoJaDescarregado: pendingSaldo.qtdJaDescarregada,
+        });
+        pendingSaldo = null;
+      } else {
+        result.push(enc);
+      }
+    }
+  });
+
+  // Saldo "solto" no final — quando não há próximo encoste pra absorver
+  if (pendingSaldo && pendingSaldo.qtd > 0) {
+    result.push({
+      id: "saldo_solto",
+      quantidade: pendingSaldo.qtd,
+      _saldoJaDescarregado: pendingSaldo.qtdJaDescarregada,
+      posicionamento: pendingSaldo.srcPosicionamento,
+      inicioOp: pendingSaldo.srcInicioOp,
+      disponivelRetirada: pendingSaldo.srcDisponivelRetirada,
+      registros: [],
+    });
+  }
+
+  return result;
+}
+
+// ══════ WHATSAPP TEXT — usa redistribuição p/ troca parcial ══════
 function gerarTexto(op) {
   const L = [];
   L.push("📦 *PRODUTIVIDADE HORA A HORA*", "━━━━━━━━━━━━━━━━━━━━━");
   L.push(`Composição: *${op.composicao || "—"}*`, `Chegada: ${fmtDateTime(op.chegada)}`, `Produto: ${op.produto || "Celulose"}`, "");
-  (op.encostes || []).forEach((enc, idx) => {
+
+  // Aplica redistribuição: 1º encoste no texto = primeira leva (30); saldo migra p/ 2º encoste
+  const encostesRel = transformaEncostesParaRelatorio(op.encostes || []);
+
+  encostesRel.forEach((enc, idx) => {
     const c = calcEncoste(enc), regs = enc.registros || [];
     L.push(`▸ *${idx + 1}º ENCOSTE*`, `  Qtd: ${enc.quantidade || 0} vagões`, `  Posicionamento: ${fmtDateTime(enc.posicionamento)}`, `  Início: ${fmtDateTime(enc.inicioOp)}`);
     L.push(`  Descarregados: ${c.total} | Restante: ${Math.max(0, c.rest)}`, `  Produtividade: ${c.prod.toFixed(1)} VG/h`, `  Tempo Op: ${fmtDur(c.tempoOp)}`);
+    if (enc.disponivelRetirada) L.push(`  Disponível p/ Retirada: ${fmtDateTime(enc.disponivelRetirada)}`);
     if (c.done) L.push("  ✅ *CONCLUÍDO*"); else if (c.prev) L.push(`  🕐 *Prev. Término: ${fmtDateTime(c.prev)}*`);
     if (regs.length) { L.push(""); regs.forEach((r, i) => { const ac = regs.slice(0, i + 1).reduce((s, x) => s + (x.qtd || 0), 0); L.push(`  ${i + 1}ª h → ${fmtTime(r.hora)} | +${r.qtd || 0} vg | Acum: ${ac}`); }); }
     L.push("");
@@ -304,21 +529,27 @@ function Login({ onAuth }) {
 }
 
 // ══════ ENCOSTE COMPONENT ══════
-function Encoste({ enc, eIdx, total, onUpdate, onRemove, onAddReg, onRemoveReg, onUpdateReg }) {
-  const c = calcEncoste(enc);
+function Encoste({ enc, eIdx, total, saldoAnterior = 0, onUpdate, onUpdateTroca, onRemove, onAddReg, onRemoveReg, onUpdateReg }) {
+const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
   const regs = enc.registros || [];
   const ini = enc.inicioOp ? new Date(enc.inicioOp) : null;
   const [showPorticos, setShowPorticos] = useState({});
-  const dateStr = enc.inicioOp ? enc.inicioOp.slice(0, 10) : (enc.posicionamento ? new Date(enc.posicionamento).toISOString().slice(0, 10) : null);
-  const hora = enc.inicioOp ? new Date(enc.inicioOp).getHours() : null;
-  let periodo = null;
-  if (hora !== null) {
-    if (hora >= 7 && hora < 13) periodo = "07x13";
-    else if (hora >= 13 && hora < 19) periodo = "13x19";
-    else if (hora >= 19 || hora < 1) periodo = "19x01";
-    else periodo = "01x07";
-  }
-  const equipeAuto = dateStr && periodo ? getEquipePeriodo(dateStr.includes("T") ? dateStr.slice(0, 10) : dateStr, periodo) : null;
+  const tp = enc.trocaParcial;
+  const temTroca = !!tp;
+  const [showTroca, setShowTroca] = useState(temTroca);
+  const saldoTroca = tp && (tp.qtdAntesChamada || 0) > 0 ? Math.max(0, (enc.quantidade || 0) - tp.qtdAntesChamada) : 0;
+
+  const toggleTroca = () => {
+    if (temTroca) {
+      if (confirm("Remover dados da troca parcial deste encoste?")) {
+        onUpdate("trocaParcial", null);
+        setShowTroca(false);
+      }
+    } else {
+      onUpdate("trocaParcial", { qtdAntesChamada: 30, momentoChamada: null, paradaEfetiva: null, qtdAteParada: null, liberadoRetorno: null, retornoDescarga: null, novaParada: null, qtdAposRetorno: null });
+      setShowTroca(true);
+    }
+  };
 
   return (
     <div className={`section encoste ${c.done ? "done" : ""}`}>
@@ -326,15 +557,10 @@ function Encoste({ enc, eIdx, total, onUpdate, onRemove, onAddReg, onRemoveReg, 
         <div className="section-title" style={{ marginBottom: 0 }}>
           <span className="encoste-num">{eIdx + 1}</span>
           {eIdx + 1}º ENCOSTE
-          {equipeAuto && <span className="badge badge-accent">Equipe {enc.equipeManual || equipeAuto}</span>}
           {c.done && <span className="badge badge-success">✓ Concluído</span>}
+          {temTroca && <span className="badge badge-warning">🔄 Troca Parcial</span>}
         </div>
         <div className="encoste-actions">
-          {equipeAuto && (
-            <select className="inp" style={{ width: 52, padding: "4px 6px", fontSize: 10 }} value={enc.equipeManual || equipeAuto} onChange={e => onUpdate("equipeManual", e.target.value === equipeAuto ? undefined : e.target.value)}>
-              {["A", "B", "C", "D"].map(eq => <option key={eq} value={eq}>{eq}</option>)}
-            </select>
-          )}
           {total > 1 && <button className="btn btn-danger btn-xs" onClick={onRemove}>🗑 Excluir</button>}
         </div>
       </div>
@@ -351,32 +577,106 @@ function Encoste({ enc, eIdx, total, onUpdate, onRemove, onAddReg, onRemoveReg, 
           <label className="lbl">Início Operação</label>
           <input type="datetime-local" className="inp" value={toLocal(enc.inicioOp)} onChange={e => onUpdate("inicioOp", e.target.value ? new Date(e.target.value).toISOString() : null)} />
         </div>
+        <div className="field-date">
+          <label className="lbl">Disponível p/ Retirada</label>
+          <input type="datetime-local" className="inp" value={toLocal(enc.disponivelRetirada)} onChange={e => onUpdate("disponivelRetirada", e.target.value ? new Date(e.target.value).toISOString() : null)} />
+        </div>
       </div>
       <div className="metrics">
         <div className="metric"><div className="metric-num">{c.total}</div><div className="metric-label">Descarregados</div></div>
         <div className="metric"><div className={`metric-num ${c.rest > 0 ? "color-warning" : "color-success"}`}>{Math.max(0, c.rest)}</div><div className="metric-label">Restante</div></div>
         <div className="metric"><div className="metric-num">{c.prod.toFixed(1)}</div><div className="metric-label">VG/h</div></div>
+        <div className="metric"><div className="metric-num color-info" style={{ fontSize: 16 }}>{c.abertura > 0 ? fmtDur(c.abertura) : "—"}</div><div className="metric-label">Abertura</div></div>
         <div className="metric"><div className="metric-num color-info">{fmtDur(c.tempoOp)}</div><div className="metric-label">Tempo Op.</div></div>
-        <div className="metric"><div className="metric-num" style={{ fontSize: 18 }}>{c.prev ? fmtTime(c.prev) : c.done ? "✓" : "—"}</div><div className="metric-label">Prev. Término</div></div>
+        <div className="metric"><div className="metric-num color-info" style={{ fontSize: 16 }}>{c.fechamento > 0 ? fmtDur(c.fechamento) : "—"}</div><div className="metric-label">Fechamento</div></div>
+        <div className="metric"><div className="metric-num" style={{ fontSize: 18 }}>{c.done ? "✓" : (c.prev ? fmtTime(c.prev) : "—")}</div><div className="metric-label">Prev. Término</div></div>
       </div>
-      <div style={{ overflowX: "auto" }}>
+
+      {/* Bloco colapsável: Troca Parcial */}
+      <button className={`troca-toggle ${temTroca ? "active" : ""}`} onClick={() => temTroca ? setShowTroca(!showTroca) : toggleTroca()}>
+        <span style={{ fontSize: 14 }}>🔄</span>
+        <span>Troca Parcial {temTroca ? `· ${tp.qtdAntesChamada || 0} + ${saldoTroca}` : "(desativada)"}</span>
+        <span style={{ marginLeft: "auto", fontSize: 10 }}>
+          {temTroca ? (showTroca ? "▲ ocultar" : "▼ exibir") : "＋ ativar"}
+        </span>
+      </button>
+
+      {temTroca && showTroca && (
+        <div className="troca-block">
+          <div className="troca-title">📋 1ª leva (chamada da FIPS)</div>
+          <div className="row">
+            <div className="field" style={{ minWidth: 100 }}>
+              <label className="lbl">Qtd. antes da chamada</label>
+              <input type="number" className="inp" value={tp.qtdAntesChamada || ""} placeholder="30" inputMode="numeric" onChange={e => onUpdateTroca("qtdAntesChamada", parseInt(e.target.value) || 0)} />
+            </div>
+            <div className="field-date">
+              <label className="lbl">Disponível 1ª leva</label>
+              <input type="datetime-local" className="inp" value={toLocal(tp.momentoChamada)} onChange={e => onUpdateTroca("momentoChamada", e.target.value ? new Date(e.target.value).toISOString() : null)} />
+            </div>
+            <div className="field" style={{ minWidth: 80 }}>
+              <label className="lbl">Saldo</label>
+              <div className="saldo-pill" style={{ marginLeft: 0, width: "100%" }}>{saldoTroca}</div>
+            </div>
+          </div>
+
+          <div className="troca-title" style={{ marginTop: 14 }}>⏸ Parada efetiva (FIPS chegou)</div>
+          <div className="row">
+            <div className="field-date troca-field-lg">
+              <label className="lbl">Parada efetiva</label>
+              <input type="datetime-local" className="inp" value={toLocal(tp.paradaEfetiva)} onChange={e => onUpdateTroca("paradaEfetiva", e.target.value ? new Date(e.target.value).toISOString() : null)} />
+            </div>
+            <div className="field troca-field-lg">
+              <label className="lbl">Qtd. descarregada (até parada)</label>
+              <input type="number" className="inp" value={tp.qtdAteParada ?? ""} placeholder="0" inputMode="numeric" onChange={e => onUpdateTroca("qtdAteParada", e.target.value === "" ? null : parseInt(e.target.value) || 0)} />
+            </div>
+          </div>
+
+          <div className="troca-title" style={{ marginTop: 14 }}>▶ Retomada</div>
+          <div className="row">
+            <div className="field-date troca-field-lg">
+              <label className="lbl">Liberado p/ retorno</label>
+              <input type="datetime-local" className="inp" value={toLocal(tp.liberadoRetorno)} onChange={e => onUpdateTroca("liberadoRetorno", e.target.value ? new Date(e.target.value).toISOString() : null)} />
+            </div>
+            <div className="field-date troca-field-lg">
+              <label className="lbl">Retorno da descarga</label>
+              <input type="datetime-local" className="inp" value={toLocal(tp.retornoDescarga)} onChange={e => onUpdateTroca("retornoDescarga", e.target.value ? new Date(e.target.value).toISOString() : null)} />
+            </div>
+            <div className="field-date troca-field-lg">
+              <label className="lbl">Nova parada (fim do saldo)</label>
+              <input type="datetime-local" className="inp" value={toLocal(tp.novaParada)} onChange={e => onUpdateTroca("novaParada", e.target.value ? new Date(e.target.value).toISOString() : null)} />
+            </div>
+            <div className="field troca-field-lg">
+              <label className="lbl">Qtd. descarregada (após retorno)</label>
+              <input type="number" className="inp" value={tp.qtdAposRetorno ?? ""} placeholder="0" inputMode="numeric" onChange={e => onUpdateTroca("qtdAposRetorno", e.target.value === "" ? null : parseInt(e.target.value) || 0)} />
+            </div>
+          </div>
+
+          <div style={{ marginTop: 12, textAlign: "right" }}>
+            <button className="btn btn-danger btn-xs" onClick={toggleTroca}>🗑 Remover troca parcial</button>
+          </div>
+        </div>
+      )}
+
+      <div style={{ overflowX: "auto", marginTop: 12 }}>
         <table>
-          <thead><tr><th>#</th><th>Hora</th><th>Tempo Op.</th><th>Qtd. VG</th><th>Acum.</th><th>VG/h</th><th>Pórticos</th><th></th></tr></thead>
+          <thead><tr><th>#</th><th>Hora</th><th className="col-center">Equipe</th><th className="col-center">Tempo Op.</th><th className="col-center">Qtd. VG</th><th className="col-center">Acum.</th><th className="col-center">VG/h</th><th>Pórticos</th><th></th></tr></thead>
           <tbody>
-            {!regs.length && <tr><td colSpan={8} style={{ textAlign: "center", color: "var(--text-muted)", padding: 24 }}>Clique "＋ Hora" para registrar</td></tr>}
+            {!regs.length && <tr><td colSpan={9} style={{ textAlign: "center", color: "var(--text-muted)", padding: 24 }}>Clique "＋ Hora" para registrar</td></tr>}
             {regs.map((r, rIdx) => {
               const acum = regs.slice(0, rIdx + 1).reduce((s, x) => s + (x.qtd || 0), 0);
               const elapsed = ini && r.hora ? new Date(r.hora).getTime() - ini.getTime() : 0;
               const vgh = elapsed > 0 && acum > 0 ? acum / (elapsed / 36e5) : 0;
               const showP = showPorticos[rIdx];
+              const eqReg = r.hora ? getEquipeForTimestamp(r.hora) : null;
               return (
                 <tr key={r.id || rIdx} className={rIdx % 2 ? "alt" : ""}>
                   <td style={{ color: "var(--text-muted)", fontWeight: 600 }}>{rIdx + 1}ª</td>
                   <td><input type="datetime-local" className="inp" style={{ padding: "4px 8px", fontSize: 11, width: 170 }} value={r.hora ? toLocal(r.hora) : ""} onChange={e => onUpdateReg(rIdx, "hora", e.target.value ? new Date(e.target.value).toISOString() : null)} /></td>
-                  <td className="num">{elapsed > 0 ? fmtDur(elapsed) : "—"}</td>
-                  <td><input type="number" className="inp" style={{ width: 64, padding: "4px 8px", fontSize: 12, textAlign: "center" }} inputMode="numeric" value={r.qtd || ""} placeholder="0" onChange={e => onUpdateReg(rIdx, "qtd", parseInt(e.target.value) || 0)} /></td>
-                  <td className="num">{acum}</td>
-                  <td className="num" style={{ color: "var(--success)" }}>{vgh.toFixed(1)}</td>
+                  <td className="col-center">{eqReg ? <span className="badge badge-accent">{eqReg}</span> : "—"}</td>
+                  <td className="num col-center">{elapsed > 0 ? fmtDur(elapsed) : "—"}</td>
+                  <td className="col-center"><input type="number" className="inp" style={{ width: 64, padding: "4px 8px", fontSize: 12, textAlign: "center" }} inputMode="numeric" value={r.qtd || ""} placeholder="0" onChange={e => onUpdateReg(rIdx, "qtd", parseInt(e.target.value) || 0)} /></td>
+                  <td className="num col-center">{acum}</td>
+                  <td className="num col-center" style={{ color: "var(--success)" }}>{vgh.toFixed(1)}</td>
                   <td>
                     <button className="portico-toggle" onClick={() => setShowPorticos({ ...showPorticos, [rIdx]: !showP })}>{showP ? "▲" : "🏗️"}</button>
                     {showP && (
@@ -401,12 +701,123 @@ function Encoste({ enc, eIdx, total, onUpdate, onRemove, onAddReg, onRemoveReg, 
 }
 
 // ══════ ANALISE COMPONENT ══════
+function calcAnaliseStats(historico) {
+  const months = {};
+  const equipes = { A: { vg: 0, h: 0 }, B: { vg: 0, h: 0 }, C: { vg: 0, h: 0 }, D: { vg: 0, h: 0 } };
+  const periodos = { "07x13": { vg: 0, h: 0 }, "13x19": { vg: 0, h: 0 }, "19x01": { vg: 0, h: 0 }, "01x07": { vg: 0, h: 0 } };
+  let totalHrsDois = 0, totalHrsUm = 0, totalHrsZero = 0;
+
+  (historico || []).forEach(op => {
+    const chegada = op.chegada ? new Date(op.chegada) : null;
+    if (!chegada) return;
+    const mKey = `${chegada.getFullYear()}-${String(chegada.getMonth() + 1).padStart(2, "0")}`;
+    if (!months[mKey]) months[mKey] = { vgTotal: 0, hTotal: 0, ops: 0, comps: [] };
+    months[mKey].ops++;
+
+    let opVG = 0, opH = 0;
+    const compData = { nome: op.composicao || "-", chegada: op.chegada, tChegPos: 0, tDescarga: 0, tTroca: 0, tRetirada: 0 };
+    const encostes = op.encostes || [];
+    const saldos = saldosAnterioresPorEncoste(encostes);
+    const encostesCalc = encostes.map((enc, ei) => calcEncoste({ ...enc, _saldoAnterior: saldos[ei] || 0 }));
+
+    const addEquipePeriodo = (iso, vg, horas) => {
+      if (!iso) return;
+      const eq = getEquipeForTimestamp(iso);
+      const per = getPeriodoForTimestamp(iso);
+      if (eq && equipes[eq]) {
+        equipes[eq].vg += vg || 0;
+        equipes[eq].h += horas || 0;
+      }
+      if (per && periodos[per]) {
+        periodos[per].vg += vg || 0;
+        periodos[per].h += horas || 0;
+      }
+    };
+
+    encostes.forEach((enc, ei) => {
+      const regs = (enc.registros || []).slice().sort((a, b) => new Date(a.hora || 0) - new Date(b.hora || 0));
+      const ini = enc.inicioOp ? new Date(enc.inicioOp) : null;
+      const pos = enc.posicionamento ? new Date(enc.posicionamento) : null;
+      const c = encostesCalc[ei];
+      const tp = enc.trocaParcial || {};
+
+      opVG += c.total;
+      if (c.tempoTotal > 0) opH += c.tempoTotal / 36e5;
+
+      if (ei === 0 && pos && chegada) compData.tChegPos = Math.max(0, (pos.getTime() - chegada.getTime()) / 36e5);
+      if (c.tempoOp > 0) compData.tDescarga += c.tempoOp / 36e5;
+      if (ei > 0) {
+        const prevFim = encostesCalc[ei - 1]?.fimOperacional;
+        if (prevFim && ini) compData.tTroca += Math.max(0, (ini.getTime() - prevFim.getTime()) / 36e5);
+      }
+      if (ei === encostes.length - 1 && op.dataRetirada && c.fimOperacional) {
+        compData.tRetirada = Math.max(0, (new Date(op.dataRetirada).getTime() - c.fimOperacional.getTime()) / 36e5);
+      }
+
+      let prevTime = pos || ini;
+      const addEvento = (iso, vg) => {
+        if (!iso) return;
+        const t = new Date(iso);
+        const horas = prevTime && t > prevTime ? (t.getTime() - prevTime.getTime()) / 36e5 : 0;
+        addEquipePeriodo(iso, vg || 0, horas);
+        prevTime = t;
+      };
+
+      regs.forEach(r => addEvento(r.hora, r.qtd || 0));
+      addEvento(tp.paradaEfetiva || tp.momentoChamada, tp.qtdAteParada || 0);
+      addEvento(tp.novaParada || tp.retornoDescarga, tp.qtdAposRetorno || 0);
+
+      regs.forEach(r => {
+        if (r.p1 && r.p2) totalHrsDois++;
+        else if (r.p1 || r.p2) totalHrsUm++;
+        else totalHrsZero++;
+      });
+    });
+
+    months[mKey].vgTotal += opVG;
+    months[mKey].hTotal += opH;
+    months[mKey].comps.push(compData);
+  });
+
+  const sortedMonths = Object.keys(months).sort();
+  const monthLabels = sortedMonths.map(k => { const [y, m] = k.split("-"); const nomes = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]; return nomes[parseInt(m) - 1] + " " + y; });
+  const vghPerMonth = sortedMonths.map(k => months[k].hTotal > 0 ? Math.round(months[k].vgTotal / months[k].hTotal * 10) / 10 : 0);
+  const opsPerMonth = sortedMonths.map(k => months[k].ops);
+  const ytd = opsPerMonth.reduce((s, v) => s + v, 0);
+
+  const totalPH = totalHrsDois + totalHrsUm + totalHrsZero;
+  const pctDois = totalPH > 0 ? Math.round(totalHrsDois / totalPH * 100) : 0;
+  const pctUm = totalPH > 0 ? Math.round(totalHrsUm / totalPH * 100) : 0;
+  const pctZero = totalPH > 0 ? Math.round(totalHrsZero / totalPH * 100) : 0;
+
+  let cChegPos = 0, cDesc = 0, cTroca = 0, cRet = 0, cCount = 0;
+  sortedMonths.forEach(k => months[k].comps.forEach(c => {
+    cChegPos += c.tChegPos; cDesc += c.tDescarga; cTroca += c.tTroca; cRet += c.tRetirada; cCount++;
+  }));
+  const consolidado = { chegPos: cCount > 0 ? Math.round(cChegPos / cCount * 10) / 10 : 0, desc: cCount > 0 ? Math.round(cDesc / cCount * 10) / 10 : 0, troca: cCount > 0 ? Math.round(cTroca / cCount * 10) / 10 : 0, ret: cCount > 0 ? Math.round(cRet / cCount * 10) / 10 : 0 };
+  const cicloPerMonth = sortedMonths.map(k => {
+    const comps = months[k].comps;
+    const n = comps.length || 1;
+    return {
+      chegPos: Math.round(comps.reduce((s, c) => s + c.tChegPos, 0) / n * 10) / 10,
+      desc: Math.round(comps.reduce((s, c) => s + c.tDescarga, 0) / n * 10) / 10,
+      troca: Math.round(comps.reduce((s, c) => s + c.tTroca, 0) / n * 10) / 10,
+      ret: Math.round(comps.reduce((s, c) => s + c.tRetirada, 0) / n * 10) / 10,
+    };
+  });
+  const eqArr = Object.entries(equipes).map(([k, v]) => ({ eq: k, vgh: v.h > 0 ? Math.round(v.vg / v.h * 10) / 10 : 0 })).sort((a, b) => b.vgh - a.vgh);
+  const perArr = Object.entries(periodos).map(([k, v]) => ({ per: k, vgh: v.h > 0 ? Math.round(v.vg / v.h * 10) / 10 : 0 }));
+
+  return { sortedMonths, monthLabels, vghPerMonth, opsPerMonth, ytd, pctDois, pctUm, pctZero, cicloPerMonth, consolidado, eqArr, perArr, months, totalOps: (historico || []).length };
+}
+
 function Analise({ historico }) {
   const chartRefs = { vgh: useRef(null), qtd: useRef(null), portico: useRef(null), ciclo: useRef(null), equipe: useRef(null), periodo: useRef(null) };
   const chartInstances = useRef({});
   const [expandedMonth, setExpandedMonth] = useState(null);
 
   const stats = useMemo(() => {
+    return calcAnaliseStats(historico);
     const months = {};
     const equipes = { A: { vg: 0, h: 0 }, B: { vg: 0, h: 0 }, C: { vg: 0, h: 0 }, D: { vg: 0, h: 0 } };
     const periodos = { "07x13": { vg: 0, h: 0 }, "13x19": { vg: 0, h: 0 }, "19x01": { vg: 0, h: 0 }, "01x07": { vg: 0, h: 0 } };
@@ -686,24 +1097,6 @@ function Analise({ historico }) {
         {gap > 0 && <div className="insight-card">A Equipe {best.eq} tem produtividade {gap}% superior à Equipe {worst.eq}.</div>}
       </div>
 
-      {/* 6. Período */}
-      <div className="section">
-        <div className="section-title">Produtividade por período</div>
-        <div className="metrics">
-          {stats.perArr.map(p => (
-            <div key={p.per} className="metric"><div className="metric-num">{p.vgh}</div><div className="metric-label">{p.per}</div></div>
-          ))}
-        </div>
-        <div className="chart-container"><canvas ref={chartRefs.periodo} /></div>
-        {stats.perArr.length > 0 && (() => {
-          const diurno = stats.perArr.filter(p => p.per === "07x13" || p.per === "13x19");
-          const noturno = stats.perArr.filter(p => p.per === "19x01" || p.per === "01x07");
-          const dAvg = diurno.reduce((s, p) => s + p.vgh, 0) / (diurno.filter(p => p.vgh > 0).length || 1);
-          const nAvg = noturno.reduce((s, p) => s + p.vgh, 0) / (noturno.filter(p => p.vgh > 0).length || 1);
-          const diff = nAvg > 0 ? Math.round((dAvg - nAvg) / nAvg * 100) : 0;
-          return diff > 0 ? <div className="insight-card">Turnos diurnos (07-19) têm produtividade {diff}% superior aos noturnos.</div> : null;
-        })()}
-      </div>
     </div>
   );
 }
@@ -725,6 +1118,8 @@ function App() {
   const [confirmPw, setConfirmPw] = useState("");
   const [pwErr, setPwErr] = useState("");
   const [pwLoading, setPwLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
   const opRef = useRef(op);
   opRef.current = op;
 
@@ -751,77 +1146,95 @@ function App() {
 
   useEffect(() => { document.body.dataset.theme = theme; localStorage.setItem("pt_theme", theme); }, [theme]);
 
+  // Wrapper que liga/desliga indicador de save e marca timestamp da última gravação
+  const saveOpWithIndicator = useCallback(async (next) => {
+    setSaving(true);
+    try { await saveOp(next); setLastSaved(new Date()); }
+    finally { setSaving(false); }
+  }, []);
+
   const updateOp = useCallback((patch) => {
     setOp(prev => {
       const next = { ...prev, ...patch };
-      saveOp(next);
+      saveOpWithIndicator(next);
       return next;
     });
-  }, []);
+  }, [saveOpWithIndicator]);
 
   const updateEncoste = useCallback((eIdx, field, value) => {
     setOp(prev => {
       const next = JSON.parse(JSON.stringify(prev));
-      next.encostes[eIdx][field] = value;
-      saveOp(next);
+      if (value === null || value === undefined) delete next.encostes[eIdx][field];
+      else next.encostes[eIdx][field] = value;
+      saveOpWithIndicator(next);
       return next;
     });
-  }, []);
+  }, [saveOpWithIndicator]);
+
+  const updateTrocaParcial = useCallback((eIdx, field, value) => {
+    setOp(prev => {
+      const next = JSON.parse(JSON.stringify(prev));
+      if (!next.encostes[eIdx].trocaParcial) next.encostes[eIdx].trocaParcial = {};
+      next.encostes[eIdx].trocaParcial[field] = value;
+      saveOpWithIndicator(next);
+      return next;
+    });
+  }, [saveOpWithIndicator]);
 
   const updateRegistro = useCallback((eIdx, rIdx, field, value) => {
     setOp(prev => {
       const next = JSON.parse(JSON.stringify(prev));
       next.encostes[eIdx].registros[rIdx][field] = value;
-      saveOp(next);
+      saveOpWithIndicator(next);
       return next;
     });
-  }, []);
+  }, [saveOpWithIndicator]);
 
   const addEncoste = useCallback(() => {
     setOp(prev => {
       const next = JSON.parse(JSON.stringify(prev));
       next.encostes.push({ id: Date.now(), quantidade: 0, posicionamento: null, inicioOp: null, registros: [] });
-      saveOp(next);
+      saveOpWithIndicator(next);
       return next;
     });
-  }, []);
+  }, [saveOpWithIndicator]);
 
   const removeEncoste = useCallback((eIdx) => {
     if (!confirm(`Excluir o ${eIdx + 1}º Encoste e todos os seus registros?`)) return;
     setOp(prev => {
       const next = JSON.parse(JSON.stringify(prev));
       next.encostes.splice(eIdx, 1);
-      saveOp(next);
+      saveOpWithIndicator(next);
       return next;
     });
     showToast("Encoste excluído");
-  }, []);
+  }, [saveOpWithIndicator]);
 
   const addRegistro = useCallback((eIdx) => {
     setOp(prev => {
       const next = JSON.parse(JSON.stringify(prev));
       next.encostes[eIdx].registros.push({ id: Date.now(), hora: null, qtd: 0, p1: "", p2: "" });
-      saveOp(next);
+      saveOpWithIndicator(next);
       return next;
     });
-  }, []);
+  }, [saveOpWithIndicator]);
 
   const removeRegistro = useCallback((eIdx, rIdx) => {
     setOp(prev => {
       const next = JSON.parse(JSON.stringify(prev));
       next.encostes[eIdx].registros.splice(rIdx, 1);
-      saveOp(next);
+      saveOpWithIndicator(next);
       return next;
     });
-  }, []);
+  }, [saveOpWithIndicator]);
 
   const novaOp = useCallback(() => {
     const newOp = { id: Date.now(), composicao: "", chegada: new Date().toISOString(), produto: "Celulose", totalVagoes: 0, encostes: [{ id: Date.now(), quantidade: 0, posicionamento: null, inicioOp: null, registros: [] }] };
     setOp(newOp);
-    saveOp(newOp);
+    saveOpWithIndicator(newOp);
     setShowShare(false);
     setTab("operacao");
-  }, []);
+  }, [saveOpWithIndicator]);
 
   const salvarHist = useCallback(async () => {
     if (!opRef.current) return;
@@ -894,7 +1307,9 @@ function App() {
         </div>
         <div className="header-right">
           <div className="user-bar">
-            <span className="sync-dot online" />
+            <span className={`save-indicator ${saving ? "saving" : (lastSaved ? "saved" : "")}`}>
+              {saving ? <><span className="spinner" /> Salvando...</> : (lastSaved ? <>✓ Salvo {fmtTime(lastSaved)}</> : <><span className="sync-dot online" /> Sincronizado</>)}
+            </span>
             <span>{user.email.split("@")[0]}</span>
             {role === "gestor" && <span className="badge badge-accent">Gestor</span>}
             <button onClick={() => setShowPwModal(true)}>🔑 Senha</button>
@@ -959,15 +1374,30 @@ function App() {
                 <div className="progress"><div className="progress-fill" style={{ width: `${Math.min(100, pctRef)}%` }} /></div>
               </div>
 
-              {(op.encostes || []).map((enc, eIdx) => (
-                <Encoste key={enc.id || eIdx} enc={enc} eIdx={eIdx} total={(op.encostes || []).length}
-                  onUpdate={(f, v) => updateEncoste(eIdx, f, v)}
-                  onRemove={() => removeEncoste(eIdx)}
-                  onAddReg={() => addRegistro(eIdx)}
-                  onRemoveReg={(rIdx) => removeRegistro(eIdx, rIdx)}
-                  onUpdateReg={(rIdx, f, v) => updateRegistro(eIdx, rIdx, f, v)}
-                />
-              ))}
+              {(() => {
+                const warns = validateOp(op);
+                return warns.length ? (
+                  <div className="consistency-banner">
+                    <div className="ttl">⚠ Atenção — possível inconsistência</div>
+                    <ul>{warns.map((w, i) => <li key={i}>{w}</li>)}</ul>
+                  </div>
+                ) : null;
+              })()}
+
+              {(() => {
+                const encostes = op.encostes || [];
+                const saldosAnteriores = saldosAnterioresPorEncoste(encostes);
+                return encostes.map((enc, eIdx) => (
+                  <Encoste key={enc.id || eIdx} enc={enc} eIdx={eIdx} total={encostes.length} saldoAnterior={saldosAnteriores[eIdx] || 0}
+                    onUpdate={(f, v) => updateEncoste(eIdx, f, v)}
+                    onUpdateTroca={(f, v) => updateTrocaParcial(eIdx, f, v)}
+                    onRemove={() => removeEncoste(eIdx)}
+                    onAddReg={() => addRegistro(eIdx)}
+                    onRemoveReg={(rIdx) => removeRegistro(eIdx, rIdx)}
+                    onUpdateReg={(rIdx, f, v) => updateRegistro(eIdx, rIdx, f, v)}
+                  />
+                ));
+              })()}
 
               <div className="actions">
                 <button className="btn btn-info" onClick={addEncoste}>＋ Encoste</button>
@@ -1038,7 +1468,11 @@ function App() {
                           <button className="btn btn-success btn-sm" onClick={e => { e.stopPropagation(); copiarTexto(h); }}>📋 Copiar</button>
                           <button className="btn btn-danger btn-sm" onClick={async e => { e.stopPropagation(); await removeHist(h.id); await reloadHist(setHist); if (viewHistId === h.id) setViewHistId(null); showToast("✓ Removido"); }}>🗑 Excluir</button>
                         </div>
-                        {(h.encostes || []).map((enc, eidx) => {
+                        {(() => {
+                          const encostesHist = h.encostes || [];
+                          const saldosHist = saldosAnterioresPorEncoste(encostesHist);
+                          return encostesHist.map((enc, eidx) => {
+                          const saldoAnterior = saldosHist[eidx] || 0;
                           const regs = enc.registros || [];
                           const ini2 = enc.inicioOp ? new Date(enc.inicioOp) : null;
                           const encDateStr = enc.inicioOp ? enc.inicioOp.slice(0, 10) : null;
@@ -1055,8 +1489,34 @@ function App() {
                             <div key={eidx} style={{ marginTop: 18 }}>
                               <div style={{ fontSize: 11, fontWeight: 800, color: "var(--accent)", marginBottom: 8, letterSpacing: 1 }}>
                                 {eidx + 1}º ENCOSTE — {enc.quantidade || 0} vagões
-                                {enc.equipeManual && <span className="badge badge-accent" style={{ marginLeft: 8 }}>Equipe {enc.equipeManual}</span>}
+                                {enc.trocaParcial && <span className="badge badge-warning" style={{ marginLeft: 8 }}>🔄 Troca Parcial</span>}
                               </div>
+
+                              {enc.trocaParcial && (() => {
+                                const tp = enc.trocaParcial;
+                                const saldo = Math.max(0, (enc.quantidade || 0) - (tp.qtdAntesChamada || 0));
+                                return (
+                                  <div className="troca-block" style={{ marginBottom: 12, padding: 10 }}>
+                                    <div className="troca-title" style={{ marginBottom: 6 }}>🔄 Troca Parcial · {tp.qtdAntesChamada || 0} + {saldo}</div>
+                                    <div style={{ fontSize: 11, color: "var(--text)", lineHeight: 1.6 }}>
+                                      <div>1ª leva: <b>{tp.qtdAntesChamada || 0}</b> vg · Disponível {fmtDateTime(tp.momentoChamada) || "—"}</div>
+                                      <div>Continuidade até parada: descarregados <b>{tp.qtdAteParada ?? 0}</b> vg · Parada {fmtDateTime(tp.paradaEfetiva) || "—"}</div>
+                                      <div>Retomada: liberado {fmtDateTime(tp.liberadoRetorno) || "—"} · retorno {fmtDateTime(tp.retornoDescarga) || "—"} · descarregados <b>{tp.qtdAposRetorno ?? 0}</b> vg · nova parada {fmtDateTime(tp.novaParada) || "—"}</div>
+                                      <div style={{ marginTop: 4, color: "var(--text-muted)" }}>Total descarregado durante a troca: <b>{(tp.qtdAteParada || 0) + (tp.qtdAposRetorno || 0)}</b> vg</div>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
+
+                              {saldoAnterior > 0 && (
+                                <div className="troca-block" style={{ marginBottom: 12, padding: 10 }}>
+                                  <div className="troca-title" style={{ marginBottom: 6 }}>Saldo anexado do encoste anterior</div>
+                                  <div style={{ fontSize: 11, color: "var(--text)", lineHeight: 1.6 }}>
+                                    Saldo restante do {eidx}º encoste: <b>{saldoAnterior}</b> vg anexado ao {eidx + 1}º encoste · Base operacional: <b>{(enc.quantidade || 0) + saldoAnterior}</b> vg
+                                  </div>
+                                </div>
+                              )}
+
                               <table>
                                 <thead><tr><th>#</th><th>Hora</th><th>Qtd</th><th>Acum.</th><th>VG/h</th>{regs.some(r => r.p1 || r.p2) && <th>Pórticos</th>}<th>Equipe</th></tr></thead>
                                 <tbody>
@@ -1088,7 +1548,8 @@ function App() {
                               </table>
                             </div>
                           );
-                        })}
+                          });
+                        })()}
                       </div>
                     )}
                   </div>
