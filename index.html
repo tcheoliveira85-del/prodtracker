@@ -34,6 +34,8 @@ input,select,button,textarea{font-family:inherit}
 .section-grad{background:linear-gradient(135deg,var(--card),var(--card-alt))}
 .row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
 .field{flex:1;min-width:140px}.field-sm{flex:.6;min-width:100px}.field-date{flex:1;min-width:200px}
+.encoste-main-row{display:grid;grid-template-columns:minmax(110px,.65fr) minmax(110px,.65fr) repeat(3,minmax(165px,1fr));gap:12px;margin-bottom:12px}
+.encoste-main-row .field-sm,.encoste-main-row .field-date{min-width:0}
 label.lbl{display:block;font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
 input.inp,select.inp{width:100%;height:42px;min-height:42px;padding:0 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;line-height:1.2;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
 input[type="datetime-local"].inp,input[type="date"].inp,input[type="time"].inp,input[type="number"].inp{height:42px;min-height:42px}
@@ -98,6 +100,8 @@ tr.alt{background:var(--card-alt)}
 .troca-block .row{margin-bottom:8px}
 .troca-block label.lbl{white-space:nowrap}
 .troca-field-lg{flex:0 0 400.8px;width:400.8px;max-width:100%}
+.overlap-row-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.overlap-row-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:8px}
 .saldo-pill{display:inline-flex;align-items:center;justify-content:center;height:42px;min-height:42px;margin-left:8px;padding:0 14px;background:rgba(245,158,11,.15);border-radius:8px;font-size:13px;font-weight:700;color:var(--warning)}
 .col-center{text-align:center}.col-center .inp{display:block;margin-left:auto;margin-right:auto}
 .save-indicator{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:var(--text-muted);transition:opacity .3s}
@@ -120,7 +124,8 @@ tr.alt{background:var(--card-alt)}
 .rank-row:last-child{border-bottom:none}
 .rank-pos{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
 .rank-name{flex:1;font-size:13px}.rank-val{font-size:13px;font-weight:700}
-@media(max-width:600px){.container{padding:8px 12px}.header{gap:8px}.row{gap:8px}.field{min-width:100%;flex-basis:100%}.field-date{min-width:100%;flex-basis:100%}.field-sm{min-width:100%;flex-basis:100%}.troca-field-lg{flex:1 1 100%;width:100%;max-width:100%;min-width:0}.metrics{gap:6px}.metric{min-width:60px;padding:10px 4px}.metric-num{font-size:16px}.metric-num-lg{font-size:22px}.btn{padding:8px 14px;font-size:11px}.section{padding:14px}.nav-btn{padding:6px 10px;font-size:10px}input[type="datetime-local"].inp{font-size:14px}td input[type="datetime-local"].inp{width:100%!important;min-width:150px}.login-box{padding:28px 20px}.chart-container{height:220px}}
+@media(max-width:900px){.encoste-main-row{grid-template-columns:repeat(2,minmax(120px,1fr))}.encoste-main-row .field-date{grid-column:span 2}}
+@media(max-width:600px){.container{padding:8px 12px}.header{gap:8px}.row{gap:8px}.field{min-width:100%;flex-basis:100%}.field-date{min-width:100%;flex-basis:100%}.field-sm{min-width:100%;flex-basis:100%}.encoste-main-row{grid-template-columns:1fr;gap:8px}.encoste-main-row .field-date{grid-column:auto}.overlap-row-3,.overlap-row-2{grid-template-columns:1fr;gap:8px}.troca-field-lg{flex:1 1 100%;width:100%;max-width:100%;min-width:0}.metrics{gap:6px}.metric{min-width:60px;padding:10px 4px}.metric-num{font-size:16px}.metric-num-lg{font-size:22px}.btn{padding:8px 14px;font-size:11px}.section{padding:14px}.nav-btn{padding:6px 10px;font-size:10px}input[type="datetime-local"].inp{font-size:14px}td input[type="datetime-local"].inp{width:100%!important;min-width:150px}.login-box{padding:28px 20px}.chart-container{height:220px}}
 ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--card)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 </style>
 </head>
@@ -231,25 +236,34 @@ function getPeriodoForTimestamp(iso) {
 function calcEncoste(enc) {
   const regs = enc.registros || [];
   const totalRegs = regs.reduce((s, r) => s + (r.qtd || 0), 0);
-  // Deltas da troca parcial (vagões descarregados durante as janelas da troca, fora dos registros hora a hora)
+  // Deltas da overlap de manobra (vagões descarregados durante as janelas da troca, fora dos registros hora a hora)
   const tp = enc.trocaParcial || {};
   const qtdTroca = (tp.qtdAteParada || 0) + (tp.qtdAposRetorno || 0);
   // Saldo já descarregado de encoste anterior (campo virtual injetado pela transformação para o relatório)
   const saldoExt = enc._saldoJaDescarregado || 0;
   const saldoAnterior = enc._saldoAnterior || 0;
   const quantidadeBase = (enc.quantidade || 0) + saldoAnterior;
+  const planejado = Math.max(0, enc.planejado || 0);
+  const alvoDescarga = planejado > 0 ? planejado + saldoAnterior : quantidadeBase;
   const total = totalRegs + qtdTroca + saldoExt;
-  const rest = quantidadeBase - total;
+  const rest = alvoDescarga - total;
   const pos = enc.posicionamento ? new Date(enc.posicionamento) : null;
   const ini = enc.inicioOp ? new Date(enc.inicioOp) : null;
   const disp = enc.disponivelRetirada ? new Date(enc.disponivelRetirada) : null;
   const regsH = regs.filter(r => r.hora);
   // Para "último momento operacional" considera também os timestamps da troca (parada efetiva, nova parada)
-  const candidatosFim = [];
-  if (regsH.length) candidatosFim.push(new Date(regsH[regsH.length - 1].hora).getTime());
-  if (tp.paradaEfetiva) candidatosFim.push(new Date(tp.paradaEfetiva).getTime());
-  if (tp.novaParada) candidatosFim.push(new Date(tp.novaParada).getTime());
-  const fimMs = candidatosFim.length ? Math.max(...candidatosFim) : null;
+  const eventosFim = [];
+  regsH.forEach(r => eventosFim.push({ ms: new Date(r.hora).getTime(), qtd: r.qtd || 0 }));
+  if (tp.paradaEfetiva) eventosFim.push({ ms: new Date(tp.paradaEfetiva).getTime(), qtd: qtdTroca });
+  eventosFim.sort((a, b) => a.ms - b.ms);
+  const ultimoEventoMs = eventosFim.length ? eventosFim[eventosFim.length - 1].ms : null;
+  let acumuladoAteMeta = saldoExt;
+  let fimMetaMs = null;
+  eventosFim.forEach(ev => {
+    acumuladoAteMeta += ev.qtd || 0;
+    if (!fimMetaMs && alvoDescarga > 0 && acumuladoAteMeta >= alvoDescarga) fimMetaMs = ev.ms;
+  });
+  const fimMs = fimMetaMs || ultimoEventoMs;
   const ultHora = fimMs ? new Date(fimMs) : null;
   // tempoOp: tempo "puro" de operação (inicioOp → último momento operacional)
   const tempoOp = ini && fimMs ? fimMs - ini.getTime() : 0;
@@ -259,19 +273,22 @@ function calcEncoste(enc) {
   const abertura = pos && ini ? Math.max(0, ini.getTime() - pos.getTime()) : 0;
   // fechamento: último momento operacional → disponivelRetirada
   const fechamento = fimMs && disp ? Math.max(0, new Date(disp).getTime() - fimMs) : 0;
-  const prod = tempoTotal > 0 && total > 0 ? total / (tempoTotal / 36e5) : 0;
+  const tempoProd = tempoOp > 0 ? tempoOp : tempoTotal;
+  const atingiuMeta = rest <= 0 && total > 0;
+  const baseProd = total > 0 ? (atingiuMeta ? alvoDescarga : total) : 0;
+  const prod = tempoProd > 0 && baseProd > 0 ? baseProd / (tempoProd / 36e5) : 0;
   const tRest = prod > 0 && rest > 0 ? (rest / prod) * 36e5 : 0;
   const prev = ultHora && tRest > 0 ? new Date(fimMs + tRest) : null;
-  return { total, totalRegs, qtdTroca, saldoAnterior, quantidadeBase, rest, fimOperacional: ultHora, tempoOp: tempoOp > 0 ? tempoOp : 0, tempoTotal: tempoTotal > 0 ? tempoTotal : 0, abertura, fechamento, prod, prev, done: rest <= 0 && total > 0 };
+  return { total, totalRegs, qtdTroca, saldoAnterior, quantidadeBase, planejado, alvoDescarga, baseProd, rest, fimOperacional: ultHora, tempoOp: tempoOp > 0 ? tempoOp : 0, tempoTotal: tempoTotal > 0 ? tempoTotal : 0, tempoProd: tempoProd > 0 ? tempoProd : 0, abertura, fechamento, prod, prev, done: atingiuMeta };
 }
 
 function calcGeral(op) {
   if (!op) return { totalVG: 0, totalQtd: 0, pct: 0, tempoTotal: 0, prodMedia: 0 };
-  let totalVG = 0, totalQtd = 0, tempoBase = 0;
+  let totalVG = 0, totalQtd = 0, prodBase = 0, tempoBase = 0, tempoProdBase = 0;
   // tempoBase agora soma c.tempoTotal (posicionamento → último registro), não c.tempoOp
   // assim a produtividade média é coerente com a produtividade por encoste
-  (op.encostes || []).forEach(e => { const c = calcEncoste(e); totalVG += c.total; totalQtd += e.quantidade || 0; tempoBase += c.tempoTotal; });
-  return { totalVG, totalQtd, pct: totalQtd > 0 ? totalVG / totalQtd * 100 : 0, tempoTotal: tempoBase, prodMedia: tempoBase > 0 && totalVG > 0 ? totalVG / (tempoBase / 36e5) : 0 };
+  (op.encostes || []).forEach(e => { const c = calcEncoste(e); totalVG += c.total; totalQtd += e.quantidade || 0; prodBase += c.baseProd || 0; tempoBase += c.tempoTotal; tempoProdBase += c.tempoProd || 0; });
+  return { totalVG, totalQtd, pct: totalQtd > 0 ? totalVG / totalQtd * 100 : 0, tempoTotal: tempoBase, prodMedia: tempoProdBase > 0 && prodBase > 0 ? prodBase / (tempoProdBase / 36e5) : 0 };
 }
 
 // ══════ VALIDAÇÃO DE CONSISTÊNCIA ══════
@@ -283,7 +300,7 @@ function saldosAnterioresPorEncoste(encostes) {
   (encostes || []).forEach(enc => {
     saldos.push(saldo);
     const c = calcEncoste({ ...enc, _saldoAnterior: saldo });
-    saldo = Math.max(0, c.rest);
+    saldo = Math.max(0, ((enc.quantidade || 0) + saldo) - c.total);
   });
   return saldos;
 }
@@ -324,18 +341,12 @@ function validateOp(op) {
 
     if (enc.trocaParcial) {
       if ((tp.qtdAntesChamada || 0) > (enc.quantidade || 0)) {
-        warns.push(`${lbl}: troca parcial — qtd antes da chamada (${tp.qtdAntesChamada}) > quantidade do encoste`);
+        warns.push(`${lbl}: overlap de manobra — qtd antes da chamada (${tp.qtdAntesChamada}) > quantidade do encoste`);
       }
       const mC = tp.momentoChamada ? new Date(tp.momentoChamada).getTime() : null;
       const pE = tp.paradaEfetiva ? new Date(tp.paradaEfetiva).getTime() : null;
-      const lR = tp.liberadoRetorno ? new Date(tp.liberadoRetorno).getTime() : null;
-      const rD = tp.retornoDescarga ? new Date(tp.retornoDescarga).getTime() : null;
-      const nP = tp.novaParada ? new Date(tp.novaParada).getTime() : null;
       if (ini && mC && mC < ini) warns.push(`${lbl}: chamada da troca antes do início da operação`);
       if (mC && pE && pE < mC) warns.push(`${lbl}: parada efetiva antes da chamada`);
-      if (pE && lR && lR < pE) warns.push(`${lbl}: liberação antes da parada`);
-      if (lR && rD && rD < lR) warns.push(`${lbl}: retorno antes da liberação`);
-      if (rD && nP && nP < rD) warns.push(`${lbl}: nova parada antes do retorno`);
     }
   });
 
@@ -344,7 +355,7 @@ function validateOp(op) {
 
 
 // ══════ TRANSFORMAÇÃO P/ RELATÓRIO WHATSAPP ══════
-// Operacionalmente, quando há troca parcial:
+// Operacionalmente, quando há overlap de manobra:
 // "1º encoste" no relatório = primeira leva (qtdAntesChamada vagões, ex: 30)
 // "2º encoste" no relatório = saldo (ex: 10) + próxima leva real (ex: 30) = 40
 // Modelo (interpretação A — delta): vagões descarregados durante a troca estão em
@@ -361,30 +372,30 @@ function transformaEncostesParaRelatorio(encostes) {
 
     if (temTroca) {
       const qtdPrim = tp.qtdAntesChamada;
-      const saldo = Math.max(0, (enc.quantidade || 0) - qtdPrim);
+      const saldo = Math.max(0, (enc.quantidade || 0) - qtdPrim - (tp.qtdAteParada || 0) - (tp.qtdAposRetorno || 0));
       const regs = enc.registros || [];
       const tCham = tp.momentoChamada ? new Date(tp.momentoChamada).getTime() : null;
       // Registros até a chamada da FIPS = registros da 1ª leva
       const regsAntes = tCham ? regs.filter(r => r.hora && new Date(r.hora).getTime() <= tCham) : regs;
 
       // Se já havia um saldo pendente, ele se incorpora à 1ª leva deste encoste no relatório
-      const baseQtd = qtdPrim + (pendingSaldo ? pendingSaldo.qtd : 0);
-      const baseSaldoExt = pendingSaldo ? pendingSaldo.qtdJaDescarregada : 0;
+      const baseQtd = (enc.quantidade || 0) + (pendingSaldo ? pendingSaldo.qtd : 0);
 
       result.push({
         ...enc,
         quantidade: baseQtd,
-        registros: regsAntes,
+        planejado: enc.planejado ? enc.planejado + (pendingSaldo ? pendingSaldo.qtd : 0) : 0,
+        registros: regs,
         // Disponível p/ Retirada da 1ª leva = momento da chamada (é quando "fica disponível")
-        disponivelRetirada: enc.disponivelRetirada || tp.momentoChamada || null,
+        disponivelRetirada: enc.disponivelRetirada || null,
         // Limpa trocaParcial — os deltas pertencem ao saldo, não à 1ª leva
-        trocaParcial: null,
-        _saldoJaDescarregado: baseSaldoExt,
+        trocaParcial: enc.trocaParcial,
+        _saldoJaDescarregado: 0,
       });
 
       pendingSaldo = {
         qtd: saldo,
-        qtdJaDescarregada: (tp.qtdAteParada || 0) + (tp.qtdAposRetorno || 0),
+        qtdJaDescarregada: 0,
         srcPosicionamento: enc.posicionamento,
         srcInicioOp: enc.inicioOp,
         srcDisponivelRetirada: enc.disponivelRetirada,
@@ -394,7 +405,8 @@ function transformaEncostesParaRelatorio(encostes) {
         result.push({
           ...enc,
           quantidade: (enc.quantidade || 0) + pendingSaldo.qtd,
-          _saldoJaDescarregado: pendingSaldo.qtdJaDescarregada,
+          planejado: enc.planejado ? enc.planejado + pendingSaldo.qtd : 0,
+          _saldoJaDescarregado: 0,
         });
         pendingSaldo = null;
       } else {
@@ -408,7 +420,8 @@ function transformaEncostesParaRelatorio(encostes) {
     result.push({
       id: "saldo_solto",
       quantidade: pendingSaldo.qtd,
-      _saldoJaDescarregado: pendingSaldo.qtdJaDescarregada,
+      planejado: pendingSaldo.qtd,
+      _saldoJaDescarregado: 0,
       posicionamento: pendingSaldo.srcPosicionamento,
       inicioOp: pendingSaldo.srcInicioOp,
       disponivelRetirada: pendingSaldo.srcDisponivelRetirada,
@@ -419,7 +432,7 @@ function transformaEncostesParaRelatorio(encostes) {
   return result;
 }
 
-// ══════ WHATSAPP TEXT — usa redistribuição p/ troca parcial ══════
+// ══════ WHATSAPP TEXT — usa redistribuição p/ overlap de manobra ══════
 function gerarTexto(op) {
   const L = [];
   L.push("📦 *PRODUTIVIDADE HORA A HORA*", "━━━━━━━━━━━━━━━━━━━━━");
@@ -431,6 +444,7 @@ function gerarTexto(op) {
   encostesRel.forEach((enc, idx) => {
     const c = calcEncoste(enc), regs = enc.registros || [];
     L.push(`▸ *${idx + 1}º ENCOSTE*`, `  Qtd: ${enc.quantidade || 0} vagões`, `  Posicionamento: ${fmtDateTime(enc.posicionamento)}`, `  Início: ${fmtDateTime(enc.inicioOp)}`);
+    if (c.planejado > 0) L.push(`  Planejado: ${c.planejado} vagoes`);
     L.push(`  Descarregados: ${c.total} | Restante: ${Math.max(0, c.rest)}`, `  Produtividade: ${c.prod.toFixed(1)} VG/h`, `  Tempo Op: ${fmtDur(c.tempoOp)}`);
     if (enc.disponivelRetirada) L.push(`  Disponível p/ Retirada: ${fmtDateTime(enc.disponivelRetirada)}`);
     if (c.done) L.push("  ✅ *CONCLUÍDO*"); else if (c.prev) L.push(`  🕐 *Prev. Término: ${fmtDateTime(c.prev)}*`);
@@ -537,16 +551,17 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
   const tp = enc.trocaParcial;
   const temTroca = !!tp;
   const [showTroca, setShowTroca] = useState(temTroca);
-  const saldoTroca = tp && (tp.qtdAntesChamada || 0) > 0 ? Math.max(0, (enc.quantidade || 0) - tp.qtdAntesChamada) : 0;
+  const qtdOverlap = tp ? (tp.qtdAteParada || 0) + (tp.qtdAposRetorno || 0) : 0;
+  const saldoTroca = tp && (tp.qtdAntesChamada || 0) > 0 ? Math.max(0, (enc.quantidade || 0) - (tp.qtdAntesChamada || 0) - qtdOverlap) : 0;
 
   const toggleTroca = () => {
     if (temTroca) {
-      if (confirm("Remover dados da troca parcial deste encoste?")) {
+      if (confirm("Remover dados do overlap de manobra deste encoste?")) {
         onUpdate("trocaParcial", null);
         setShowTroca(false);
       }
     } else {
-      onUpdate("trocaParcial", { qtdAntesChamada: 30, momentoChamada: null, paradaEfetiva: null, qtdAteParada: null, liberadoRetorno: null, retornoDescarga: null, novaParada: null, qtdAposRetorno: null });
+      onUpdate("trocaParcial", { qtdAntesChamada: enc.planejado || 30, momentoChamada: null, paradaEfetiva: null, qtdAteParada: null });
       setShowTroca(true);
     }
   };
@@ -558,16 +573,20 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
           <span className="encoste-num">{eIdx + 1}</span>
           {eIdx + 1}º ENCOSTE
           {c.done && <span className="badge badge-success">✓ Concluído</span>}
-          {temTroca && <span className="badge badge-warning">🔄 Troca Parcial</span>}
+          {temTroca && <span className="badge badge-warning">🔄 Overlap de Manobra</span>}
         </div>
         <div className="encoste-actions">
           {total > 1 && <button className="btn btn-danger btn-xs" onClick={onRemove}>🗑 Excluir</button>}
         </div>
       </div>
-      <div className="row">
-        <div className="field">
+      <div className="encoste-main-row">
+        <div className="field-sm">
           <label className="lbl">Quantidade</label>
           <input type="number" className="inp" value={enc.quantidade || ""} placeholder="Nº vagões" inputMode="numeric" onChange={e => onUpdate("quantidade", parseInt(e.target.value) || 0)} />
+        </div>
+        <div className="field-sm">
+          <label className="lbl">Planejado</label>
+          <input type="number" className="inp" value={enc.planejado || ""} placeholder="Meta" inputMode="numeric" onChange={e => onUpdate("planejado", e.target.value === "" ? null : parseInt(e.target.value) || 0)} />
         </div>
         <div className="field-date">
           <label className="lbl">Posicionamento</label>
@@ -584,7 +603,7 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
       </div>
       <div className="metrics">
         <div className="metric"><div className="metric-num">{c.total}</div><div className="metric-label">Descarregados</div></div>
-        <div className="metric"><div className={`metric-num ${c.rest > 0 ? "color-warning" : "color-success"}`}>{Math.max(0, c.rest)}</div><div className="metric-label">Restante</div></div>
+        <div className="metric"><div className={`metric-num ${c.rest > 0 ? "color-warning" : "color-success"}`}>{Math.max(0, c.rest)}</div><div className="metric-label">{c.planejado > 0 ? "Rest. planej." : "Restante"}</div></div>
         <div className="metric"><div className="metric-num">{c.prod.toFixed(1)}</div><div className="metric-label">VG/h</div></div>
         <div className="metric"><div className="metric-num color-info" style={{ fontSize: 16 }}>{c.abertura > 0 ? fmtDur(c.abertura) : "—"}</div><div className="metric-label">Abertura</div></div>
         <div className="metric"><div className="metric-num color-info">{fmtDur(c.tempoOp)}</div><div className="metric-label">Tempo Op.</div></div>
@@ -592,10 +611,10 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
         <div className="metric"><div className="metric-num" style={{ fontSize: 18 }}>{c.done ? "✓" : (c.prev ? fmtTime(c.prev) : "—")}</div><div className="metric-label">Prev. Término</div></div>
       </div>
 
-      {/* Bloco colapsável: Troca Parcial */}
+      {/* Bloco colapsável: Overlap de Manobra */}
       <button className={`troca-toggle ${temTroca ? "active" : ""}`} onClick={() => temTroca ? setShowTroca(!showTroca) : toggleTroca()}>
         <span style={{ fontSize: 14 }}>🔄</span>
-        <span>Troca Parcial {temTroca ? `· ${tp.qtdAntesChamada || 0} + ${saldoTroca}` : "(desativada)"}</span>
+        <span>Overlap de Manobra {temTroca ? `· ${tp.qtdAntesChamada || 0} + ${saldoTroca}` : "(desativado)"}</span>
         <span style={{ marginLeft: "auto", fontSize: 10 }}>
           {temTroca ? (showTroca ? "▲ ocultar" : "▼ exibir") : "＋ ativar"}
         </span>
@@ -604,8 +623,8 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
       {temTroca && showTroca && (
         <div className="troca-block">
           <div className="troca-title">📋 1ª leva (chamada da FIPS)</div>
-          <div className="row">
-            <div className="field" style={{ minWidth: 100 }}>
+          <div className="overlap-row-3">
+            <div className="field">
               <label className="lbl">Qtd. antes da chamada</label>
               <input type="number" className="inp" value={tp.qtdAntesChamada || ""} placeholder="30" inputMode="numeric" onChange={e => onUpdateTroca("qtdAntesChamada", parseInt(e.target.value) || 0)} />
             </div>
@@ -613,46 +632,25 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
               <label className="lbl">Disponível 1ª leva</label>
               <input type="datetime-local" className="inp" value={toLocal(tp.momentoChamada)} onChange={e => onUpdateTroca("momentoChamada", e.target.value ? new Date(e.target.value).toISOString() : null)} />
             </div>
-            <div className="field" style={{ minWidth: 80 }}>
+            <div className="field">
               <label className="lbl">Saldo</label>
               <div className="saldo-pill" style={{ marginLeft: 0, width: "100%" }}>{saldoTroca}</div>
             </div>
           </div>
 
           <div className="troca-title" style={{ marginTop: 14 }}>⏸ Parada efetiva (FIPS chegou)</div>
-          <div className="row">
-            <div className="field-date troca-field-lg">
+          <div className="overlap-row-2">
+            <div className="field-date">
               <label className="lbl">Parada efetiva</label>
               <input type="datetime-local" className="inp" value={toLocal(tp.paradaEfetiva)} onChange={e => onUpdateTroca("paradaEfetiva", e.target.value ? new Date(e.target.value).toISOString() : null)} />
             </div>
-            <div className="field troca-field-lg">
-              <label className="lbl">Qtd. descarregada (até parada)</label>
-              <input type="number" className="inp" value={tp.qtdAteParada ?? ""} placeholder="0" inputMode="numeric" onChange={e => onUpdateTroca("qtdAteParada", e.target.value === "" ? null : parseInt(e.target.value) || 0)} />
+            <div className="field">
+              <label className="lbl">Qtd. descarregada (ate a troca)</label>
+              <input type="number" className="inp" value={qtdOverlap || ""} placeholder="0" inputMode="numeric" onChange={e => { onUpdateTroca("qtdAteParada", e.target.value === "" ? null : parseInt(e.target.value) || 0); if (tp.qtdAposRetorno) onUpdateTroca("qtdAposRetorno", null); }} />
             </div>
           </div>
-
-          <div className="troca-title" style={{ marginTop: 14 }}>▶ Retomada</div>
-          <div className="row">
-            <div className="field-date troca-field-lg">
-              <label className="lbl">Liberado p/ retorno</label>
-              <input type="datetime-local" className="inp" value={toLocal(tp.liberadoRetorno)} onChange={e => onUpdateTroca("liberadoRetorno", e.target.value ? new Date(e.target.value).toISOString() : null)} />
-            </div>
-            <div className="field-date troca-field-lg">
-              <label className="lbl">Retorno da descarga</label>
-              <input type="datetime-local" className="inp" value={toLocal(tp.retornoDescarga)} onChange={e => onUpdateTroca("retornoDescarga", e.target.value ? new Date(e.target.value).toISOString() : null)} />
-            </div>
-            <div className="field-date troca-field-lg">
-              <label className="lbl">Nova parada (fim do saldo)</label>
-              <input type="datetime-local" className="inp" value={toLocal(tp.novaParada)} onChange={e => onUpdateTroca("novaParada", e.target.value ? new Date(e.target.value).toISOString() : null)} />
-            </div>
-            <div className="field troca-field-lg">
-              <label className="lbl">Qtd. descarregada (após retorno)</label>
-              <input type="number" className="inp" value={tp.qtdAposRetorno ?? ""} placeholder="0" inputMode="numeric" onChange={e => onUpdateTroca("qtdAposRetorno", e.target.value === "" ? null : parseInt(e.target.value) || 0)} />
-            </div>
-          </div>
-
           <div style={{ marginTop: 12, textAlign: "right" }}>
-            <button className="btn btn-danger btn-xs" onClick={toggleTroca}>🗑 Remover troca parcial</button>
+            <button className="btn btn-danger btn-xs" onClick={toggleTroca}>🗑 Remover overlap de manobra</button>
           </div>
         </div>
       )}
@@ -740,9 +738,11 @@ function calcAnaliseStats(historico) {
       const pos = enc.posicionamento ? new Date(enc.posicionamento) : null;
       const c = encostesCalc[ei];
       const tp = enc.trocaParcial || {};
+      const qtdOverlap = (tp.qtdAteParada || 0) + (tp.qtdAposRetorno || 0);
+      const fatorProd = c.total > 0 && c.baseProd > 0 ? c.baseProd / c.total : 1;
 
-      opVG += c.total;
-      if (c.tempoTotal > 0) opH += c.tempoTotal / 36e5;
+      opVG += c.baseProd || 0;
+      if (c.tempoProd > 0) opH += c.tempoProd / 36e5;
 
       if (ei === 0 && pos && chegada) compData.tChegPos = Math.max(0, (pos.getTime() - chegada.getTime()) / 36e5);
       if (c.tempoOp > 0) compData.tDescarga += c.tempoOp / 36e5;
@@ -754,7 +754,7 @@ function calcAnaliseStats(historico) {
         compData.tRetirada = Math.max(0, (new Date(op.dataRetirada).getTime() - c.fimOperacional.getTime()) / 36e5);
       }
 
-      let prevTime = pos || ini;
+      let prevTime = ini || pos;
       const addEvento = (iso, vg) => {
         if (!iso) return;
         const t = new Date(iso);
@@ -763,9 +763,8 @@ function calcAnaliseStats(historico) {
         prevTime = t;
       };
 
-      regs.forEach(r => addEvento(r.hora, r.qtd || 0));
-      addEvento(tp.paradaEfetiva || tp.momentoChamada, tp.qtdAteParada || 0);
-      addEvento(tp.novaParada || tp.retornoDescarga, tp.qtdAposRetorno || 0);
+      regs.forEach(r => addEvento(r.hora, (r.qtd || 0) * fatorProd));
+      addEvento(tp.paradaEfetiva || tp.momentoChamada, qtdOverlap * fatorProd);
 
       regs.forEach(r => {
         if (r.p1 && r.p2) totalHrsDois++;
@@ -1193,7 +1192,7 @@ function App() {
   const addEncoste = useCallback(() => {
     setOp(prev => {
       const next = JSON.parse(JSON.stringify(prev));
-      next.encostes.push({ id: Date.now(), quantidade: 0, posicionamento: null, inicioOp: null, registros: [] });
+      next.encostes.push({ id: Date.now(), quantidade: 0, planejado: 0, posicionamento: null, inicioOp: null, registros: [] });
       saveOpWithIndicator(next);
       return next;
     });
@@ -1228,12 +1227,21 @@ function App() {
     });
   }, [saveOpWithIndicator]);
 
-  const novaOp = useCallback(() => {
-    const newOp = { id: Date.now(), composicao: "", chegada: new Date().toISOString(), produto: "Celulose", totalVagoes: 0, encostes: [{ id: Date.now(), quantidade: 0, posicionamento: null, inicioOp: null, registros: [] }] };
+  const novaOp = useCallback(async () => {
+    if (opRef.current) {
+      const ok = confirm("Existe uma operacao em andamento. Salvar a operacao atual no historico e iniciar uma nova?");
+      if (!ok) return;
+      const atual = JSON.parse(JSON.stringify(opRef.current));
+      atual.salvoEm = new Date().toISOString();
+      await saveHist(atual);
+      await reloadHist(setHist);
+    }
+    const newOp = { id: Date.now(), composicao: "", chegada: new Date().toISOString(), produto: "Celulose", totalVagoes: 0, encostes: [{ id: Date.now(), quantidade: 0, planejado: 0, posicionamento: null, inicioOp: null, registros: [] }] };
     setOp(newOp);
     saveOpWithIndicator(newOp);
     setShowShare(false);
     setTab("operacao");
+    showToast("Nova operacao iniciada");
   }, [saveOpWithIndicator]);
 
   const salvarHist = useCallback(async () => {
@@ -1489,20 +1497,19 @@ function App() {
                             <div key={eidx} style={{ marginTop: 18 }}>
                               <div style={{ fontSize: 11, fontWeight: 800, color: "var(--accent)", marginBottom: 8, letterSpacing: 1 }}>
                                 {eidx + 1}º ENCOSTE — {enc.quantidade || 0} vagões
-                                {enc.trocaParcial && <span className="badge badge-warning" style={{ marginLeft: 8 }}>🔄 Troca Parcial</span>}
+                                {enc.trocaParcial && <span className="badge badge-warning" style={{ marginLeft: 8 }}>🔄 Overlap de Manobra</span>}
                               </div>
 
                               {enc.trocaParcial && (() => {
                                 const tp = enc.trocaParcial;
-                                const saldo = Math.max(0, (enc.quantidade || 0) - (tp.qtdAntesChamada || 0));
+                                const qtdOverlap = (tp.qtdAteParada || 0) + (tp.qtdAposRetorno || 0);
+                                const saldo = Math.max(0, (enc.quantidade || 0) - (tp.qtdAntesChamada || 0) - qtdOverlap);
                                 return (
                                   <div className="troca-block" style={{ marginBottom: 12, padding: 10 }}>
-                                    <div className="troca-title" style={{ marginBottom: 6 }}>🔄 Troca Parcial · {tp.qtdAntesChamada || 0} + {saldo}</div>
+                                    <div className="troca-title" style={{ marginBottom: 6 }}>🔄 Overlap de Manobra · {tp.qtdAntesChamada || 0} + {saldo}</div>
                                     <div style={{ fontSize: 11, color: "var(--text)", lineHeight: 1.6 }}>
                                       <div>1ª leva: <b>{tp.qtdAntesChamada || 0}</b> vg · Disponível {fmtDateTime(tp.momentoChamada) || "—"}</div>
-                                      <div>Continuidade até parada: descarregados <b>{tp.qtdAteParada ?? 0}</b> vg · Parada {fmtDateTime(tp.paradaEfetiva) || "—"}</div>
-                                      <div>Retomada: liberado {fmtDateTime(tp.liberadoRetorno) || "—"} · retorno {fmtDateTime(tp.retornoDescarga) || "—"} · descarregados <b>{tp.qtdAposRetorno ?? 0}</b> vg · nova parada {fmtDateTime(tp.novaParada) || "—"}</div>
-                                      <div style={{ marginTop: 4, color: "var(--text-muted)" }}>Total descarregado durante a troca: <b>{(tp.qtdAteParada || 0) + (tp.qtdAposRetorno || 0)}</b> vg</div>
+                                      <div>Parada efetiva: {fmtDateTime(tp.paradaEfetiva) || "—"} · descarregados ate a troca <b>{qtdOverlap}</b> vg</div>
                                     </div>
                                   </div>
                                 );
