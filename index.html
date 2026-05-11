@@ -343,7 +343,7 @@ function validateOp(op) {
       if ((tp.qtdAntesChamada || 0) > (enc.quantidade || 0)) {
         warns.push(`${lbl}: overlap de manobra — qtd antes da chamada (${tp.qtdAntesChamada}) > quantidade do encoste`);
       }
-      const mC = tp.momentoChamada ? new Date(tp.momentoChamada).getTime() : null;
+      const mC = (tp.momentoChamada || enc.disponivelRetirada) ? new Date(tp.momentoChamada || enc.disponivelRetirada).getTime() : null;
       const pE = tp.paradaEfetiva ? new Date(tp.paradaEfetiva).getTime() : null;
       if (ini && mC && mC < ini) warns.push(`${lbl}: chamada da troca antes do início da operação`);
       if (mC && pE && pE < mC) warns.push(`${lbl}: parada efetiva antes da chamada`);
@@ -374,7 +374,7 @@ function transformaEncostesParaRelatorio(encostes) {
       const qtdPrim = tp.qtdAntesChamada;
       const saldo = Math.max(0, (enc.quantidade || 0) - qtdPrim - (tp.qtdAteParada || 0) - (tp.qtdAposRetorno || 0));
       const regs = enc.registros || [];
-      const tCham = tp.momentoChamada ? new Date(tp.momentoChamada).getTime() : null;
+      const tCham = (tp.momentoChamada || enc.disponivelRetirada) ? new Date(tp.momentoChamada || enc.disponivelRetirada).getTime() : null;
       // Registros até a chamada da FIPS = registros da 1ª leva
       const regsAntes = tCham ? regs.filter(r => r.hora && new Date(r.hora).getTime() <= tCham) : regs;
 
@@ -414,20 +414,6 @@ function transformaEncostesParaRelatorio(encostes) {
       }
     }
   });
-
-  // Saldo "solto" no final — quando não há próximo encoste pra absorver
-  if (pendingSaldo && pendingSaldo.qtd > 0) {
-    result.push({
-      id: "saldo_solto",
-      quantidade: pendingSaldo.qtd,
-      planejado: pendingSaldo.qtd,
-      _saldoJaDescarregado: 0,
-      posicionamento: pendingSaldo.srcPosicionamento,
-      inicioOp: pendingSaldo.srcInicioOp,
-      disponivelRetirada: pendingSaldo.srcDisponivelRetirada,
-      registros: [],
-    });
-  }
 
   return result;
 }
@@ -561,7 +547,7 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
         setShowTroca(false);
       }
     } else {
-      onUpdate("trocaParcial", { qtdAntesChamada: enc.planejado || 30, momentoChamada: null, paradaEfetiva: null, qtdAteParada: null });
+      onUpdate("trocaParcial", { qtdAntesChamada: enc.planejado || 30, momentoChamada: enc.disponivelRetirada || null, paradaEfetiva: null, qtdAteParada: null });
       setShowTroca(true);
     }
   };
@@ -614,7 +600,7 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
       {/* Bloco colapsável: Overlap de Manobra */}
       <button className={`troca-toggle ${temTroca ? "active" : ""}`} onClick={() => temTroca ? setShowTroca(!showTroca) : toggleTroca()}>
         <span style={{ fontSize: 14 }}>🔄</span>
-        <span>Overlap de Manobra {temTroca ? `· ${tp.qtdAntesChamada || 0} + ${saldoTroca}` : "(desativado)"}</span>
+        <span>Overlap de Manobra {temTroca ? `· ${qtdOverlap} descarregados + ${saldoTroca} saldo` : "(desativado)"}</span>
         <span style={{ marginLeft: "auto", fontSize: 10 }}>
           {temTroca ? (showTroca ? "▲ ocultar" : "▼ exibir") : "＋ ativar"}
         </span>
@@ -630,7 +616,7 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
             </div>
             <div className="field-date">
               <label className="lbl">Disponível 1ª leva</label>
-              <input type="datetime-local" className="inp" value={toLocal(tp.momentoChamada)} onChange={e => onUpdateTroca("momentoChamada", e.target.value ? new Date(e.target.value).toISOString() : null)} />
+              <input type="datetime-local" className="inp" value={toLocal(tp.momentoChamada || enc.disponivelRetirada)} onChange={e => onUpdateTroca("momentoChamada", e.target.value ? new Date(e.target.value).toISOString() : null)} />
             </div>
             <div className="field">
               <label className="lbl">Saldo</label>
@@ -764,7 +750,7 @@ function calcAnaliseStats(historico) {
       };
 
       regs.forEach(r => addEvento(r.hora, (r.qtd || 0) * fatorProd));
-      addEvento(tp.paradaEfetiva || tp.momentoChamada, qtdOverlap * fatorProd);
+      addEvento(tp.paradaEfetiva || tp.momentoChamada || enc.disponivelRetirada, qtdOverlap * fatorProd);
 
       regs.forEach(r => {
         if (r.p1 && r.p2) totalHrsDois++;
@@ -1165,6 +1151,9 @@ function App() {
       const next = JSON.parse(JSON.stringify(prev));
       if (value === null || value === undefined) delete next.encostes[eIdx][field];
       else next.encostes[eIdx][field] = value;
+      if (field === "disponivelRetirada" && next.encostes[eIdx].trocaParcial) {
+        next.encostes[eIdx].trocaParcial.momentoChamada = value || null;
+      }
       saveOpWithIndicator(next);
       return next;
     });
@@ -1508,7 +1497,7 @@ function App() {
                                   <div className="troca-block" style={{ marginBottom: 12, padding: 10 }}>
                                     <div className="troca-title" style={{ marginBottom: 6 }}>🔄 Overlap de Manobra · {tp.qtdAntesChamada || 0} + {saldo}</div>
                                     <div style={{ fontSize: 11, color: "var(--text)", lineHeight: 1.6 }}>
-                                      <div>1ª leva: <b>{tp.qtdAntesChamada || 0}</b> vg · Disponível {fmtDateTime(tp.momentoChamada) || "—"}</div>
+                                      <div>1ª leva: <b>{tp.qtdAntesChamada || 0}</b> vg · Disponível {fmtDateTime(tp.momentoChamada || enc.disponivelRetirada) || "—"}</div>
                                       <div>Parada efetiva: {fmtDateTime(tp.paradaEfetiva) || "—"} · descarregados ate a troca <b>{qtdOverlap}</b> vg</div>
                                     </div>
                                   </div>
