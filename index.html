@@ -462,18 +462,24 @@ function linhasEncosteTexto(enc, idx) {
   return L;
 }
 
-function gerarTextoEncoste(op, enc, idx) {
+function gerarTextoEncoste(op, enc, idx, acumuladoAteEncoste = null, totalRef = null) {
   const L = linhasCabecalhoTexto(op);
   L.push(...linhasEncosteTexto(enc, idx));
+  if (acumuladoAteEncoste !== null) {
+    L.push("", "━━━━━━━━━━━━━━━━━━━━━", `Total: ${acumuladoAteEncoste}/${totalRef || acumuladoAteEncoste} vagões`);
+  }
   return L.join("\n");
 }
 
 function gerarTextosEncostes(op) {
   const encostesRel = transformaEncostesParaRelatorio(op.encostes || []);
+  const g = calcGeral(op);
+  const totalRef = op.totalVagoes || g.totalQtd;
+  let acumulado = 0;
   return encostesRel.map((enc, idx) => ({
     idx,
     titulo: `${idx + 1}º Encoste`,
-    texto: gerarTextoEncoste(op, enc, idx)
+    texto: gerarTextoEncoste(op, enc, idx, (acumulado += calcEncoste(enc).total), totalRef)
   }));
 }
 
