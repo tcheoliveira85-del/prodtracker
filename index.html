@@ -29,6 +29,13 @@ input,select,button,textarea{font-family:inherit}
 .nav{display:flex;gap:4px}
 .nav-btn{padding:8px 16px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;transition:all .2s}
 .nav-btn.active{border-color:var(--accent);background:var(--accent-glow);color:var(--accent)}
+.active-ops{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.active-op-card{position:relative;border:1.5px solid var(--border);background:var(--card);color:var(--text-sec);border-radius:8px;padding:10px 30px 10px 12px;cursor:pointer;min-width:170px;text-align:left;transition:all .2s}
+.active-op-card.active{border-color:var(--accent);background:var(--accent-glow);color:var(--text)}
+.active-op-title{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:3px}
+.active-op-meta{font-size:10px;color:var(--text-muted);line-height:1.35}
+.active-op-delete{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;border:none;background:transparent;color:var(--text-muted);font-size:14px;font-weight:900;line-height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.active-op-delete:hover{background:var(--danger);color:#fff}
 .section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
 .section-title{font-size:11px;font-weight:800;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .section-grad{background:linear-gradient(135deg,var(--card),var(--card-alt))}
@@ -452,27 +459,48 @@ function gerarTexto(op) {
 // ══════ FIRESTORE OPS ══════
 let _unsub = null;
 
-async function loadFirestore(setOp, setHist) {
+async function loadFirestore(setActiveOps, setHist, setActiveOpId) {
   const { db, doc, getDoc, getDocs, query, collection, orderBy } = window._fb;
   try {
-    const opDoc = await getDoc(doc(db, "config", "operacaoAtiva"));
-    setOp(opDoc.exists() ? opDoc.data().data || null : null);
+    const opsSnap = await getDocs(query(collection(db, "operacoesAtivas"), orderBy("updatedAt", "desc")));
+    const ops = [];
+    opsSnap.forEach(d => { const opData = d.data().data || null; if (opData) ops.push(opData); });
+    if (!ops.length) {
+      const opDoc = await getDoc(doc(db, "config", "operacaoAtiva"));
+      const legacyOp = opDoc.exists() ? opDoc.data().data || null : null;
+      if (legacyOp) {
+        ops.push(legacyOp);
+        await saveOp(legacyOp);
+      }
+    }
+    setActiveOps(ops);
+    setActiveOpId(prev => (prev && ops.some(o => String(o.id) === String(prev))) ? prev : (ops[0]?.id || null));
     const histSnap = await getDocs(query(collection(db, "historico"), orderBy("salvoEm", "desc")));
     const h = []; histSnap.forEach(d => h.push({ ...d.data(), _docId: d.id })); setHist(h);
   } catch (e) { console.error("Load:", e); }
 }
 
-function listenOp(setOp) {
-  const { db, doc, onSnapshot } = window._fb;
+function listenOp(setActiveOps, setActiveOpId) {
+  const { db, collection, query, orderBy, onSnapshot } = window._fb;
   if (_unsub) _unsub();
-  _unsub = onSnapshot(doc(db, "config", "operacaoAtiva"), snap => {
-    setOp(snap.exists() ? snap.data().data || null : null);
+  _unsub = onSnapshot(query(collection(db, "operacoesAtivas"), orderBy("updatedAt", "desc")), snap => {
+    const ops = [];
+    snap.forEach(d => { const opData = d.data().data || null; if (opData) ops.push(opData); });
+    setActiveOps(ops);
+    setActiveOpId(prev => (prev && ops.some(o => String(o.id) === String(prev))) ? prev : (ops[0]?.id || null));
   });
 }
 
 async function saveOp(op) {
   const { db, doc, setDoc } = window._fb;
-  try { await setDoc(doc(db, "config", "operacaoAtiva"), { data: op, updatedBy: window._curUser?.email, updatedAt: new Date().toISOString() }); } catch (e) { console.error("SaveOp:", e); }
+  if (!op || !op.id) return;
+  try { await setDoc(doc(db, "operacoesAtivas", "op_" + op.id), { data: op, updatedBy: window._curUser?.email, updatedAt: new Date().toISOString() }); } catch (e) { console.error("SaveOp:", e); }
+}
+
+async function deleteActiveOp(id) {
+  const { db, doc, deleteDoc } = window._fb;
+  if (!id) return;
+  try { await deleteDoc(doc(db, "operacoesAtivas", "op_" + id)); } catch (e) { console.error("DeleteActiveOp:", e); }
 }
 
 async function saveHist(entry) {
@@ -1097,7 +1125,8 @@ function App() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState("operador");
   const [authLoading, setAuthLoading] = useState(true);
-  const [op, setOp] = useState(null);
+  const [activeOps, setActiveOps] = useState([]);
+  const [activeOpId, setActiveOpId] = useState(null);
   const [hist, setHist] = useState([]);
   const [tab, setTab] = useState("operacao");
   const [theme, setTheme] = useState("dark");
@@ -1111,8 +1140,22 @@ function App() {
   const [pwLoading, setPwLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
+  const op = activeOps.find(o => String(o.id) === String(activeOpId)) || activeOps[0] || null;
   const opRef = useRef(op);
   opRef.current = op;
+
+  const setOp = useCallback((updater) => {
+    setActiveOps(prevOps => {
+      const currentId = opRef.current?.id ?? activeOpId;
+      const idx = prevOps.findIndex(o => String(o.id) === String(currentId));
+      if (idx < 0) return prevOps;
+      const next = typeof updater === "function" ? updater(prevOps[idx]) : updater;
+      if (!next) return prevOps.filter((_, i) => i !== idx);
+      const copy = [...prevOps];
+      copy[idx] = next;
+      return copy;
+    });
+  }, [activeOpId]);
 
   useEffect(() => {
     try { const t = localStorage.getItem("pt_theme"); if (t) setTheme(t); } catch {}
@@ -1122,12 +1165,14 @@ function App() {
         setUser(u);
         const r = await getUserRole(u.uid);
         setRole(r);
-        await loadFirestore(setOp, setHist);
-        listenOp(setOp);
+        await loadFirestore(setActiveOps, setHist, setActiveOpId);
+        listenOp(setActiveOps, setActiveOpId);
       } else {
         window._curUser = null;
         setUser(null);
         setRole("operador");
+        setActiveOps([]);
+        setActiveOpId(null);
         if (_unsub) { _unsub(); _unsub = null; }
       }
       setAuthLoading(false);
@@ -1223,20 +1268,13 @@ function App() {
   }, [saveOpWithIndicator]);
 
   const novaOp = useCallback(async () => {
-    if (opRef.current) {
-      const ok = confirm("Existe uma operacao em andamento. Salvar a operacao atual no historico e iniciar uma nova?");
-      if (!ok) return;
-      const atual = JSON.parse(JSON.stringify(opRef.current));
-      atual.salvoEm = new Date().toISOString();
-      await saveHist(atual);
-      await reloadHist(setHist);
-    }
     const newOp = { id: Date.now(), composicao: "", chegada: new Date().toISOString(), produto: "Celulose", totalVagoes: 0, encostes: [{ id: Date.now(), quantidade: 0, planejado: 0, posicionamento: null, inicioOp: null, registros: [] }] };
-    setOp(newOp);
-    saveOpWithIndicator(newOp);
+    setActiveOps(prev => [newOp, ...prev]);
+    setActiveOpId(newOp.id);
+    await saveOpWithIndicator(newOp);
     setShowShare(false);
     setTab("operacao");
-    showToast("Nova operacao iniciada");
+    showToast("Nova operacao ativa criada");
   }, [saveOpWithIndicator]);
 
   const salvarHist = useCallback(async () => {
@@ -1248,6 +1286,19 @@ function App() {
     showToast("✓ Salvo no histórico");
   }, []);
 
+  const excluirOperacaoAtiva = useCallback(async (opId) => {
+    const target = activeOps.find(item => String(item.id) === String(opId));
+    if (!target) return;
+    const nome = target.composicao || "esta operacao";
+    if (!confirm(`Excluir ${nome} das operacoes ativas? Esta acao nao salva no historico.`)) return;
+    const remaining = activeOps.filter(item => String(item.id) !== String(opId));
+    setActiveOps(remaining);
+    setActiveOpId(prev => String(prev) === String(opId) ? (remaining[0]?.id || null) : prev);
+    await deleteActiveOp(opId);
+    setShowShare(false);
+    showToast("Operacao ativa excluida");
+  }, [activeOps]);
+
   const [showFinModal, setShowFinModal] = useState(false);
   const [dataRetirada, setDataRetirada] = useState("");
 
@@ -1257,15 +1308,17 @@ function App() {
     e.salvoEm = new Date().toISOString();
     if (dataRetirada) e.dataRetirada = new Date(dataRetirada).toISOString();
     await saveHist(e);
-    setOp(null);
-    await saveOp(null);
+    const remaining = activeOps.filter(item => String(item.id) !== String(e.id));
+    setActiveOps(remaining);
+    setActiveOpId(remaining[0]?.id || null);
+    await deleteActiveOp(e.id);
     setShowShare(false);
     setConfirmFin(false);
     setShowFinModal(false);
     setDataRetirada("");
     await reloadHist(setHist);
     showToast("✓ Operação finalizada");
-  }, [dataRetirada]);
+  }, [activeOps, dataRetirada]);
 
   const copiarTexto = useCallback((opData) => {
     navigator.clipboard.writeText(gerarTexto(opData || opRef.current)).then(() => showToast("✓ Copiado!")).catch(() => showToast("Erro ao copiar"));
@@ -1339,6 +1392,21 @@ function App() {
             </div>
           ) : (
             <div>
+              {activeOps.length > 0 && (
+                <div className="active-ops">
+                  {activeOps.map((item, idx) => {
+                    const gi = calcGeral(item);
+                    const selected = op && String(item.id) === String(op.id);
+                    return (
+                      <div key={item.id || idx} role="button" tabIndex="0" className={`active-op-card ${selected ? "active" : ""}`} onClick={() => { setActiveOpId(item.id); setShowShare(false); }} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { setActiveOpId(item.id); setShowShare(false); } }}>
+                        <button type="button" className="active-op-delete" title="Excluir operacao ativa" onClick={e => { e.stopPropagation(); excluirOperacaoAtiva(item.id); }}>×</button>
+                        <div className="active-op-title">{item.composicao || `${idx + 1}ª operação`}</div>
+                        <div className="active-op-meta">{gi.totalVG}/{item.totalVagoes || gi.totalQtd || 0} vg · {(item.encostes || []).length} enc.</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
               <div className="section">
                 <div className="section-title"><span style={{ color: "var(--accent)" }}>◆</span> DADOS DA COMPOSIÇÃO</div>
                 <div className="row">
