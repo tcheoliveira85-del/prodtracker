@@ -1366,6 +1366,7 @@ function App() {
     if (!opRef.current) return;
     const e = JSON.parse(JSON.stringify(opRef.current));
     e.salvoEm = new Date().toISOString();
+    e.finalizada = false;
     await saveHist(e);
     await reloadHist(setHist);
     showToast("✓ Salvo no histórico");
@@ -1391,6 +1392,7 @@ function App() {
     if (!opRef.current) return;
     const e = JSON.parse(JSON.stringify(opRef.current));
     e.salvoEm = new Date().toISOString();
+    e.finalizada = true;
     if (dataRetirada) e.dataRetirada = new Date(dataRetirada).toISOString();
     await saveHist(e);
     const remaining = activeOps.filter(item => String(item.id) !== String(e.id));
@@ -1598,6 +1600,7 @@ function App() {
                 const hg = calcGeral(h);
                 const isOpen = viewHistId === h.id;
                 const isEditing = editHistId === h.id && role === "gestor";
+                const isFinalizada = h.finalizada === true;
                 return (
                   <div key={h.id || hIdx} className="section">
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }} onClick={() => setViewHistId(isOpen ? null : h.id)}>
@@ -1611,8 +1614,8 @@ function App() {
                         </div>
                       </div>
                       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                        <span className={`badge ${hg.totalVG >= hg.totalQtd && hg.totalQtd > 0 ? "badge-success" : "badge-warning"}`}>
-                          {hg.totalVG >= hg.totalQtd && hg.totalQtd > 0 ? "Concluído" : "Parcial"}
+                        <span className={`badge ${isFinalizada ? "badge-success" : "badge-warning"}`}>
+                          {isFinalizada ? "Concluído" : "Parcial"}
                         </span>
                         <span style={{ color: "var(--text-muted)" }}>{isOpen ? "▲" : "▼"}</span>
                       </div>
