@@ -280,7 +280,7 @@ function calcEncoste(enc) {
   const abertura = pos && ini ? Math.max(0, ini.getTime() - pos.getTime()) : 0;
   // fechamento: último momento operacional → disponivelRetirada
   const fechamento = fimMs && disp ? Math.max(0, new Date(disp).getTime() - fimMs) : 0;
-  const tempoProd = tempoOp > 0 ? tempoOp : tempoTotal;
+  const tempoProd = tempoTotal;
   const atingiuMeta = rest <= 0 && total > 0;
   const baseProd = total > 0 ? (atingiuMeta ? alvoDescarga : total) : 0;
   const prod = tempoProd > 0 && baseProd > 0 ? baseProd / (tempoProd / 36e5) : 0;
@@ -539,6 +539,7 @@ function Login({ onAuth }) {
 function Encoste({ enc, eIdx, total, saldoAnterior = 0, onUpdate, onUpdateTroca, onRemove, onAddReg, onRemoveReg, onUpdateReg }) {
 const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
   const regs = enc.registros || [];
+  const pos = enc.posicionamento ? new Date(enc.posicionamento) : null;
   const ini = enc.inicioOp ? new Date(enc.inicioOp) : null;
   const [showPorticos, setShowPorticos] = useState({});
   const tp = enc.trocaParcial;
@@ -651,7 +652,7 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
             {!regs.length && <tr><td colSpan={9} style={{ textAlign: "center", color: "var(--text-muted)", padding: 24 }}>Clique "＋ Hora" para registrar</td></tr>}
             {regs.map((r, rIdx) => {
               const acum = regs.slice(0, rIdx + 1).reduce((s, x) => s + (x.qtd || 0), 0);
-              const elapsed = ini && r.hora ? new Date(r.hora).getTime() - ini.getTime() : 0;
+              const elapsed = pos && r.hora ? new Date(r.hora).getTime() - pos.getTime() : 0;
               const vgh = elapsed > 0 && acum > 0 ? acum / (elapsed / 36e5) : 0;
               const showP = showPorticos[rIdx];
               const eqReg = r.hora ? getEquipeForTimestamp(r.hora) : null;
@@ -733,7 +734,7 @@ function calcAnaliseStats(historico) {
       const tp = enc.trocaParcial || {};
       const qtdOverlap = (tp.qtdAteParada || 0) + (tp.qtdAposRetorno || 0);
       opVG += c.total || 0;
-      if (c.tempoOp > 0) opH += c.tempoOp / 36e5;
+      if (c.tempoTotal > 0) opH += c.tempoTotal / 36e5;
 
       if (ei === 0 && pos && chegada) compData.tChegPos = Math.max(0, (pos.getTime() - chegada.getTime()) / 36e5);
       if (c.tempoOp > 0) compData.tDescarga += c.tempoOp / 36e5;
@@ -745,7 +746,7 @@ function calcAnaliseStats(historico) {
         compData.tRetirada = Math.max(0, (new Date(op.dataRetirada).getTime() - c.fimOperacional.getTime()) / 36e5);
       }
 
-      let prevTime = ini || pos;
+      let prevTime = pos || ini;
       const addEvento = (iso, vg) => {
         if (!iso) return;
         const t = new Date(iso);
@@ -1476,6 +1477,7 @@ function App() {
                           return encostesHist.map((enc, eidx) => {
                           const saldoAnterior = saldosHist[eidx] || 0;
                           const regs = enc.registros || [];
+                          const pos2 = enc.posicionamento ? new Date(enc.posicionamento) : null;
                           const ini2 = enc.inicioOp ? new Date(enc.inicioOp) : null;
                           const encDateStr = enc.inicioOp ? enc.inicioOp.slice(0, 10) : null;
                           const encHora = ini2 ? ini2.getHours() : null;
@@ -1523,7 +1525,7 @@ function App() {
                                 <tbody>
                                   {regs.map((r, i) => {
                                     const acum = regs.slice(0, i + 1).reduce((s, x) => s + (x.qtd || 0), 0);
-                                    const elapsed = ini2 && r.hora ? new Date(r.hora).getTime() - ini2.getTime() : 0;
+                                    const elapsed = pos2 && r.hora ? new Date(r.hora).getTime() - pos2.getTime() : 0;
                                     const vgh = elapsed > 0 ? acum / (elapsed / 36e5) : 0;
                                     let regEquipe = encEquipe;
                                     if (r.hora) {
