@@ -34,7 +34,7 @@ input,select,button,textarea{font-family:inherit}
 .section-grad{background:linear-gradient(135deg,var(--card),var(--card-alt))}
 .row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
 .field{flex:1;min-width:140px}.field-sm{flex:.6;min-width:100px}.field-date{flex:1;min-width:200px}
-.encoste-main-row{display:grid;grid-template-columns:minmax(110px,.65fr) minmax(110px,.65fr) repeat(3,minmax(165px,1fr));gap:12px;margin-bottom:12px}
+.encoste-main-row{display:grid;grid-template-columns:minmax(110px,.65fr) minmax(110px,.65fr) repeat(2,minmax(190px,1fr));gap:12px;margin-bottom:12px}
 .encoste-main-row .field-sm,.encoste-main-row .field-date{min-width:0}
 label.lbl{display:block;font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
 input.inp,select.inp{width:100%;height:42px;min-height:42px;padding:0 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;line-height:1.2;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
@@ -65,11 +65,16 @@ tr.alt{background:var(--card-alt)}
 [data-theme="light"] .badge-success{background:rgba(90,170,43,.1);color:var(--success)}
 .badge-warning{background:rgba(245,158,11,.12);color:var(--warning);border:1px solid rgba(245,158,11,.2)}
 .badge-accent{background:var(--accent-glow);color:var(--accent);border:1px solid rgba(65,182,196,.2)}
-.encoste{border-left:4px solid var(--accent)}.encoste.done{border-left-color:var(--success)}
+.encoste{border-left:4px solid var(--accent);display:flex;flex-direction:column}.encoste.done{border-left-color:var(--success)}
 .encoste-num{background:var(--accent);color:#fff;width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:900}
 .encoste.done .encoste-num{background:var(--success)}
 .encoste-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:8px}
 .encoste-actions{display:flex;gap:6px;align-items:center}
+.encoste-records{order:3}
+.encoste-add-row{order:4;display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-top:12px}
+.encoste-add-row .field-date{flex:1;min-width:240px;max-width:340px}
+.encoste .troca-toggle{order:5}
+.encoste>.troca-block{order:6}
 .share-box{background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:16px;white-space:pre-wrap;font-size:12px;line-height:1.7;font-family:'JetBrains Mono',monospace;overflow-x:auto}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--success);color:#fff;padding:12px 28px;border-radius:10px;font-size:12px;font-weight:700;opacity:0;transition:all .3s;z-index:999;pointer-events:none;box-shadow:0 4px 20px rgba(16,185,129,.4)}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
@@ -91,6 +96,8 @@ tr.alt{background:var(--card-alt)}
 .portico-row{display:flex;gap:6px;margin-top:4px;align-items:center}
 .portico-inp{padding:4px 8px;background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:10px;width:90px;outline:none}
 .portico-inp:focus{border-color:var(--accent)}
+.portico-choice{height:28px;min-width:38px;padding:0 8px;border:1px solid var(--border);border-radius:6px;background:var(--input-bg);color:var(--text-muted);font-size:10px;font-weight:800;cursor:pointer}
+.portico-choice.active{border-color:var(--accent);background:var(--accent-glow);color:var(--accent)}
 .portico-toggle{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:10px;padding:2px 6px}
 .troca-toggle{display:flex;align-items:center;gap:8px;width:100%;padding:10px 14px;margin-top:12px;background:rgba(245,158,11,.06);border:1px dashed rgba(245,158,11,.35);border-radius:8px;color:var(--warning);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;font-family:inherit;transition:all .2s}
 .troca-toggle:hover{background:rgba(245,158,11,.12)}
@@ -582,10 +589,6 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
           <label className="lbl">Início Operação</label>
           <input type="datetime-local" className="inp" value={toLocal(enc.inicioOp)} onChange={e => onUpdate("inicioOp", e.target.value ? new Date(e.target.value).toISOString() : null)} />
         </div>
-        <div className="field-date">
-          <label className="lbl">Disponível p/ Retirada</label>
-          <input type="datetime-local" className="inp" value={toLocal(enc.disponivelRetirada)} onChange={e => onUpdate("disponivelRetirada", e.target.value ? new Date(e.target.value).toISOString() : null)} />
-        </div>
       </div>
       <div className="metrics">
         <div className="metric"><div className="metric-num">{c.total}</div><div className="metric-label">Descarregados</div></div>
@@ -641,7 +644,7 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
         </div>
       )}
 
-      <div style={{ overflowX: "auto", marginTop: 12 }}>
+      <div className="encoste-records" style={{ overflowX: "auto", marginTop: 12 }}>
         <table>
           <thead><tr><th>#</th><th>Hora</th><th className="col-center">Equipe</th><th className="col-center">Tempo Op.</th><th className="col-center">Qtd. VG</th><th className="col-center">Acum.</th><th className="col-center">VG/h</th><th>Pórticos</th><th></th></tr></thead>
           <tbody>
@@ -665,8 +668,8 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
                     <button className="portico-toggle" onClick={() => setShowPorticos({ ...showPorticos, [rIdx]: !showP })}>{showP ? "▲" : "🏗️"}</button>
                     {showP && (
                       <div className="portico-row">
-                        <input className="portico-inp" placeholder="P1" value={r.p1 || ""} onChange={e => onUpdateReg(rIdx, "p1", e.target.value)} />
-                        <input className="portico-inp" placeholder="P2" value={r.p2 || ""} onChange={e => onUpdateReg(rIdx, "p2", e.target.value)} />
+                        <button className={`portico-choice ${r.p1 ? "active" : ""}`} onClick={() => onUpdateReg(rIdx, "p1", r.p1 ? "" : "1")}>P1</button>
+                        <button className={`portico-choice ${r.p2 ? "active" : ""}`} onClick={() => onUpdateReg(rIdx, "p2", r.p2 ? "" : "2")}>P2</button>
                       </div>
                     )}
                   </td>
@@ -677,8 +680,12 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
           </tbody>
         </table>
       </div>
-      <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
-        <button className="btn btn-accent btn-sm" onClick={onAddReg}>＋ Hora</button>
+      <div className="encoste-add-row">
+        <button className="btn btn-accent btn-sm" onClick={onAddReg}>+ Hora</button>
+        <div className="field-date">
+          <label className="lbl">Disponível p/ Retirada</label>
+          <input type="datetime-local" className="inp" value={toLocal(enc.disponivelRetirada)} onChange={e => onUpdate("disponivelRetirada", e.target.value ? new Date(e.target.value).toISOString() : null)} />
+        </div>
       </div>
     </div>
   );
@@ -725,10 +732,8 @@ function calcAnaliseStats(historico) {
       const c = encostesCalc[ei];
       const tp = enc.trocaParcial || {};
       const qtdOverlap = (tp.qtdAteParada || 0) + (tp.qtdAposRetorno || 0);
-      const fatorProd = c.total > 0 && c.baseProd > 0 ? c.baseProd / c.total : 1;
-
-      opVG += c.baseProd || 0;
-      if (c.tempoProd > 0) opH += c.tempoProd / 36e5;
+      opVG += c.total || 0;
+      if (c.tempoOp > 0) opH += c.tempoOp / 36e5;
 
       if (ei === 0 && pos && chegada) compData.tChegPos = Math.max(0, (pos.getTime() - chegada.getTime()) / 36e5);
       if (c.tempoOp > 0) compData.tDescarga += c.tempoOp / 36e5;
@@ -749,8 +754,8 @@ function calcAnaliseStats(historico) {
         prevTime = t;
       };
 
-      regs.forEach(r => addEvento(r.hora, (r.qtd || 0) * fatorProd));
-      addEvento(tp.paradaEfetiva || tp.momentoChamada || enc.disponivelRetirada, qtdOverlap * fatorProd);
+      regs.forEach(r => addEvento(r.hora, r.qtd || 0));
+      addEvento(tp.paradaEfetiva || tp.momentoChamada || enc.disponivelRetirada, qtdOverlap);
 
       regs.forEach(r => {
         if (r.p1 && r.p2) totalHrsDois++;
@@ -1535,7 +1540,7 @@ function App() {
                                       <tr key={i} className={i % 2 ? "alt" : ""}>
                                         <td>{i + 1}ª</td><td>{fmtTime(r.hora)}</td><td className="num">{r.qtd || 0}</td><td className="num">{acum}</td>
                                         <td className="num" style={{ color: "var(--success)" }}>{vgh.toFixed(1)}</td>
-                                        {regs.some(r => r.p1 || r.p2) && <td style={{ fontSize: 10, color: "var(--text-muted)" }}>{[r.p1, r.p2].filter(Boolean).join(" / ") || "—"}</td>}
+                                        {regs.some(r => r.p1 || r.p2) && <td style={{ fontSize: 10, color: "var(--text-muted)" }}>{[r.p1 ? "P1" : "", r.p2 ? "P2" : ""].filter(Boolean).join(" / ") || "—"}</td>}
                                         <td><span className="badge badge-accent">{regEquipe}</span></td>
                                       </tr>
                                     );
