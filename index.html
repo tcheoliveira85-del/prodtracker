@@ -505,7 +505,14 @@ async function deleteActiveOp(id) {
 
 async function saveHist(entry) {
   const { db, doc, setDoc } = window._fb;
-  try { await setDoc(doc(db, "historico", "op_" + entry.id), { ...entry, salvoEm: new Date().toISOString(), salvoPor: window._curUser?.email }); } catch (e) { console.error("SaveHist:", e); }
+  const { _docId, ...clean } = entry;
+  try { await setDoc(doc(db, "historico", "op_" + clean.id), { ...clean, salvoEm: new Date().toISOString(), salvoPor: window._curUser?.email }); } catch (e) { console.error("SaveHist:", e); }
+}
+
+async function updateHist(entry) {
+  const { db, doc, setDoc } = window._fb;
+  const { _docId, ...clean } = entry;
+  try { await setDoc(doc(db, "historico", "op_" + clean.id), { ...clean, editadoEm: new Date().toISOString(), editadoPor: window._curUser?.email }); } catch (e) { console.error("UpdateHist:", e); }
 }
 
 async function removeHist(id) {
@@ -1132,6 +1139,7 @@ function App() {
   const [theme, setTheme] = useState("dark");
   const [showShare, setShowShare] = useState(false);
   const [viewHistId, setViewHistId] = useState(null);
+  const [editHistId, setEditHistId] = useState(null);
   const [confirmFin, setConfirmFin] = useState(false);
   const [showPwModal, setShowPwModal] = useState(false);
   const [newPw, setNewPw] = useState("");
@@ -1188,6 +1196,22 @@ function App() {
     try { await saveOp(next); setLastSaved(new Date()); }
     finally { setSaving(false); }
   }, []);
+
+  const saveHistEditWithIndicator = useCallback(async (next) => {
+    setSaving(true);
+    try { await updateHist(next); setLastSaved(new Date()); }
+    finally { setSaving(false); }
+  }, []);
+
+  const updateHistLocal = useCallback((histId, updater) => {
+    setHist(prev => prev.map(item => {
+      if (String(item.id) !== String(histId)) return item;
+      const base = JSON.parse(JSON.stringify(item));
+      const next = typeof updater === "function" ? updater(base) : { ...base, ...updater };
+      saveHistEditWithIndicator(next);
+      return next;
+    }));
+  }, [saveHistEditWithIndicator]);
 
   const updateOp = useCallback((patch) => {
     setOp(prev => {
@@ -1266,6 +1290,67 @@ function App() {
       return next;
     });
   }, [saveOpWithIndicator]);
+
+  const updateHistOp = useCallback((histId, patch) => {
+    updateHistLocal(histId, prev => ({ ...prev, ...patch }));
+  }, [updateHistLocal]);
+
+  const updateHistEncoste = useCallback((histId, eIdx, field, value) => {
+    updateHistLocal(histId, prev => {
+      if (value === null || value === undefined) delete prev.encostes[eIdx][field];
+      else prev.encostes[eIdx][field] = value;
+      if (field === "disponivelRetirada" && prev.encostes[eIdx].trocaParcial) {
+        prev.encostes[eIdx].trocaParcial.momentoChamada = value || null;
+      }
+      return prev;
+    });
+  }, [updateHistLocal]);
+
+  const updateHistTrocaParcial = useCallback((histId, eIdx, field, value) => {
+    updateHistLocal(histId, prev => {
+      if (!prev.encostes[eIdx].trocaParcial) prev.encostes[eIdx].trocaParcial = {};
+      prev.encostes[eIdx].trocaParcial[field] = value;
+      return prev;
+    });
+  }, [updateHistLocal]);
+
+  const updateHistRegistro = useCallback((histId, eIdx, rIdx, field, value) => {
+    updateHistLocal(histId, prev => {
+      prev.encostes[eIdx].registros[rIdx][field] = value;
+      return prev;
+    });
+  }, [updateHistLocal]);
+
+  const addHistEncoste = useCallback((histId) => {
+    updateHistLocal(histId, prev => {
+      prev.encostes = prev.encostes || [];
+      prev.encostes.push({ id: Date.now(), quantidade: 0, planejado: 0, posicionamento: null, inicioOp: null, registros: [] });
+      return prev;
+    });
+  }, [updateHistLocal]);
+
+  const removeHistEncoste = useCallback((histId, eIdx) => {
+    if (!confirm(`Excluir o ${eIdx + 1}º Encoste deste historico?`)) return;
+    updateHistLocal(histId, prev => {
+      prev.encostes.splice(eIdx, 1);
+      return prev;
+    });
+  }, [updateHistLocal]);
+
+  const addHistRegistro = useCallback((histId, eIdx) => {
+    updateHistLocal(histId, prev => {
+      prev.encostes[eIdx].registros = prev.encostes[eIdx].registros || [];
+      prev.encostes[eIdx].registros.push({ id: Date.now(), hora: null, qtd: 0, p1: "", p2: "" });
+      return prev;
+    });
+  }, [updateHistLocal]);
+
+  const removeHistRegistro = useCallback((histId, eIdx, rIdx) => {
+    updateHistLocal(histId, prev => {
+      prev.encostes[eIdx].registros.splice(rIdx, 1);
+      return prev;
+    });
+  }, [updateHistLocal]);
 
   const novaOp = useCallback(async () => {
     const newOp = { id: Date.now(), composicao: "", chegada: new Date().toISOString(), produto: "Celulose", totalVagoes: 0, encostes: [{ id: Date.now(), quantidade: 0, planejado: 0, posicionamento: null, inicioOp: null, registros: [] }] };
@@ -1512,6 +1597,7 @@ function App() {
               {hist.map((h, hIdx) => {
                 const hg = calcGeral(h);
                 const isOpen = viewHistId === h.id;
+                const isEditing = editHistId === h.id && role === "gestor";
                 return (
                   <div key={h.id || hIdx} className="section">
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }} onClick={() => setViewHistId(isOpen ? null : h.id)}>
@@ -1521,7 +1607,7 @@ function App() {
                           <div style={{ fontSize: 15, fontWeight: 800, color: "var(--accent)" }}>{h.composicao || "Sem nome"}</div>
                         </div>
                         <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 3 }}>
-                          {fmtDateTime(h.chegada)} · {(h.encostes || []).length} enc. · {hg.totalVG}/{hg.totalQtd} vg{h.salvoPor ? " · " + h.salvoPor.split("@")[0] : ""}
+                          {fmtDateTime(h.chegada)} · {(h.encostes || []).length} enc. · {hg.totalVG}/{hg.totalQtd} vg{h.salvoPor ? " · " + h.salvoPor.split("@")[0] : ""}{h.editadoEm ? " · editado " + fmtDateTime(h.editadoEm) : ""}
                         </div>
                       </div>
                       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -1537,13 +1623,55 @@ function App() {
                         <div className="share-box">{gerarTexto(h)}</div>
                         <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
                           <button className="btn btn-success btn-sm" onClick={e => { e.stopPropagation(); copiarTexto(h); }}>📋 Copiar</button>
-                          <button className="btn btn-danger btn-sm" onClick={async e => { e.stopPropagation(); await removeHist(h.id); await reloadHist(setHist); if (viewHistId === h.id) setViewHistId(null); showToast("✓ Removido"); }}>🗑 Excluir</button>
+                          {role === "gestor" && <button className="btn btn-info btn-sm" onClick={e => { e.stopPropagation(); setEditHistId(isEditing ? null : h.id); }}>{isEditing ? "Fechar edição" : "Editar"}</button>}
+                          {role === "gestor" && <button className="btn btn-danger btn-sm" onClick={async e => { e.stopPropagation(); if (!confirm("Excluir este registro do historico?")) return; await removeHist(h.id); await reloadHist(setHist); if (viewHistId === h.id) setViewHistId(null); if (editHistId === h.id) setEditHistId(null); showToast("✓ Removido"); }}>🗑 Excluir</button>}
                         </div>
+                        {isEditing && (
+                          <div className="troca-block" style={{ marginTop: 12 }}>
+                            <div className="troca-title" style={{ marginBottom: 10 }}>Edição do histórico</div>
+                            <div className="row">
+                              <div className="field">
+                                <label className="lbl">Composição</label>
+                                <input className="inp" value={h.composicao || ""} onChange={e => updateHistOp(h.id, { composicao: e.target.value })} />
+                              </div>
+                              <div className="field-date">
+                                <label className="lbl">Chegada</label>
+                                <input type="datetime-local" className="inp" value={toLocal(h.chegada)} onChange={e => updateHistOp(h.id, { chegada: e.target.value ? new Date(e.target.value).toISOString() : h.chegada })} />
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="field">
+                                <label className="lbl">Qtd. Total de Vagões</label>
+                                <input type="number" className="inp" value={h.totalVagoes || ""} inputMode="numeric" onChange={e => updateHistOp(h.id, { totalVagoes: parseInt(e.target.value) || 0 })} />
+                              </div>
+                              <div className="field-sm">
+                                <label className="lbl">Produto</label>
+                                <select className="inp" value={h.produto || "Celulose"} onChange={e => updateHistOp(h.id, { produto: e.target.value })}>
+                                  <option>Celulose</option><option>Outro</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                         {(() => {
                           const encostesHist = h.encostes || [];
                           const saldosHist = saldosAnterioresPorEncoste(encostesHist);
-                          return encostesHist.map((enc, eidx) => {
+                          return (
+                            <>
+                            {encostesHist.map((enc, eidx) => {
                           const saldoAnterior = saldosHist[eidx] || 0;
+                          if (isEditing) {
+                            return (
+                              <Encoste key={enc.id || eidx} enc={enc} eIdx={eidx} total={encostesHist.length} saldoAnterior={saldoAnterior}
+                                onUpdate={(f, v) => updateHistEncoste(h.id, eidx, f, v)}
+                                onUpdateTroca={(f, v) => updateHistTrocaParcial(h.id, eidx, f, v)}
+                                onRemove={() => removeHistEncoste(h.id, eidx)}
+                                onAddReg={() => addHistRegistro(h.id, eidx)}
+                                onRemoveReg={(rIdx) => removeHistRegistro(h.id, eidx, rIdx)}
+                                onUpdateReg={(rIdx, f, v) => updateHistRegistro(h.id, eidx, rIdx, f, v)}
+                              />
+                            );
+                          }
                           const regs = enc.registros || [];
                           const pos2 = enc.posicionamento ? new Date(enc.posicionamento) : null;
                           const ini2 = enc.inicioOp ? new Date(enc.inicioOp) : null;
@@ -1619,7 +1747,10 @@ function App() {
                               </table>
                             </div>
                           );
-                          });
+                          })}
+                            {isEditing && <button className="btn btn-info" onClick={() => addHistEncoste(h.id)}>＋ Encoste no histórico</button>}
+                            </>
+                          );
                         })()}
                       </div>
                     )}
