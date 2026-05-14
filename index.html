@@ -433,23 +433,55 @@ function transformaEncostesParaRelatorio(encostes) {
 }
 
 // ══════ WHATSAPP TEXT — usa redistribuição p/ overlap de manobra ══════
-function gerarTexto(op) {
+function linhasCabecalhoTexto(op) {
+  return [
+    "📦 *PRODUTIVIDADE HORA A HORA*",
+    "━━━━━━━━━━━━━━━━━━━━━",
+    `Composição: *${op.composicao || "—"}*`,
+    `Chegada: ${fmtDateTime(op.chegada)}`,
+    `Produto: ${op.produto || "Celulose"}`,
+    ""
+  ];
+}
+
+function linhasEncosteTexto(enc, idx) {
   const L = [];
-  L.push("📦 *PRODUTIVIDADE HORA A HORA*", "━━━━━━━━━━━━━━━━━━━━━");
-  L.push(`Composição: *${op.composicao || "—"}*`, `Chegada: ${fmtDateTime(op.chegada)}`, `Produto: ${op.produto || "Celulose"}`, "");
-
-  // Aplica redistribuição: 1º encoste no texto = primeira leva (30); saldo migra p/ 2º encoste
-  const encostesRel = transformaEncostesParaRelatorio(op.encostes || []);
-
-  encostesRel.forEach((enc, idx) => {
-    const c = calcEncoste(enc), regs = enc.registros || [];
-    L.push(`▸ *${idx + 1}º ENCOSTE*`, `  Qtd: ${enc.quantidade || 0} vagões`, `  Posicionamento: ${fmtDateTime(enc.posicionamento)}`, `  Início: ${fmtDateTime(enc.inicioOp)}`);
-    if (c.planejado > 0) L.push(`  Planejado: ${c.planejado} vagoes`);
-    L.push(`  Descarregados: ${c.total} | Restante: ${Math.max(0, c.rest)}`, `  Produtividade: ${c.prod.toFixed(1)} VG/h`, `  Tempo Op: ${fmtDur(c.tempoOp)}`);
-    if (enc.disponivelRetirada) L.push(`  Disponível p/ Retirada: ${fmtDateTime(enc.disponivelRetirada)}`);
-    if (c.done) L.push("  ✅ *CONCLUÍDO*"); else if (c.prev) L.push(`  🕐 *Prev. Término: ${fmtDateTime(c.prev)}*`);
-    if (regs.length) { L.push(""); regs.forEach((r, i) => { const ac = regs.slice(0, i + 1).reduce((s, x) => s + (x.qtd || 0), 0); L.push(`  ${i + 1}ª h → ${fmtTime(r.hora)} | +${r.qtd || 0} vg | Acum: ${ac}`); }); }
+  const c = calcEncoste(enc), regs = enc.registros || [];
+  L.push(`▸ *${idx + 1}º ENCOSTE*`, `  Qtd: ${enc.quantidade || 0} vagões`, `  Posicionamento: ${fmtDateTime(enc.posicionamento)}`, `  Início: ${fmtDateTime(enc.inicioOp)}`);
+  if (c.planejado > 0) L.push(`  Planejado: ${c.planejado} vagoes`);
+  L.push(`  Descarregados: ${c.total} | Restante: ${Math.max(0, c.rest)}`, `  Produtividade: ${c.prod.toFixed(1)} VG/h`, `  Tempo Op: ${fmtDur(c.tempoTotal)}`);
+  if (enc.disponivelRetirada) L.push(`  Disponível p/ Retirada: ${fmtDateTime(enc.disponivelRetirada)}`);
+  if (c.done) L.push("  ✅ *CONCLUÍDO*"); else if (c.prev) L.push(`  🕐 *Prev. Término: ${fmtDateTime(c.prev)}*`);
+  if (regs.length) {
     L.push("");
+    regs.forEach((r, i) => {
+      const ac = regs.slice(0, i + 1).reduce((s, x) => s + (x.qtd || 0), 0);
+      L.push(`  ${i + 1}ª h → ${fmtTime(r.hora)} | +${r.qtd || 0} vg | Acum: ${ac}`);
+    });
+  }
+  return L;
+}
+
+function gerarTextoEncoste(op, enc, idx) {
+  const L = linhasCabecalhoTexto(op);
+  L.push(...linhasEncosteTexto(enc, idx));
+  return L.join("\n");
+}
+
+function gerarTextosEncostes(op) {
+  const encostesRel = transformaEncostesParaRelatorio(op.encostes || []);
+  return encostesRel.map((enc, idx) => ({
+    idx,
+    titulo: `${idx + 1}º Encoste`,
+    texto: gerarTextoEncoste(op, enc, idx)
+  }));
+}
+
+function gerarTexto(op) {
+  const L = linhasCabecalhoTexto(op);
+  const encostesRel = transformaEncostesParaRelatorio(op.encostes || []);
+  encostesRel.forEach((enc, idx) => {
+    L.push(...linhasEncosteTexto(enc, idx), "");
   });
   const g = calcGeral(op); const totalRef = op.totalVagoes || g.totalQtd;
   L.push("━━━━━━━━━━━━━━━━━━━━━", `Total: ${g.totalVG}/${totalRef} vagões`);
@@ -1411,6 +1443,10 @@ function App() {
     navigator.clipboard.writeText(gerarTexto(opData || opRef.current)).then(() => showToast("✓ Copiado!")).catch(() => showToast("Erro ao copiar"));
   }, []);
 
+  const copiarTextoLivre = useCallback((texto) => {
+    navigator.clipboard.writeText(texto).then(() => showToast("✓ Copiado!")).catch(() => showToast("Erro ao copiar"));
+  }, []);
+
   const doChangePassword = useCallback(async () => {
     setPwErr("");
     if (!newPw || !confirmPw) { setPwErr("Preencha os dois campos"); return; }
@@ -1576,11 +1612,20 @@ function App() {
               {showShare && (
                 <div className="section">
                   <div className="section-title"><span style={{ color: "var(--accent)" }}>◆</span> TEXTO PARA WHATSAPP</div>
-                  <div className="share-box">{gerarTexto(op)}</div>
-                  <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
-                    <button className="btn btn-success" onClick={() => copiarTexto()}>📋 Copiar</button>
-                    <button className="btn btn-outline" onClick={() => window.open("https://wa.me/?text=" + encodeURIComponent(gerarTexto(op)), "_blank")}>💬 WhatsApp</button>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
+                    <button className="btn btn-success" onClick={() => copiarTexto()}>📋 Copiar completo</button>
+                    <button className="btn btn-outline" onClick={() => window.open("https://wa.me/?text=" + encodeURIComponent(gerarTexto(op)), "_blank")}>💬 WhatsApp completo</button>
                   </div>
+                  {gerarTextosEncostes(op).map(parte => (
+                    <div key={parte.idx} style={{ marginTop: 14 }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: "var(--accent)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8 }}>{parte.titulo}</div>
+                      <div className="share-box">{parte.texto}</div>
+                      <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <button className="btn btn-success btn-sm" onClick={() => copiarTextoLivre(parte.texto)}>📋 Copiar {parte.titulo}</button>
+                        <button className="btn btn-outline btn-sm" onClick={() => window.open("https://wa.me/?text=" + encodeURIComponent(parte.texto), "_blank")}>💬 WhatsApp</button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
