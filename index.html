@@ -1600,7 +1600,12 @@ function App() {
                 const hg = calcGeral(h);
                 const isOpen = viewHistId === h.id;
                 const isEditing = editHistId === h.id && role === "gestor";
-                const isFinalizada = h.finalizada === true;
+                const aindaAtiva = activeOps.some(a =>
+                  String(a.id) === String(h.id) ||
+                  ((a.composicao || "").trim() && (a.composicao || "").trim() === (h.composicao || "").trim())
+                );
+                const concluidaPorCompatibilidade = h.finalizada === undefined && !aindaAtiva && hg.totalQtd > 0 && hg.totalVG >= hg.totalQtd;
+                const isFinalizada = h.finalizada === true || concluidaPorCompatibilidade;
                 return (
                   <div key={h.id || hIdx} className="section">
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }} onClick={() => setViewHistId(isOpen ? null : h.id)}>
