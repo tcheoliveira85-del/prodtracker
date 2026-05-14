@@ -631,7 +631,7 @@ const c = calcEncoste({ ...enc, _saldoAnterior: saldoAnterior });
         <div className="metric"><div className={`metric-num ${c.rest > 0 ? "color-warning" : "color-success"}`}>{Math.max(0, c.rest)}</div><div className="metric-label">{c.planejado > 0 ? "Rest. planej." : "Restante"}</div></div>
         <div className="metric"><div className="metric-num">{c.prod.toFixed(1)}</div><div className="metric-label">VG/h</div></div>
         <div className="metric"><div className="metric-num color-info" style={{ fontSize: 16 }}>{c.abertura > 0 ? fmtDur(c.abertura) : "—"}</div><div className="metric-label">Abertura</div></div>
-        <div className="metric"><div className="metric-num color-info">{fmtDur(c.tempoOp)}</div><div className="metric-label">Tempo Op.</div></div>
+        <div className="metric"><div className="metric-num color-info">{fmtDur(c.tempoTotal)}</div><div className="metric-label">Tempo Op.</div></div>
         <div className="metric"><div className="metric-num color-info" style={{ fontSize: 16 }}>{c.fechamento > 0 ? fmtDur(c.fechamento) : "—"}</div><div className="metric-label">Fechamento</div></div>
         <div className="metric"><div className="metric-num" style={{ fontSize: 18 }}>{c.done ? "✓" : (c.prev ? fmtTime(c.prev) : "—")}</div><div className="metric-label">Prev. Término</div></div>
       </div>
