@@ -498,19 +498,11 @@ function gerarTexto(op) {
 let _unsub = null;
 
 async function loadFirestore(setActiveOps, setHist, setActiveOpId) {
-  const { db, doc, getDoc, getDocs, query, collection, orderBy } = window._fb;
+  const { db, getDocs, query, collection, orderBy } = window._fb;
   try {
     const opsSnap = await getDocs(query(collection(db, "operacoesAtivas"), orderBy("updatedAt", "desc")));
     const ops = [];
     opsSnap.forEach(d => { const opData = d.data().data || null; if (opData) ops.push(opData); });
-    if (!ops.length) {
-      const opDoc = await getDoc(doc(db, "config", "operacaoAtiva"));
-      const legacyOp = opDoc.exists() ? opDoc.data().data || null : null;
-      if (legacyOp) {
-        ops.push(legacyOp);
-        await saveOp(legacyOp);
-      }
-    }
     setActiveOps(ops);
     setActiveOpId(prev => (prev && ops.some(o => String(o.id) === String(prev))) ? prev : (ops[0]?.id || null));
     const histSnap = await getDocs(query(collection(db, "historico"), orderBy("salvoEm", "desc")));
