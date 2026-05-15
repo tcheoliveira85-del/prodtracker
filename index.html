@@ -218,6 +218,11 @@ function getEquipePeriodo(dateStr, periodo) {
   return eq[periodo] || "—";
 }
 
+function localDateKey(date) {
+  if (!date) return "";
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
 // Helper: dado um ISO timestamp, retorna a equipe (A/B/C/D) considerando o turno em que cai
 function getEquipeForTimestamp(iso) {
   if (!iso) return null;
@@ -229,10 +234,11 @@ function getEquipeForTimestamp(iso) {
   else if (h >= 19 || h < 1) periodo = "19x01";
   else periodo = "01x07";
   // Para o turno 19x01 que cruza meia-noite: registros entre 00:00 e 00:59 pertencem ao turno 19x01 do dia ANTERIOR
-  let dateStr = iso.slice(0, 10);
+  let dateStr = localDateKey(d);
   if (periodo === "19x01" && h < 1) {
-    const prev = new Date(d.getTime() - 24 * 3600 * 1000);
-    dateStr = prev.toISOString().slice(0, 10);
+    const prev = new Date(d);
+    prev.setDate(prev.getDate() - 1);
+    dateStr = localDateKey(prev);
   }
   return getEquipePeriodo(dateStr, periodo);
 }
@@ -920,13 +926,12 @@ function Analise({ historico }) {
 
         // Equipe
         if (ini) {
-          const dateStr = enc.inicioOp.slice(0, 10);
           const hora = ini.getHours();
           let per = "01x07";
           if (hora >= 7 && hora < 13) per = "07x13";
           else if (hora >= 13 && hora < 19) per = "13x19";
           else if (hora >= 19 || hora < 1) per = "19x01";
-          const eq = enc.equipeManual || getEquipePeriodo(dateStr, per);
+          const eq = enc.equipeManual || getEquipeForTimestamp(enc.inicioOp);
           if (equipes[eq]) { equipes[eq].vg += total; equipes[eq].h += elapsed; }
           periodos[per].vg += total; periodos[per].h += elapsed;
         }
@@ -1726,16 +1731,7 @@ function App() {
                           const regs = enc.registros || [];
                           const pos2 = enc.posicionamento ? new Date(enc.posicionamento) : null;
                           const ini2 = enc.inicioOp ? new Date(enc.inicioOp) : null;
-                          const encDateStr = enc.inicioOp ? enc.inicioOp.slice(0, 10) : null;
-                          const encHora = ini2 ? ini2.getHours() : null;
-                          let encPeriodo = null;
-                          if (encHora !== null) {
-                            if (encHora >= 7 && encHora < 13) encPeriodo = "07x13";
-                            else if (encHora >= 13 && encHora < 19) encPeriodo = "13x19";
-                            else if (encHora >= 19 || encHora < 1) encPeriodo = "19x01";
-                            else encPeriodo = "01x07";
-                          }
-                          const encEquipe = enc.equipeManual || (encDateStr && encPeriodo ? getEquipePeriodo(encDateStr, encPeriodo) : "—");
+                          const encEquipe = enc.equipeManual || (enc.inicioOp ? getEquipeForTimestamp(enc.inicioOp) : "—");
                           return (
                             <div key={eidx} style={{ marginTop: 18 }}>
                               <div style={{ fontSize: 11, fontWeight: 800, color: "var(--accent)", marginBottom: 8, letterSpacing: 1 }}>
@@ -1776,14 +1772,7 @@ function App() {
                                     const vgh = elapsed > 0 ? acum / (elapsed / 36e5) : 0;
                                     let regEquipe = encEquipe;
                                     if (r.hora) {
-                                      const rDate = new Date(r.hora);
-                                      const rDateStr = r.hora.slice(0, 10);
-                                      const rH = rDate.getHours();
-                                      let rPer = "01x07";
-                                      if (rH >= 7 && rH < 13) rPer = "07x13";
-                                      else if (rH >= 13 && rH < 19) rPer = "13x19";
-                                      else if (rH >= 19 || rH < 1) rPer = "19x01";
-                                      regEquipe = enc.equipeManual || getEquipePeriodo(rDateStr, rPer);
+                                      regEquipe = enc.equipeManual || getEquipeForTimestamp(r.hora);
                                     }
                                     return (
                                       <tr key={i} className={i % 2 ? "alt" : ""}>
